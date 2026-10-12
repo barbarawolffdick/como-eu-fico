@@ -1,5 +1,8 @@
 """Confere regras para votos válidos usando apenas dados sintéticos."""
 import unittest
+import subprocess
+import sys
+from pathlib import Path
 import zipfile
 from tests.test_reconciliar_8_municipios import ReconciliaTest
 from scripts.conferir_validos_8_municipios import verify
@@ -8,6 +11,13 @@ class ValidVotesTests(ReconciliaTest):
     def test_esquema_incompleto_falha_com_mensagem_explicita(self):
         with self.assertRaisesRegex(ValueError, "colunas ausentes"):
             verify(self.tse)
+
+    def test_execucao_direta_do_script(self):
+        script = Path(__file__).resolve().parents[1] / "scripts" / "conferir_validos_8_municipios.py"
+        result = subprocess.run([sys.executable, str(script), "--help"],
+                                capture_output=True, text=True, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("--tse", result.stdout)
 
     def test_compativel_em_cada_secao(self):
         path=self.tse/"votacao_secao_2026_BR.zip"

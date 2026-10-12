@@ -2,6 +2,15 @@
 
 Projeto de análise eleitoral e indicadores públicos por município brasileiro.
 
+## Direção editorial e contrato de dados
+
+O **Como Eu Fico** mostra, no nível municipal, a presença das políticas, serviços, benefícios e entregas com participação federal na vida cotidiana. Acompanha sua evolução **mês a mês**, tendo o resultado da eleição presidencial de 2026 como referência fixa para análises descritivas; uma associação não demonstra causalidade.
+
+- [Contrato editorial e de dados v1 (proposta)](docs/contrato-editorial-dados-v1.md)
+- [Catálogo de fontes e questões em aberto](docs/catalogo-fontes-v0.md)
+
+Cada domínio (eleições, benefícios, finanças, território e entregas) conserva dados independentes. Relacionamentos são efetuados em código, com chaves territoriais e regras temporais explícitas. Novas integrações dependem da revisão do contrato.
+
 ## Fonte de dados atual
 
 - **Votação:** arquivos oficiais TSE 2026, primeiro turno, cargo Presidente.

@@ -91,7 +91,18 @@ def voting_checks(zip_file, member):
               codigos_distintos=len(votables)),
     ]
 
-def detail_checks(zip_file):
+EVIDENCE_FIELDS = ("arquivo_zip", "arquivo_csv", "linha_csv", "SG_UF", "CD_MUNICIPIO",
+                   "NM_MUNICIPIO", "NR_ZONA", "NR_SECAO", "NR_LOCAL_VOTACAO",
+                   "QT_APTOS", "QT_COMPARECIMENTO", "QT_ABSTENCOES", "diferenca")
+
+def write_evidence(path, evidence):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=EVIDENCE_FIELDS)
+        writer.writeheader()
+        writer.writerows(evidence)
+
+def detail_checks(zip_file, evidence=None, zip_name="detalhe_votacao_secao_2026.zip"):
     national = [name for name in zip_file.namelist()
                 if name.endswith("detalhe_votacao_secao_2026_BRASIL.csv")]
     if len(national) != 1:
@@ -110,7 +121,7 @@ def detail_checks(zip_file):
     examples = []
     numeric = ("QT_APTOS", "QT_COMPARECIMENTO", "QT_ABSTENCOES",
                "QT_VOTOS_NOMINAIS", "QT_VOTOS_BRANCOS", "QT_VOTOS_NULOS")
-    for _, row in iterator:
+    for line_number, (_, row) in enumerate(iterator, start=2):
         total += 1
         if not in_scope(row):
             ignored += 1
@@ -129,8 +140,19 @@ def detail_checks(zip_file):
             continue
         if any(value < 0 for value in values.values()):
             violations["negativo"] += 1
-        if values["QT_APTOS"] != values["QT_COMPARECIMENTO"] + values["QT_ABSTENCOES"]:
+        difference = values["QT_APTOS"] - values["QT_COMPARECIMENTO"] - values["QT_ABSTENCOES"]
+        if difference != 0:
             violations["aptos_diferentes_comparecimento_abstencoes"] += 1
+            if evidence is not None:
+                evidence.append({
+                    "arquivo_zip": zip_name, "arquivo_csv": member,
+                    "linha_csv": line_number,
+                    **{field: row.get(field, "") for field in
+                       ("SG_UF", "CD_MUNICIPIO", "NM_MUNICIPIO",
+                        "NR_ZONA", "NR_SECAO", "NR_LOCAL_VOTACAO",
+                        "QT_APTOS", "QT_COMPARECIMENTO", "QT_ABSTENCOES")},
+                    "diferenca": difference,
+                })
         if (values["QT_VOTOS_NOMINAIS"] + values["QT_VOTOS_BRANCOS"]
                 + values["QT_VOTOS_NULOS"] > values["QT_COMPARECIMENTO"]):
             violations["votos_superiores_comparecimento"] += 1
@@ -144,7 +166,7 @@ def detail_checks(zip_file):
               ocorrencias=dict(violations)),
     ]
 
-def run(directory):
+def run(directory, evidence=None):
     tests = []
     manifest_path = directory / "manifest.json"
     try:
@@ -204,7 +226,7 @@ def run(directory):
     if "detalhe" in valid:
         try:
             with zipfile.ZipFile(valid["detalhe"]) as archive:
-                tests.extend(detail_checks(archive))
+                tests.extend(detail_checks(archive, evidence=evidence, zip_name=FILES["detalhe"]))
         except Exception as exc:
             tests.append(check("ler_detalhe", "FAIL", erro=repr(exc)))
     tests.append(check("reconciliacao", "INCONCLUSIVO",
@@ -215,8 +237,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dir", type=Path, default=Path("data/raw/tse/2026"))
     parser.add_argument("--output", type=Path, default=Path("data/quality/validacao_tse_2026.json"))
+    parser.add_argument("--evidence", type=Path,
+                        default=Path("data/quality/divergencias_aptos_2026.csv"))
     args = parser.parse_args()
-    tests = run(args.dir)
+    evidence = []
+    tests = run(args.dir, evidence=evidence)
+    write_evidence(args.evidence, evidence)
     counts = dict(Counter(test["status"] for test in tests))
     status = "FAIL" if counts.get("FAIL") else ("INCONCLUSIVO" if counts.get("INCONCLUSIVO") else "PASS")
     report = {"gerado_em_utc": datetime.now(timezone.utc).isoformat(),
@@ -225,6 +251,7 @@ def main():
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"resultado": status, "contagem": counts,
                       "relatorio": str(args.output),
+                      "arquivo_evidencias": str(args.evidence), "registros_evidencias": len(evidence),
                       "falhas": [t["teste"] for t in tests if t["status"] == "FAIL"],
                       "inconclusivos": [t["teste"] for t in tests if t["status"] == "INCONCLUSIVO"]},
                      ensure_ascii=False, indent=2))

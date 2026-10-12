@@ -64,7 +64,7 @@ def classify(name):
     n = norm(name)
     if n in {"LUIZ INACIO LULA DA SILVA", "LULA"}:
         return "lula"
-    if n == "FLAVIO BOLSONARO":
+    if n in {"FLAVIO BOLSONARO", "FLAVIO NANTES BOLSONARO"}:
         return "flavio"
     return None
 

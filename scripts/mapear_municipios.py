@@ -22,6 +22,24 @@ UF_NAMES = {
     "Sergipe":"SE","Tocantins":"TO"
 }
 
+# Equivalências revisadas explicitamente (UF, nome na base eleitoral) -> código IBGE.
+# Não utilizar fuzzy matching: qualquer nome novo permanece pendente.
+ALIASES_IBGE = {
+    ("GO", "BOM JESUS"): "5203500",
+    ("MT", "SANTO ANTÔNIO DO LEVERGER"): "5107800",
+    ("MG", "BARÃO DE MONTE ALTO"): "3105509",
+    ("MG", "DONA EUSÉBIA"): "3122900",
+    ("MG", "SÃO THOMÉ DAS LETRAS"): "3165206",
+    ("PA", "ELDORADO DOS CARAJÁS"): "1502954",
+    ("PR", "MUNHOZ DE MELLO"): "4116307",
+    ("RN", "BOA SAÚDE"): "2405306",
+    ("RO", "ALVORADA DO OESTE"): "1100346",
+    ("RO", "ESPIGÃO DO OESTE"): "1100098",
+    ("RR", "SÃO LUIZ"): "1400605",
+    ("SP", "SÃO LUÍS DO PARAITINGA"): "3550001",
+    ("SE", "AMPARO DE SÃO FRANCISCO"): "2800100",
+}
+
 def norm(s):
     s = unicodedata.normalize("NFKD", str(s).strip())
     s = "".join(c for c in s if not unicodedata.combining(c))
@@ -84,6 +102,8 @@ def main():
     ref.sort(key=lambda r:(r["uf"], r["municipio_ibge"]))
     write_csv(a.output/"reference"/"municipios_ibge.csv", ref, ["codigo_ibge","uf","municipio_ibge"])
 
+    codes = {r["codigo_ibge"]: r for r in ref}
+    aliases = {(uf, norm(name)): code for (uf, name), code in ALIASES_IBGE.items()}
     matched, unresolved, seen = [], [], set()
     files = sorted(a.source.glob("*/resumo_municipios_*.csv"))
     for path in files:
@@ -100,25 +120,38 @@ def main():
                 unresolved.append({**base,"motivo":"Município duplicado nos resumos"})
                 continue
             seen.add(key)
-            if key not in index:
-                unresolved.append({**base,"motivo":"Sem correspondência exata IBGE; requer revisão"})
+            reference = index.get(key)
+            method = "nome_exato_normalizado"
+            if reference is None and key in aliases:
+                code = aliases[key]
+                reference = codes.get(code)
+                method = "equivalencia_revisada"
+                if reference is None or reference["uf"] != uf:
+                    raise ValueError(f"Alias IBGE inválido: {key} -> {code}")
+            if reference is None:
+                unresolved.append({**base,"motivo":"Sem correspondência IBGE; requer revisão"})
                 continue
-            matched.append({**base,**index[key]})
+            matched.append({**base,**reference,"metodo_correspondencia":method})
     write_csv(a.output/"reference"/"municipios_mapeados.csv", matched,
-              ["codigo_ibge","uf","municipio_ibge","municipio_origem","arquivo_origem","linha_origem"])
+              ["codigo_ibge","uf","municipio_ibge","municipio_origem","arquivo_origem","linha_origem","metodo_correspondencia"])
     write_csv(a.output/"quality"/"municipios_nao_correspondidos.csv", unresolved,
               ["arquivo_origem","linha_origem","uf","municipio_origem","motivo"])
+    matched_codes = {r["codigo_ibge"] for r in matched}
+    missing = [r for r in ref if r["codigo_ibge"] not in matched_codes]
+    write_csv(a.output/"quality"/"municipios_ibge_ausentes.csv", missing,
+              ["codigo_ibge","uf","municipio_ibge"])
     report = {
         "fonte_ibge":IBGE_URL, "arquivos_csv_lidos":len(files),
         "registros_ibge":len(ref), "municipios_mapeados":len(matched),
-        "registros_pendentes":len(unresolved),
+        "registros_pendentes":len(unresolved), "municipios_ibge_ausentes":len(missing),
+        "equivalencias_revisadas":sum(r["metodo_correspondencia"]=="equivalencia_revisada" for r in matched),
         "motivos_pendencia":dict(Counter(r["motivo"] for r in unresolved)),
-        "observacao":"Correspondência exata após remoção de acentos, pontuação e variações de espaço; não há matching aproximado."
+        "observacao":"Nome normalizado ou equivalência explícita por código IBGE, sem matching aproximado."
     }
     (a.output/"quality"/"resumo_mapeamento.json").write_text(
         json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(report,ensure_ascii=False,indent=2))
-    if not files or unresolved:
+    if not files or unresolved or missing or len(matched_codes) != len(matched):
         raise SystemExit(1)
 
 if __name__ == "__main__":

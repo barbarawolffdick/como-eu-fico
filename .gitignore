@@ -11,3 +11,6 @@ __pycache__/
 *.py[cod]
 .DS_Store
 inventario-limpeza*.json
+
+# Legado secundário (preservar cópia local, não versionar)
+dados-municipios/

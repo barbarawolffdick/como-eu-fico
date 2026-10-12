@@ -1,0 +1,16 @@
+# Dados nacionais e produtos reconstruíveis: ficam no Mac, não no Git
+data/raw/
+data/tse_oficial/
+data/curated/
+data/reference/tse_ibge/
+data/reference/ibge_municipios_raw.json
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+__pycache__/
+*.py[cod]
+.DS_Store
+inventario-limpeza*.json
+
+# Legado secundário (preservar cópia local, não versionar)
+dados-municipios/

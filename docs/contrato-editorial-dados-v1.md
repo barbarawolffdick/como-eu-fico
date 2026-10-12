@@ -34,7 +34,7 @@ Cada medida deverá permitir rastrear a fonte, o que representa concretamente e 
 ## 3. Contrato temporal
 
 - **Unidade analítica padrão:** mês de referência, `AAAA-MM`.
-- **Janela inicial da investigação:** janeiro de 2023 a setembro de 2026, com extensão histórica quando houver informação oficial comparável.
+- **Janela inicial da investigação:** janeiro de 2025 a setembro de 2026 (21 meses), limitada aos períodos com dados oficiais disponíveis; períodos anteriores somente em expansão futura, por decisão explícita.
 - **Eleição:** evento fixo de 2026; não repetir resultados eleitorais como se fossem fatos mensais.
 - Cada observação registra `periodo_referencia_inicio`, `periodo_referencia_fim`, `tipo_periodo` (competência, pagamento, execução, exercício, medição), `data_publicacao` quando disponível e `data_extracao`.
 - Dado anual ou pontual mantém sua frequência original; proibido distribuir valores anuais pelos meses ou interpolar sem método e rótulo explícitos.
@@ -112,7 +112,7 @@ Cada resultado publicável aponta para: arquivo bruto e hash, versão do código
 
 Este contrato e o catálogo inicial de fontes são revisados editorialmente; questões em aberto são registradas. Só então desenhar esquemas físicos, testes e ingestões por domínio.
 
-Questões pendentes para etapa 2: janela histórica para fontes que não têm 2023–2026 completo; política de revisões retroativas; nomenclatura e contagem de famílias beneficiárias; condições de inferência de alcance/entrega; regra editorial para casos de município sem evidências suficientes.
+Questões pendentes para etapa 2: janela histórica para fontes que não têm 2025–2026 completo; política de revisões retroativas; nomenclatura e contagem de famílias beneficiárias; condições de inferência de alcance/entrega; regra editorial para casos de município sem evidências suficientes.
 
 ## Referências oficiais verificadas em 2026-10-12
 

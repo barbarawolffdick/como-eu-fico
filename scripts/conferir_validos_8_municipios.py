@@ -3,9 +3,12 @@
 import csv
 import io
 import json
+import sys
 import zipfile
 from collections import defaultdict
 from pathlib import Path
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.reconciliar_8_municipios import TARGETS, norm, scope, section, integer, reconcile, write_csv
 
 VOTE = "votacao_secao_2026_BR.csv"
@@ -53,6 +56,13 @@ def verify(directory):
     details=defaultdict(set)
     problems=defaultdict(list)
     with zipfile.ZipFile(directory/"detalhe_votacao_secao_2026.zip") as z:
+        with z.open(DETAIL) as handle:
+            columns = next(csv.reader([handle.readline().decode("latin-1")], delimiter=";"))
+        expected = {"QT_VOTOS_NOMINAIS","QT_VOTOS_BRANCOS","QT_VOTOS_NULOS",
+                    "QT_COMPARECIMENTO","QT_VOTOS_LEGENDA","QT_VOTOS_ANULADOS_APU_SEP"}
+        missing = expected - set(columns)
+        if missing:
+            raise ValueError(f"{DETAIL}: colunas ausentes: {sorted(missing)}")
         for line,row in read(z,DETAIL):
             key=(row["SG_UF"],norm(row["NM_MUNICIPIO"]))
             if key not in TARGETS or not scope(row):

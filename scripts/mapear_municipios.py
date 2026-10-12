@@ -64,7 +64,17 @@ def main():
     index = {}
     ref = []
     for r in official:
-        uf = r["microrregiao"]["mesorregiao"]["UF"]["sigla"]
+        # A API pode retornar microrregiao nula; usa a divisao regional atual.
+        uf_info = None
+        micro = r.get("microrregiao")
+        if micro and micro.get("mesorregiao"):
+            uf_info = micro["mesorregiao"].get("UF")
+        imediata = r.get("regiao-imediata")
+        if not uf_info and imediata and imediata.get("regiao-intermediaria"):
+            uf_info = imediata["regiao-intermediaria"].get("UF")
+        if not uf_info or not uf_info.get("sigla"):
+            raise ValueError(f"UF ausente nas hierarquias IBGE: {r.get('id')} - {r.get('nome')}")
+        uf = uf_info["sigla"]
         row = {"codigo_ibge":str(r["id"]), "uf":uf, "municipio_ibge":r["nome"]}
         ref.append(row)
         key = (uf, norm(r["nome"]))

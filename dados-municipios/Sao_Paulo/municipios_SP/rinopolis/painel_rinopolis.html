@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Rinópolis/SP – Painel de votação</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#FFFFFF; --superficie:#F3F5F8; --zebra:#F3F5F8; --texto:#1A202C; --suave:#4A5568;
+  --linha:#CBD5E0; --borda-campo:#718096; --titulo:#1A365D; --th-bg:#1A365D; --th-texto:#FFFFFF;
+  --link:#004E8A; --foco:#005FCC;
+  --lula:#D55E00; --lula-t:#9A4200; --lula-f:#FCEBDD;
+  --flavio:#0072B2; --flavio-t:#00598C; --flavio-f:#DDEEF8;
+  --outros:#6B7785; --neutro-f:#EEF1F5;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#12171D; --superficie:#1B222B; --zebra:#171D25; --texto:#EDF2F7; --suave:#A9B4C2;
+    --linha:#33404F; --borda-campo:#8A96A6; --titulo:#BEE3F8; --th-bg:#243447; --th-texto:#FFFFFF;
+    --link:#7CC0F0; --foco:#FFD166;
+    --lula:#E8772E; --lula-t:#F4A261; --lula-f:#3A2414;
+    --flavio:#3C9DD6; --flavio-t:#6CB6E8; --flavio-f:#12304A;
+    --outros:#8D99A8; --neutro-f:#232C37;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:100%;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:1rem;line-height:1.55}
+a{color:var(--link);text-underline-offset:.15em}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--foco);outline-offset:2px;border-radius:2px}
+.sr{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.pular{position:absolute;left:.5rem;top:-4rem;background:var(--titulo);color:var(--bg);padding:.6rem 1rem;z-index:10;border-radius:.3rem}
+.pular:focus{top:.5rem}
+.pagina{max-width:75rem;margin:0 auto;padding:1.25rem clamp(1rem,4vw,2rem) 3rem}
+header.topo{padding:1.5rem 0 1rem;border-bottom:3px solid var(--titulo);margin-bottom:1rem}
+.eyebrow{margin:0;color:var(--suave);font-size:.95rem}
+h1{margin:.15rem 0 .25rem;font-size:clamp(1.6rem,4.5vw,2.4rem);line-height:1.15;color:var(--titulo)}
+h1 .uf{font-weight:400;color:var(--suave)}
+h2{margin:2.25rem 0 .6rem;font-size:clamp(1.25rem,3vw,1.6rem);color:var(--titulo);line-height:1.2}
+h3{margin:1.75rem 0 .2rem;font-size:1.15rem;color:var(--titulo)}
+.nota{color:var(--suave);font-size:.95rem;margin:.2rem 0 .8rem;max-width:62rem}
+nav.secoes ul{list-style:none;margin:.9rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem .5rem}
+nav.secoes a{display:inline-block;padding:.35rem .8rem;border:1px solid var(--linha);border-radius:2rem;text-decoration:none;font-size:.95rem}
+nav.secoes a:hover{background:var(--superficie)}
+/* conclusões */
+.conclusoes{list-style:none;margin:0;padding:1rem 1.25rem;background:var(--neutro-f);border-left:.3rem solid var(--titulo);border-radius:.3rem}
+.conclusoes li{margin:.35rem 0;max-width:62rem}
+/* indicadores */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.75rem;margin:0}
+.kpi{border:1px solid var(--linha);border-radius:.5rem;padding:.8rem 1rem;background:var(--superficie)}
+.kpi dt{font-size:.9rem;color:var(--suave)}
+.kpi dd{margin:0}
+.kpi .valor{font-size:1.7rem;font-weight:700;color:var(--titulo);line-height:1.25}
+.kpi .sub{font-size:.9rem;color:var(--suave)}
+/* barras (HTML puro: o texto é a informação; a barra só reforça) */
+.barras{list-style:none;margin:.5rem 0 0;padding:0}
+.barras li{display:grid;grid-template-columns:minmax(8.5rem,12rem) 1fr minmax(8rem,11rem);align-items:center;gap:.25rem .75rem;padding:.3rem 0}
+.barras .nome{font-weight:600}
+.barras .trilho{display:block;height:1.1rem;background:var(--neutro-f);border-radius:.2rem}
+.barras .barra{display:block;height:100%;border-radius:.2rem;background:var(--outros);border:1px solid var(--suave)}
+.barras .barra.lula{background:var(--lula);border-color:var(--lula-t)}
+.barras .barra.flavio{background:var(--flavio);border-color:var(--flavio-t)}
+.barras .valor strong{font-size:1.05rem}
+.barras .valor span{color:var(--suave);font-size:.9rem;white-space:nowrap}
+.barras .nome.lula{color:var(--lula-t)} .barras .nome.flavio{color:var(--flavio-t)}
+.branconulo{margin:.6rem 0 0}
+/* disputa por local */
+.divisao{display:flex;height:1.9rem;border-radius:.3rem;overflow:hidden;border:1px solid var(--suave);margin:.5rem 0}
+.divisao span{display:block;height:100%}
+.divisao .lula{background:var(--lula)} .divisao .flavio{background:var(--flavio)} .divisao .empate{background:var(--outros)}
+.legenda{list-style:none;margin:.4rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.3rem 1.5rem}
+/* selo de resultado: cor + símbolo + texto */
+.selo{display:inline-flex;gap:.4rem;align-items:baseline;padding:.15rem .6rem;border-radius:.25rem;border-left:.4rem solid var(--outros);background:var(--neutro-f);color:var(--texto);font-weight:600;white-space:nowrap}
+.selo.lula{background:var(--lula-f);color:var(--lula-t);border-left-color:var(--lula)}
+.selo.flavio{background:var(--flavio-f);color:var(--flavio-t);border-left-color:var(--flavio)}
+.c-lula{color:var(--lula-t);font-weight:600} .c-flavio{color:var(--flavio-t);font-weight:600}
+/* rankings dos insights */
+.criterio{margin:.1rem 0 .7rem;color:var(--suave);font-size:.95rem;max-width:62rem}
+.ranking{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.ranking>li{border:1px solid var(--linha);border-radius:.5rem;padding:.75rem 1rem;background:var(--bg)}
+.ranking .local{margin:0;font-weight:700}
+.ranking .meta{margin:0 0 .5rem;color:var(--suave);font-size:.9rem}
+.metricas{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));gap:.5rem 1rem}
+.metricas dt{font-size:.85rem;color:var(--suave)} .metricas dd{margin:0}
+/* controles */
+.controles{display:flex;flex-wrap:wrap;gap:.75rem 1rem;align-items:flex-end;margin:.5rem 0 .75rem}
+.controles[hidden]{display:none}
+.campo{display:flex;flex-direction:column;gap:.2rem}
+.campo label{font-size:.9rem;font-weight:600}
+.campo input,.campo select{font:inherit;color:var(--texto);background:var(--bg);border:2px solid var(--borda-campo);border-radius:.35rem;padding:.45rem .6rem;min-height:2.75rem}
+.campo input{min-width:min(18rem,100%)}
+#contagem{margin:.25rem 0 .5rem;color:var(--suave);font-size:.95rem}
+/* tabela */
+.rolagem{position:relative;overflow-x:auto;border:1px solid var(--linha);border-radius:.5rem}
+table.ordenavel{border-collapse:separate;border-spacing:0;width:100%;min-width:62rem;font-size:.95rem}
+table.ordenavel caption{text-align:left;padding:.6rem .9rem;color:var(--suave);font-size:.9rem}
+.ordenavel thead th{background:var(--th-bg);color:var(--th-texto);text-align:left;font-weight:700;font-size:.85rem;padding:0;vertical-align:bottom}
+.ordenavel thead th.num{text-align:right}
+.ordenavel th button,.ordenavel th .semord{all:unset;box-sizing:border-box;display:flex;gap:.35rem;width:100%;padding:.7rem .75rem;cursor:pointer;align-items:flex-end;justify-content:flex-start}
+.ordenavel th.num button{justify-content:flex-end}
+.ordenavel th .semord{cursor:default}
+.ordenavel th button:hover{background:rgba(255,255,255,.12)}
+.ordenavel th button:focus-visible{outline:3px solid var(--foco);outline-offset:-3px}
+.ordenavel .seta::after{content:"\2195";opacity:.55}
+.ordenavel th[aria-sort="ascending"] .seta::after{content:"\25B2";opacity:1}
+.ordenavel th[aria-sort="descending"] .seta::after{content:"\25BC";opacity:1}
+.ordenavel tbody th,.ordenavel tbody td{padding:.6rem .75rem;border-bottom:1px solid var(--linha);text-align:left;vertical-align:middle;background:var(--bg);font-weight:400}
+.ordenavel tbody tr:nth-child(even)>*{background:var(--zebra)}
+.ordenavel tbody tr:hover>*{background:var(--neutro-f)}
+.ordenavel td.num{text-align:right;font-variant-numeric:tabular-nums}
+.ordenavel tbody th[scope=row]{position:sticky;left:0;min-width:15rem;z-index:1}
+.ordenavel .local{display:block;font-weight:700}
+.ordenavel .meta{display:block;color:var(--suave);font-size:.85rem}
+.ordenavel tr[hidden]{display:none!important}
+.ordenavel .doc a{display:inline-block;margin-right:.5rem;padding:.4rem .35rem;min-height:2.25rem;white-space:nowrap}
+.ordenavel .local{padding:.25rem 0}
+/* notas */
+.notas{padding-left:1.2rem;max-width:62rem} .notas li{margin:.4rem 0}
+footer.rodape{margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--linha);color:var(--suave);font-size:.9rem}
+/* celular: a tabela vira lista de cartões (papéis ARIA preservam a semântica de tabela) */
+@media (max-width:720px){
+  .barras li{grid-template-columns:1fr auto;grid-template-areas:"nome valor" "trilho trilho"}
+  .barras .nome{grid-area:nome}.barras .trilho{grid-area:trilho}.barras .valor{grid-area:valor;text-align:right}
+  .rolagem{border:0;overflow:visible}
+  table.ordenavel{min-width:0}
+  .ordenavel,.ordenavel thead,.ordenavel tbody,.ordenavel tr,.ordenavel th,.ordenavel td,.ordenavel caption{display:block}
+  .ordenavel thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .ordenavel tbody tr{border:1px solid var(--linha);border-radius:.5rem;margin:0 0 .7rem;padding:.4rem .2rem;background:var(--bg)}
+  .ordenavel tbody tr>*{background:transparent!important;border:0}
+  .ordenavel tbody th[scope=row]{position:static;min-width:0;padding-bottom:.2rem}
+  .ordenavel tbody td{display:flex;justify-content:space-between;gap:1rem;padding:.3rem .75rem}
+  .ordenavel tbody td::before{content:attr(data-label);color:var(--suave);font-size:.9rem;text-align:left}
+  .ordenavel td.num{text-align:right}
+  .ordenavel td.doc{flex-wrap:wrap;justify-content:flex-start}
+  .ordenavel td.doc::before{flex-basis:100%}
+}
+@media (forced-colors:active){
+  .selo{border:2px solid CanvasText} .barras .barra,.divisao span{background:CanvasText!important}
+}
+@media print{
+  .pular,nav.secoes,.controles,#contagem{display:none!important}
+  body{background:#fff;color:#000;font-size:10.5pt}
+  .rolagem{overflow:visible} table.ordenavel{min-width:0;font-size:8.5pt}
+  .ordenavel tbody tr{break-inside:avoid} .ordenavel tbody th[scope=row]{position:static}
+  .ranking>li{break-inside:avoid} h2,h3{break-after:avoid}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<div class="pagina">
+<header class="topo"><p class="eyebrow">Presidente · 1º turno · 2026</p><h1>Rinópolis <span class="uf">· SP</span></h1><p class="nota">Versões para imprimir: <a href="../../index.html">← Todos os municípios</a> · <a href="relatorio_rinopolis.pdf">Relatório (PDF)</a> · <a href="tabela_analise_rinopolis.pdf">Tabela (PDF)</a></p><nav class="secoes" aria-label="Seções desta página"><ul><li><a href="#conclusoes">Conclusões</a></li><li><a href="#numeros">Números</a></li><li><a href="#candidatos">Candidatos</a></li><li><a href="#locais">Disputa por local</a></li><li><a href="#insights">Insights</a></li><li><a href="#tabela">Tabela completa</a></li><li><a href="#notas">Como ler</a></li></ul></nav></header>
+<main id="conteudo" tabindex="-1">
+<section id="conclusoes" aria-labelledby="h-conc"><h2 id="h-conc">Principais conclusões</h2><ul class="conclusoes"><li>Flávio Bolsonaro lidera em Rinópolis, com 70,3% dos votos válidos (3.648 votos). Em segundo, Lula, com 24,6%.</li><li>No duelo direto, Flávio Bolsonaro está 45,7 pontos percentuais à frente de Lula (2.373 votos de diferença).</li><li>Lula venceu Flávio em 0 de 3 locais de votação (0,0%); Flávio venceu em 3.</li><li>Disputa mais apertada: Ee, DR, Ginez Carmona Martinez (Flávio +45,4 p.p., 988 votos de diferença).</li><li>A abstenção foi de 26,6% (1.980 eleitores). Brancos e nulos somam 5,2% de quem compareceu.</li></ul></section>
+<section id="numeros" aria-labelledby="h-num"><h2 id="h-num">Números gerais</h2><dl class="kpis"><div class="kpi"><dt>Eleitores aptos</dt><dd class="valor">7.452</dd><dd class="sub">3 locais de votação</dd></div><div class="kpi"><dt>Comparecimento</dt><dd class="valor">5.472</dd><dd class="sub">73,4% dos aptos</dd></div><div class="kpi"><dt>Abstenção</dt><dd class="valor">1.980</dd><dd class="sub">26,6% dos aptos</dd></div><div class="kpi"><dt>Votos válidos</dt><dd class="valor">5.190</dd><dd class="sub">comparecimento − brancos − nulos</dd></div></dl></section>
+<section id="candidatos" aria-labelledby="h-cand"><h2 id="h-cand">Votos por candidato</h2><p class="nota">Percentuais sobre os votos válidos, em ordem decrescente de votos.</p><ol class="barras"><li><span class="nome flavio"><span aria-hidden="true">◆</span> Flávio Bolsonaro</span><span class="trilho" aria-hidden="true"><span class="barra flavio" style="width:100.0%"></span></span><span class="valor"><strong>70,3%</strong> <span>3.648 votos</span></span></li><li><span class="nome lula"><span aria-hidden="true">●</span> Lula</span><span class="trilho" aria-hidden="true"><span class="barra lula" style="width:35.0%"></span></span><span class="valor"><strong>24,6%</strong> <span>1.275 votos</span></span></li><li><span class="nome ">Cury</span><span class="trilho" aria-hidden="true"><span class="barra " style="width:3.0%"></span></span><span class="valor"><strong>2,1%</strong> <span>109 votos</span></span></li><li><span class="nome ">Renan Santos</span><span class="trilho" aria-hidden="true"><span class="barra " style="width:2.1%"></span></span><span class="valor"><strong>1,5%</strong> <span>78 votos</span></span></li><li><span class="nome ">Caiado</span><span class="trilho" aria-hidden="true"><span class="barra " style="width:1.9%"></span></span><span class="valor"><strong>1,3%</strong> <span>70 votos</span></span></li><li><span class="nome ">Demais candidatos</span><span class="trilho" aria-hidden="true"><span class="barra " style="width:0.5%"></span></span><span class="valor"><strong>0,2%</strong> <span>10 votos</span></span></li></ol><p class="branconulo"><strong>Brancos:</strong> 125 (2,3% do comparecimento) · <strong>Nulos:</strong> 157 (2,9% do comparecimento)</p></section>
+<section id="locais" aria-labelledby="h-loc"><h2 id="h-loc">Disputa por local de votação</h2><p class="nota">Em quantos dos 3 locais de votação cada um ficou à frente.</p><div class="divisao" aria-hidden="true"><span class="flavio" style="width:100.00%"></span></div><ul class="legenda"><li><span aria-hidden="true">●</span> <strong>0</strong> Lula à frente (0,0%)</li><li><span aria-hidden="true">◆</span> <strong>3</strong> Flávio à frente (100,0%)</li><li><span aria-hidden="true">■</span> <strong>0</strong> Empate ou sem dados (0,0%)</li></ul></section>
+<section id="insights" aria-labelledby="h-ins"><h2 id="h-ins">Diretrizes e insights para a campanha de Lula</h2><p class="nota">Cada ranking mostra os 5 primeiros locais de votação.</p><h3>Insight 1: Maiores vitórias de Lula sobre Flávio</h3><p class="criterio"><strong>Critério:</strong> Locais onde Lula tem a maior vantagem sobre Flávio Bolsonaro (em pontos percentuais dos votos válidos). <strong>Por que importa:</strong> São as bases mais sólidas: mostram onde proteger e mobilizar o eleitorado.</p><p>Nenhum local de votação registrou vitória de Lula sobre Flávio Bolsonaro.</p><h3>Insight 2: Defender e conquistar locais com margem apertada</h3><p class="criterio"><strong>Critério:</strong> Locais onde a diferença entre Lula e Flávio Bolsonaro é a menor, a favor de quem estiver à frente. <strong>Por que importa:</strong> Poucos votos mudam o resultado: bons alvos para virar o local ou impedir uma virada.</p><ol class="ranking"><li><p class="local">Ee, DR, Ginez Carmona Martinez</p><p class="meta">Zona 210 · Avenida Rinópolis,  625 · 3.022 eleitores aptos</p><dl class="metricas"><div><dt>Resultado</dt><dd><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +45,4 p.p.</span></span></dd></div><div><dt>Diferença</dt><dd>988 votos</dd></div><div><dt>Abstenção</dt><dd>24,0% · 726 eleitores</dd></div><div><dt>Brancos e nulos</dt><dd>5,1% · 118 votos</dd></div><div><dt>Terceira via</dt><dd>5,2% · 114 votos</dd></div></dl></li><li><p class="local">Ee, Profa, Amália Valentina Marsiglia Rino</p><p class="meta">Zona 210 · Rua Carlos Gomes, 750 · 2.845 eleitores aptos</p><dl class="metricas"><div><dt>Resultado</dt><dd><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +45,6 p.p.</span></span></dd></div><div><dt>Diferença</dt><dd>901 votos</dd></div><div><dt>Abstenção</dt><dd>27,1% · 772 eleitores</dd></div><div><dt>Brancos e nulos</dt><dd>4,8% · 100 votos</dd></div><div><dt>Terceira via</dt><dd>5,0% · 98 votos</dd></div></dl></li><li><p class="local">Ee, Profa, Seraphina Etelvina Pagliuso</p><p class="meta">Zona 210 · Avenida Rinópolis, 547 · 1.585 eleitores aptos</p><dl class="metricas"><div><dt>Resultado</dt><dd><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +46,5 p.p.</span></span></dd></div><div><dt>Diferença</dt><dd>484 votos</dd></div><div><dt>Abstenção</dt><dd>30,4% · 482 eleitores</dd></div><div><dt>Brancos e nulos</dt><dd>5,8% · 64 votos</dd></div><div><dt>Terceira via</dt><dd>5,3% · 55 votos</dd></div></dl></li></ol><h3>Insight 3: Conversão de votos da terceira via e demais candidatos</h3><p class="criterio"><strong>Critério:</strong> Locais com o maior número de votos em Cury, Renan Santos, Caiado e demais candidatos somados. <strong>Por que importa:</strong> Votos que não foram para Lula nem para Flávio: o espaço potencial para conversão.</p><ol class="ranking"><li><p class="local">Ee, DR, Ginez Carmona Martinez</p><p class="meta">Zona 210 · Avenida Rinópolis,  625 · 3.022 eleitores aptos</p><dl class="metricas"><div><dt>Terceira via</dt><dd>5,2% · 114 votos</dd></div><div><dt>Mais votados</dt><dd>Cury 51 (2,3%) · Renan Santos 38 (1,7%)</dd></div><div><dt>Lula</dt><dd><span class="c-lula">24,7%</span> · 538 votos</dd></div><div><dt>Flávio Bolsonaro</dt><dd><span class="c-flavio">70,1%</span> · 1.526 votos</dd></div></dl></li><li><p class="local">Ee, Profa, Amália Valentina Marsiglia Rino</p><p class="meta">Zona 210 · Rua Carlos Gomes, 750 · 2.845 eleitores aptos</p><dl class="metricas"><div><dt>Terceira via</dt><dd>5,0% · 98 votos</dd></div><div><dt>Mais votados</dt><dd>Caiado 38 (1,9%) · Cury 32 (1,6%)</dd></div><div><dt>Lula</dt><dd><span class="c-lula">24,7%</span> · 487 votos</dd></div><div><dt>Flávio Bolsonaro</dt><dd><span class="c-flavio">70,3%</span> · 1.388 votos</dd></div></dl></li><li><p class="local">Ee, Profa, Seraphina Etelvina Pagliuso</p><p class="meta">Zona 210 · Avenida Rinópolis, 547 · 1.585 eleitores aptos</p><dl class="metricas"><div><dt>Terceira via</dt><dd>5,3% · 55 votos</dd></div><div><dt>Mais votados</dt><dd>Cury 26 (2,5%) · Renan Santos 15 (1,4%)</dd></div><div><dt>Lula</dt><dd><span class="c-lula">24,1%</span> · 250 votos</dd></div><div><dt>Flávio Bolsonaro</dt><dd><span class="c-flavio">70,6%</span> · 734 votos</dd></div></dl></li></ol><h3>Insight 4: Locais com maior total de votos brancos e nulos</h3><p class="criterio"><strong>Critério:</strong> Locais com o maior número absoluto de votos brancos mais nulos. <strong>Por que importa:</strong> Indicam eleitores que foram votar, mas não escolheram nenhum candidato.</p><ol class="ranking"><li><p class="local">Ee, DR, Ginez Carmona Martinez</p><p class="meta">Zona 210 · Avenida Rinópolis,  625 · 3.022 eleitores aptos</p><dl class="metricas"><div><dt>Brancos e nulos</dt><dd>5,1% · 118 votos</dd></div><div><dt>Comparecimento</dt><dd>2.296 eleitores</dd></div><div><dt>Lula</dt><dd><span class="c-lula">24,7%</span> · 538 votos</dd></div><div><dt>Flávio Bolsonaro</dt><dd><span class="c-flavio">70,1%</span> · 1.526 votos</dd></div></dl></li><li><p class="local">Ee, Profa, Amália Valentina Marsiglia Rino</p><p class="meta">Zona 210 · Rua Carlos Gomes, 750 · 2.845 eleitores aptos</p><dl class="metricas"><div><dt>Brancos e nulos</dt><dd>4,8% · 100 votos</dd></div><div><dt>Comparecimento</dt><dd>2.073 eleitores</dd></div><div><dt>Lula</dt><dd><span class="c-lula">24,7%</span> · 487 votos</dd></div><div><dt>Flávio Bolsonaro</dt><dd><span class="c-flavio">70,3%</span> · 1.388 votos</dd></div></dl></li><li><p class="local">Ee, Profa, Seraphina Etelvina Pagliuso</p><p class="meta">Zona 210 · Avenida Rinópolis, 547 · 1.585 eleitores aptos</p><dl class="metricas"><div><dt>Brancos e nulos</dt><dd>5,8% · 64 votos</dd></div><div><dt>Comparecimento</dt><dd>1.103 eleitores</dd></div><div><dt>Lula</dt><dd><span class="c-lula">24,1%</span> · 250 votos</dd></div><div><dt>Flávio Bolsonaro</dt><dd><span class="c-flavio">70,6%</span> · 734 votos</dd></div></dl></li></ol></section>
+<section id="tabela" aria-labelledby="h-tab"><h2 id="h-tab">Todos os locais de votação</h2><p class="nota">Use a busca, o filtro e a ordenação. Em telas grandes, também é possível clicar nos títulos das colunas.</p><div class="controles" id="controles" hidden>
+<div class="campo"><label for="busca">Buscar local ou endereço</label><input id="busca" type="search" autocomplete="off"></div>
+<div class="campo"><label for="filtro">Mostrar</label><select id="filtro"><option value="todos">Todos os locais</option><option value="LULA">Lula à frente</option><option value="FLAVIO">Flávio à frente</option><option value="EMPATE">Empate</option><option value="SEM DADOS">Sem votos válidos</option></select></div>
+<div class="campo"><label for="ordem">Ordenar por</label><select id="ordem"><option value="2:desc">Maior vantagem de Lula</option><option value="2:asc">Maior vantagem de Flávio</option><option value="1:asc">Local de votação (A–Z)</option><option value="8:desc">Mais eleitores aptos</option><option value="9:desc">Maior abstenção</option><option value="4:desc">Maior % de Lula</option><option value="6:desc">Maior % de Flávio</option><option value="11:desc">Maior % de terceira via</option></select></div>
+</div>
+<p id="contagem" role="status" aria-live="polite"></p><div class="rolagem" role="region" tabindex="0" aria-label="Tabela de locais de votação de Rinópolis. Role para os lados se necessário."><table class="ordenavel" role="table" data-unidade="locais"><caption>Resultado em cada local de votação de Rinópolis. Percentuais sobre votos válidos; a diferença é em pontos percentuais (p.p.).</caption><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Posição <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="txt" aria-sort="none"><button type="button">Local de votação <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="descending"><button type="button">Resultado <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Diferença (votos) <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Lula (%) <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Lula (votos) <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Flávio (%) <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Flávio (votos) <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Eleitores aptos <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Abstenção (%) <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Votos válidos <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Terceira via (%) <span class="seta" aria-hidden="true"></span></button></th></tr></thead><tbody role="rowgroup"><tr role="row" data-lider="FLAVIO" data-busca="ee, dr, ginez carmona martinez avenida rinopolis,  625"><td role="cell" class="num" data-label="Posição" data-v="1">1</td><th scope="row" role="rowheader" data-v="ee, dr, ginez carmona martinez"><span class="local">Ee, DR, Ginez Carmona Martinez</span><span class="meta">Zona 210 · Avenida Rinópolis,  625</span></th><td role="cell" class="num" data-label="Resultado" data-v="-45.39999999999999"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +45,4 p.p.</span></span></td><td role="cell" class="num" data-label="Diferença (votos)" data-v="-988.0">−988</td><td role="cell" class="num" data-label="Lula (%)" data-v="24.7"><span class="c-lula">24,7%</span></td><td role="cell" class="num" data-label="Lula (votos)" data-v="538.0">538</td><td role="cell" class="num" data-label="Flávio (%)" data-v="70.1"><span class="c-flavio">70,1%</span></td><td role="cell" class="num" data-label="Flávio (votos)" data-v="1526.0">1.526</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="3022.0">3.022</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="24.02">24,0%</td><td role="cell" class="num" data-label="Votos válidos" data-v="2178.0">2.178</td><td role="cell" class="num" data-label="Terceira via (%)" data-v="5.23">5,2%</td></tr><tr role="row" data-lider="FLAVIO" data-busca="ee, profa, amalia valentina marsiglia rino rua carlos gomes, 750"><td role="cell" class="num" data-label="Posição" data-v="2">2</td><th scope="row" role="rowheader" data-v="ee, profa, amalia valentina marsiglia rino"><span class="local">Ee, Profa, Amália Valentina Marsiglia Rino</span><span class="meta">Zona 210 · Rua Carlos Gomes, 750</span></th><td role="cell" class="num" data-label="Resultado" data-v="-45.599999999999994"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +45,6 p.p.</span></span></td><td role="cell" class="num" data-label="Diferença (votos)" data-v="-901.0">−901</td><td role="cell" class="num" data-label="Lula (%)" data-v="24.7"><span class="c-lula">24,7%</span></td><td role="cell" class="num" data-label="Lula (votos)" data-v="487.0">487</td><td role="cell" class="num" data-label="Flávio (%)" data-v="70.3"><span class="c-flavio">70,3%</span></td><td role="cell" class="num" data-label="Flávio (votos)" data-v="1388.0">1.388</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="2845.0">2.845</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="27.14">27,1%</td><td role="cell" class="num" data-label="Votos válidos" data-v="1973.0">1.973</td><td role="cell" class="num" data-label="Terceira via (%)" data-v="4.97">5,0%</td></tr><tr role="row" data-lider="FLAVIO" data-busca="ee, profa, seraphina etelvina pagliuso avenida rinopolis, 547"><td role="cell" class="num" data-label="Posição" data-v="3">3</td><th scope="row" role="rowheader" data-v="ee, profa, seraphina etelvina pagliuso"><span class="local">Ee, Profa, Seraphina Etelvina Pagliuso</span><span class="meta">Zona 210 · Avenida Rinópolis, 547</span></th><td role="cell" class="num" data-label="Resultado" data-v="-46.49999999999999"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +46,5 p.p.</span></span></td><td role="cell" class="num" data-label="Diferença (votos)" data-v="-484.0">−484</td><td role="cell" class="num" data-label="Lula (%)" data-v="24.1"><span class="c-lula">24,1%</span></td><td role="cell" class="num" data-label="Lula (votos)" data-v="250.0">250</td><td role="cell" class="num" data-label="Flávio (%)" data-v="70.6"><span class="c-flavio">70,6%</span></td><td role="cell" class="num" data-label="Flávio (votos)" data-v="734.0">734</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="1585.0">1.585</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="30.41">30,4%</td><td role="cell" class="num" data-label="Votos válidos" data-v="1039.0">1.039</td><td role="cell" class="num" data-label="Terceira via (%)" data-v="5.29">5,3%</td></tr></tbody></table></div></section>
+<section id="notas" aria-labelledby="h-notas"><h2 id="h-notas">Como ler os números</h2><ul class="notas"><li><strong>Votos válidos</strong> = comparecimento − votos brancos − votos nulos. Os percentuais dos candidatos usam essa base.</li><li><strong>Abstenção</strong> é calculada sobre os eleitores aptos. <strong>Brancos e nulos</strong>, sobre o comparecimento.</li><li><strong>p.p.</strong> (ponto percentual) é a diferença entre dois percentuais. Exemplo: 40% − 35% = 5 p.p.</li><li><strong>Símbolos:</strong> ● Lula à frente · ◆ Flávio à frente · ■ empate. Laranja identifica Lula e azul identifica Flávio; essas cores foram escolhidas para serem distinguíveis por pessoas com daltonismo, e nenhuma informação depende só da cor.</li></ul></section><footer class="rodape">Base de dados carregada em 06/10/2026 às 14:03.</footer>
+</main>
+</div>
+<script>
+(function(){
+  var tabela=document.querySelector('table.ordenavel'); if(!tabela){return;}
+  var corpo=tabela.tBodies[0], linhas=Array.prototype.slice.call(corpo.rows);
+  var cab=tabela.tHead.rows[0].cells;
+  var busca=document.getElementById('busca'), filtro=document.getElementById('filtro');
+  var ordem=document.getElementById('ordem'), contagem=document.getElementById('contagem');
+  var controles=document.getElementById('controles'), unidade=tabela.getAttribute('data-unidade')||'itens';
+  if(controles){controles.hidden=false;}
+  linhas.forEach(function(tr,i){tr._ini=i;});
+  function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+  function valor(tr,col,tipo){
+    var v=tr.cells[col].getAttribute('data-v');
+    if(v===null||v===''){return null;}
+    if(tipo==='num'){var n=parseFloat(v);return isNaN(n)?null:n;}
+    return v;
+  }
+  function ordenar(col,dir){
+    var tipo=cab[col].getAttribute('data-tipo')||'txt';
+    linhas.sort(function(a,b){
+      var x=valor(a,col,tipo), y=valor(b,col,tipo);
+      if(x===null&&y===null){return a._ini-b._ini;}
+      if(x===null){return 1;} if(y===null){return -1;}
+      var r=(tipo==='num')?(x-y):x.localeCompare(y,'pt-BR');
+      if(r===0){return a._ini-b._ini;}
+      return dir==='asc'?r:-r;
+    });
+    linhas.forEach(function(tr){corpo.appendChild(tr);});
+    for(var i=0;i<cab.length;i++){cab[i].setAttribute('aria-sort', i===col?(dir==='asc'?'ascending':'descending'):'none');}
+    if(ordem){ordem.value=col+':'+dir;}
+  }
+  function aplicar(){
+    var termos=norm(busca?busca.value:'').split(/\s+/).filter(Boolean), f=filtro?filtro.value:'todos', vis=0;
+    linhas.forEach(function(tr){
+      var txt=tr.getAttribute('data-busca')||'';
+      var achou=termos.every(function(t){return txt.indexOf(t)>-1;});   /* todas as palavras, em qualquer ordem */
+      var ok=achou&&(f==='todos'||tr.getAttribute('data-lider')===f);
+      tr.hidden=!ok; if(ok){vis++;}
+    });
+    if(contagem){contagem.textContent='Mostrando '+vis+' de '+linhas.length+' '+unidade;}
+  }
+  for(var i=0;i<cab.length;i++){
+    (function(col){
+      var b=cab[col].querySelector('button'); if(!b){return;}
+      b.addEventListener('click',function(){
+        var atual=cab[col].getAttribute('aria-sort');
+        var padrao=cab[col].getAttribute('data-tipo')==='num'?'desc':'asc';
+        var dir=(atual==='none'||!atual)?padrao:(atual==='ascending'?'descending':'ascending');
+        ordenar(col, dir==='ascending'||dir==='asc'?'asc':'desc');
+      });
+    })(i);
+  }
+  if(ordem){ordem.addEventListener('change',function(){var p=ordem.value.split(':');ordenar(parseInt(p[0],10),p[1]);});}
+  if(busca){busca.addEventListener('input',aplicar);}
+  if(filtro){filtro.addEventListener('change',aplicar);}
+  aplicar();
+})();
+</script>
+</body>
+</html>

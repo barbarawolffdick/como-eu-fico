@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Análise por município – RR</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#FFFFFF; --superficie:#F3F5F8; --zebra:#F3F5F8; --texto:#1A202C; --suave:#4A5568;
+  --linha:#CBD5E0; --borda-campo:#718096; --titulo:#1A365D; --th-bg:#1A365D; --th-texto:#FFFFFF;
+  --link:#004E8A; --foco:#005FCC;
+  --lula:#D55E00; --lula-t:#9A4200; --lula-f:#FCEBDD;
+  --flavio:#0072B2; --flavio-t:#00598C; --flavio-f:#DDEEF8;
+  --outros:#6B7785; --neutro-f:#EEF1F5;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#12171D; --superficie:#1B222B; --zebra:#171D25; --texto:#EDF2F7; --suave:#A9B4C2;
+    --linha:#33404F; --borda-campo:#8A96A6; --titulo:#BEE3F8; --th-bg:#243447; --th-texto:#FFFFFF;
+    --link:#7CC0F0; --foco:#FFD166;
+    --lula:#E8772E; --lula-t:#F4A261; --lula-f:#3A2414;
+    --flavio:#3C9DD6; --flavio-t:#6CB6E8; --flavio-f:#12304A;
+    --outros:#8D99A8; --neutro-f:#232C37;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:100%;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:1rem;line-height:1.55}
+a{color:var(--link);text-underline-offset:.15em}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--foco);outline-offset:2px;border-radius:2px}
+.sr{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.pular{position:absolute;left:.5rem;top:-4rem;background:var(--titulo);color:var(--bg);padding:.6rem 1rem;z-index:10;border-radius:.3rem}
+.pular:focus{top:.5rem}
+.pagina{max-width:75rem;margin:0 auto;padding:1.25rem clamp(1rem,4vw,2rem) 3rem}
+header.topo{padding:1.5rem 0 1rem;border-bottom:3px solid var(--titulo);margin-bottom:1rem}
+.eyebrow{margin:0;color:var(--suave);font-size:.95rem}
+h1{margin:.15rem 0 .25rem;font-size:clamp(1.6rem,4.5vw,2.4rem);line-height:1.15;color:var(--titulo)}
+h1 .uf{font-weight:400;color:var(--suave)}
+h2{margin:2.25rem 0 .6rem;font-size:clamp(1.25rem,3vw,1.6rem);color:var(--titulo);line-height:1.2}
+h3{margin:1.75rem 0 .2rem;font-size:1.15rem;color:var(--titulo)}
+.nota{color:var(--suave);font-size:.95rem;margin:.2rem 0 .8rem;max-width:62rem}
+nav.secoes ul{list-style:none;margin:.9rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem .5rem}
+nav.secoes a{display:inline-block;padding:.35rem .8rem;border:1px solid var(--linha);border-radius:2rem;text-decoration:none;font-size:.95rem}
+nav.secoes a:hover{background:var(--superficie)}
+/* conclusões */
+.conclusoes{list-style:none;margin:0;padding:1rem 1.25rem;background:var(--neutro-f);border-left:.3rem solid var(--titulo);border-radius:.3rem}
+.conclusoes li{margin:.35rem 0;max-width:62rem}
+/* indicadores */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.75rem;margin:0}
+.kpi{border:1px solid var(--linha);border-radius:.5rem;padding:.8rem 1rem;background:var(--superficie)}
+.kpi dt{font-size:.9rem;color:var(--suave)}
+.kpi dd{margin:0}
+.kpi .valor{font-size:1.7rem;font-weight:700;color:var(--titulo);line-height:1.25}
+.kpi .sub{font-size:.9rem;color:var(--suave)}
+/* barras (HTML puro: o texto é a informação; a barra só reforça) */
+.barras{list-style:none;margin:.5rem 0 0;padding:0}
+.barras li{display:grid;grid-template-columns:minmax(8.5rem,12rem) 1fr minmax(8rem,11rem);align-items:center;gap:.25rem .75rem;padding:.3rem 0}
+.barras .nome{font-weight:600}
+.barras .trilho{display:block;height:1.1rem;background:var(--neutro-f);border-radius:.2rem}
+.barras .barra{display:block;height:100%;border-radius:.2rem;background:var(--outros);border:1px solid var(--suave)}
+.barras .barra.lula{background:var(--lula);border-color:var(--lula-t)}
+.barras .barra.flavio{background:var(--flavio);border-color:var(--flavio-t)}
+.barras .valor strong{font-size:1.05rem}
+.barras .valor span{color:var(--suave);font-size:.9rem;white-space:nowrap}
+.barras .nome.lula{color:var(--lula-t)} .barras .nome.flavio{color:var(--flavio-t)}
+.branconulo{margin:.6rem 0 0}
+/* disputa por local */
+.divisao{display:flex;height:1.9rem;border-radius:.3rem;overflow:hidden;border:1px solid var(--suave);margin:.5rem 0}
+.divisao span{display:block;height:100%}
+.divisao .lula{background:var(--lula)} .divisao .flavio{background:var(--flavio)} .divisao .empate{background:var(--outros)}
+.legenda{list-style:none;margin:.4rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.3rem 1.5rem}
+/* selo de resultado: cor + símbolo + texto */
+.selo{display:inline-flex;gap:.4rem;align-items:baseline;padding:.15rem .6rem;border-radius:.25rem;border-left:.4rem solid var(--outros);background:var(--neutro-f);color:var(--texto);font-weight:600;white-space:nowrap}
+.selo.lula{background:var(--lula-f);color:var(--lula-t);border-left-color:var(--lula)}
+.selo.flavio{background:var(--flavio-f);color:var(--flavio-t);border-left-color:var(--flavio)}
+.c-lula{color:var(--lula-t);font-weight:600} .c-flavio{color:var(--flavio-t);font-weight:600}
+/* rankings dos insights */
+.criterio{margin:.1rem 0 .7rem;color:var(--suave);font-size:.95rem;max-width:62rem}
+.ranking{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.ranking>li{border:1px solid var(--linha);border-radius:.5rem;padding:.75rem 1rem;background:var(--bg)}
+.ranking .local{margin:0;font-weight:700}
+.ranking .meta{margin:0 0 .5rem;color:var(--suave);font-size:.9rem}
+.metricas{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));gap:.5rem 1rem}
+.metricas dt{font-size:.85rem;color:var(--suave)} .metricas dd{margin:0}
+/* controles */
+.controles{display:flex;flex-wrap:wrap;gap:.75rem 1rem;align-items:flex-end;margin:.5rem 0 .75rem}
+.controles[hidden]{display:none}
+.campo{display:flex;flex-direction:column;gap:.2rem}
+.campo label{font-size:.9rem;font-weight:600}
+.campo input,.campo select{font:inherit;color:var(--texto);background:var(--bg);border:2px solid var(--borda-campo);border-radius:.35rem;padding:.45rem .6rem;min-height:2.75rem}
+.campo input{min-width:min(18rem,100%)}
+#contagem{margin:.25rem 0 .5rem;color:var(--suave);font-size:.95rem}
+/* tabela */
+.rolagem{position:relative;overflow-x:auto;border:1px solid var(--linha);border-radius:.5rem}
+table.ordenavel{border-collapse:separate;border-spacing:0;width:100%;min-width:62rem;font-size:.95rem}
+table.ordenavel caption{text-align:left;padding:.6rem .9rem;color:var(--suave);font-size:.9rem}
+.ordenavel thead th{background:var(--th-bg);color:var(--th-texto);text-align:left;font-weight:700;font-size:.85rem;padding:0;vertical-align:bottom}
+.ordenavel thead th.num{text-align:right}
+.ordenavel th button,.ordenavel th .semord{all:unset;box-sizing:border-box;display:flex;gap:.35rem;width:100%;padding:.7rem .75rem;cursor:pointer;align-items:flex-end;justify-content:flex-start}
+.ordenavel th.num button{justify-content:flex-end}
+.ordenavel th .semord{cursor:default}
+.ordenavel th button:hover{background:rgba(255,255,255,.12)}
+.ordenavel th button:focus-visible{outline:3px solid var(--foco);outline-offset:-3px}
+.ordenavel .seta::after{content:"\2195";opacity:.55}
+.ordenavel th[aria-sort="ascending"] .seta::after{content:"\25B2";opacity:1}
+.ordenavel th[aria-sort="descending"] .seta::after{content:"\25BC";opacity:1}
+.ordenavel tbody th,.ordenavel tbody td{padding:.6rem .75rem;border-bottom:1px solid var(--linha);text-align:left;vertical-align:middle;background:var(--bg);font-weight:400}
+.ordenavel tbody tr:nth-child(even)>*{background:var(--zebra)}
+.ordenavel tbody tr:hover>*{background:var(--neutro-f)}
+.ordenavel td.num{text-align:right;font-variant-numeric:tabular-nums}
+.ordenavel tbody th[scope=row]{position:sticky;left:0;min-width:15rem;z-index:1}
+.ordenavel .local{display:block;font-weight:700}
+.ordenavel .meta{display:block;color:var(--suave);font-size:.85rem}
+.ordenavel tr[hidden]{display:none!important}
+.ordenavel .doc a{display:inline-block;margin-right:.5rem;padding:.4rem .35rem;min-height:2.25rem;white-space:nowrap}
+.ordenavel .local{padding:.25rem 0}
+/* notas */
+.notas{padding-left:1.2rem;max-width:62rem} .notas li{margin:.4rem 0}
+footer.rodape{margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--linha);color:var(--suave);font-size:.9rem}
+/* celular: a tabela vira lista de cartões (papéis ARIA preservam a semântica de tabela) */
+@media (max-width:720px){
+  .barras li{grid-template-columns:1fr auto;grid-template-areas:"nome valor" "trilho trilho"}
+  .barras .nome{grid-area:nome}.barras .trilho{grid-area:trilho}.barras .valor{grid-area:valor;text-align:right}
+  .rolagem{border:0;overflow:visible}
+  table.ordenavel{min-width:0}
+  .ordenavel,.ordenavel thead,.ordenavel tbody,.ordenavel tr,.ordenavel th,.ordenavel td,.ordenavel caption{display:block}
+  .ordenavel thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .ordenavel tbody tr{border:1px solid var(--linha);border-radius:.5rem;margin:0 0 .7rem;padding:.4rem .2rem;background:var(--bg)}
+  .ordenavel tbody tr>*{background:transparent!important;border:0}
+  .ordenavel tbody th[scope=row]{position:static;min-width:0;padding-bottom:.2rem}
+  .ordenavel tbody td{display:flex;justify-content:space-between;gap:1rem;padding:.3rem .75rem}
+  .ordenavel tbody td::before{content:attr(data-label);color:var(--suave);font-size:.9rem;text-align:left}
+  .ordenavel td.num{text-align:right}
+  .ordenavel td.doc{flex-wrap:wrap;justify-content:flex-start}
+  .ordenavel td.doc::before{flex-basis:100%}
+}
+@media (forced-colors:active){
+  .selo{border:2px solid CanvasText} .barras .barra,.divisao span{background:CanvasText!important}
+}
+@media print{
+  .pular,nav.secoes,.controles,#contagem{display:none!important}
+  body{background:#fff;color:#000;font-size:10.5pt}
+  .rolagem{overflow:visible} table.ordenavel{min-width:0;font-size:8.5pt}
+  .ordenavel tbody tr{break-inside:avoid} .ordenavel tbody th[scope=row]{position:static}
+  .ranking>li{break-inside:avoid} h2,h3{break-after:avoid}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<div class="pagina">
+<header class="topo"><p class="eyebrow">Presidente · 1º turno · 2026</p><h1>Análise por município <span class="uf">· RR</span></h1><nav class="secoes" aria-label="Seções desta página"><ul><li><a href="#visao">Visão geral</a></li><li><a href="#municipios">Municípios</a></li></ul></nav></header>
+<main id="conteudo" tabindex="-1">
+<section id="visao" aria-labelledby="h-vis"><h2 id="h-vis">Visão geral</h2><dl class="kpis"><div class="kpi"><dt>Municípios</dt><dd class="valor">15</dd><dd class="sub"></dd></div><div class="kpi"><dt>Locais de votação</dt><dd class="valor">354</dd><dd class="sub"></dd></div><div class="kpi"><dt>Eleitores aptos</dt><dd class="valor">400.254</dd><dd class="sub"></dd></div><div class="kpi"><dt>Lula</dt><dd class="valor">22,9%</dd><dd class="sub">74.420 votos válidos</dd></div><div class="kpi"><dt>Flávio Bolsonaro</dt><dd class="valor">71,3%</dd><dd class="sub">231.322 votos válidos</dd></div></dl></section><section id="municipios" aria-labelledby="h-mun"><h2 id="h-mun">Municípios</h2><p class="nota">Escolha um município para abrir o painel completo, ou baixe o relatório e a tabela em PDF.</p><div class="controles" id="controles" hidden>
+<div class="campo"><label for="busca">Buscar município</label><input id="busca" type="search" autocomplete="off"></div>
+<div class="campo"><label for="filtro">Mostrar</label><select id="filtro"><option value="todos">Todos os municípios</option><option value="LULA">Lula à frente</option><option value="FLAVIO">Flávio à frente</option><option value="EMPATE">Empate</option></select></div>
+<div class="campo"><label for="ordem">Ordenar por</label><select id="ordem"><option value="0:asc">Município (A–Z)</option><option value="1:desc">Maior vantagem de Lula</option><option value="1:asc">Maior vantagem de Flávio</option><option value="7:desc">Mais eleitores aptos</option><option value="8:desc">Maior abstenção</option><option value="5:desc">Mais locais com Lula à frente</option></select></div>
+</div>
+<p id="contagem" role="status" aria-live="polite"></p><div class="rolagem" role="region" tabindex="0" aria-label="Tabela de municípios. Role para os lados se necessário."><table class="ordenavel" role="table" data-unidade="municípios"><caption>Municípios com resultado no duelo Lula × Flávio Bolsonaro (votos válidos). A coluna Resultado é a diferença em pontos percentuais (p.p.).</caption><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader" data-tipo="txt" aria-sort="ascending"><button type="button">Município <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Resultado <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Lula (%) <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Flávio (%) <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Locais de votação <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Locais com Lula à frente <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Locais com Flávio à frente <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Eleitores aptos <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="num" class="num" aria-sort="none"><button type="button">Abstenção (%) <span class="seta" aria-hidden="true"></span></button></th><th scope="col" role="columnheader" data-tipo="txt"><span class="semord">Documentos</span></th></tr></thead><tbody role="rowgroup"><tr role="row" data-lider="FLAVIO" data-busca="alto alegre"><th scope="row" role="rowheader" data-v="alto alegre"><a class="local" href="RR/alto_alegre/painel_alto_alegre.html">Alto Alegre</a></th><td role="cell" class="num" data-label="Resultado" data-v="-47.65934461649261"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +47,7 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="23.919697515304286"><span class="c-lula">23,9%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="71.5790421317969"><span class="c-flavio">71,6%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="15">15</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="5">5</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="10">10</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="13408">13.408</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="15.371420047732698">15,4%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/alto_alegre/painel_alto_alegre.html">Painel<span class="sr"> de Alto Alegre</span></a><a href="RR/alto_alegre/relatorio_alto_alegre.pdf">Relatório (PDF)<span class="sr"> de Alto Alegre</span></a><a href="RR/alto_alegre/tabela_analise_alto_alegre.pdf">Tabela (PDF)<span class="sr"> de Alto Alegre</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="amajari"><th scope="row" role="rowheader" data-v="amajari"><a class="local" href="RR/amajari/painel_amajari.html">Amajari</a></th><td role="cell" class="num" data-label="Resultado" data-v="-50.58322824716268"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +50,6 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="22.477931904161412"><span class="c-lula">22,5%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="73.06116015132409"><span class="c-flavio">73,1%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="11">11</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="0">0</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="11">11</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="7631">7.631</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="14.559035513038921">14,6%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/amajari/painel_amajari.html">Painel<span class="sr"> de Amajari</span></a><a href="RR/amajari/relatorio_amajari.pdf">Relatório (PDF)<span class="sr"> de Amajari</span></a><a href="RR/amajari/tabela_analise_amajari.pdf">Tabela (PDF)<span class="sr"> de Amajari</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="boa vista"><th scope="row" role="rowheader" data-v="boa vista"><a class="local" href="RR/boa_vista/painel_boa_vista.html">Boa Vista</a></th><td role="cell" class="num" data-label="Resultado" data-v="-54.44990030038695"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +54,4 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="19.345846879943117"><span class="c-lula">19,3%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="73.79574718033007"><span class="c-flavio">73,8%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="146">146</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="1">1</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="145">145</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="240242">240.242</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="17.39412758801542">17,4%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/boa_vista/painel_boa_vista.html">Painel<span class="sr"> de Boa Vista</span></a><a href="RR/boa_vista/relatorio_boa_vista.pdf">Relatório (PDF)<span class="sr"> de Boa Vista</span></a><a href="RR/boa_vista/tabela_analise_boa_vista.pdf">Tabela (PDF)<span class="sr"> de Boa Vista</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="bonfim"><th scope="row" role="rowheader" data-v="bonfim"><a class="local" href="RR/bonfim/painel_bonfim.html">Bonfim</a></th><td role="cell" class="num" data-label="Resultado" data-v="-35.6550748079256"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +35,7 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="30.701577031945003"><span class="c-lula">30,7%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="66.35665183987061"><span class="c-flavio">66,4%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="18">18</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="8">8</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="10">10</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="12329">12.329</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="18.152323789439535">18,2%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/bonfim/painel_bonfim.html">Painel<span class="sr"> de Bonfim</span></a><a href="RR/bonfim/relatorio_bonfim.pdf">Relatório (PDF)<span class="sr"> de Bonfim</span></a><a href="RR/bonfim/tabela_analise_bonfim.pdf">Tabela (PDF)<span class="sr"> de Bonfim</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="canta"><th scope="row" role="rowheader" data-v="canta"><a class="local" href="RR/canta/painel_canta.html">Cantá</a></th><td role="cell" class="num" data-label="Resultado" data-v="-44.35624260149015"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +44,4 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="25.53443353526913"><span class="c-lula">25,5%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="69.89067613675928"><span class="c-flavio">69,9%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="27">27</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="3">3</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="24">24</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="17613">17.613</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="16.90796570714813">16,9%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/canta/painel_canta.html">Painel<span class="sr"> de Cantá</span></a><a href="RR/canta/relatorio_canta.pdf">Relatório (PDF)<span class="sr"> de Cantá</span></a><a href="RR/canta/tabela_analise_canta.pdf">Tabela (PDF)<span class="sr"> de Cantá</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="caracarai"><th scope="row" role="rowheader" data-v="caracarai"><a class="local" href="RR/caracarai/painel_caracarai.html">Caracaraí</a></th><td role="cell" class="num" data-label="Resultado" data-v="-46.10138854654506"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +46,1 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="24.541943965163092"><span class="c-lula">24,5%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="70.64333251170815"><span class="c-flavio">70,6%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="20">20</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="2">2</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="18">18</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="15259">15.259</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="18.39570089783079">18,4%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/caracarai/painel_caracarai.html">Painel<span class="sr"> de Caracaraí</span></a><a href="RR/caracarai/relatorio_caracarai.pdf">Relatório (PDF)<span class="sr"> de Caracaraí</span></a><a href="RR/caracarai/tabela_analise_caracarai.pdf">Tabela (PDF)<span class="sr"> de Caracaraí</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="caroebe"><th scope="row" role="rowheader" data-v="caroebe"><a class="local" href="RR/caroebe/painel_caroebe.html">Caroebe</a></th><td role="cell" class="num" data-label="Resultado" data-v="-58.52000617951491"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +58,5 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="18.553993511509344"><span class="c-lula">18,6%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="77.07399969102426"><span class="c-flavio">77,1%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="8">8</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="2">2</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="6">6</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="7649">7.649</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="13.557327755262124">13,6%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/caroebe/painel_caroebe.html">Painel<span class="sr"> de Caroebe</span></a><a href="RR/caroebe/relatorio_caroebe.pdf">Relatório (PDF)<span class="sr"> de Caroebe</span></a><a href="RR/caroebe/tabela_analise_caroebe.pdf">Tabela (PDF)<span class="sr"> de Caroebe</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="iracema"><th scope="row" role="rowheader" data-v="iracema"><a class="local" href="RR/iracema/painel_iracema.html">Iracema</a></th><td role="cell" class="num" data-label="Resultado" data-v="-51.62961724887181"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +51,6 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="21.64465986963062"><span class="c-lula">21,6%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="73.27427711850243"><span class="c-flavio">73,3%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="6">6</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="0">0</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="6">6</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="7593">7.593</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="18.964836033188462">19,0%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/iracema/painel_iracema.html">Painel<span class="sr"> de Iracema</span></a><a href="RR/iracema/relatorio_iracema.pdf">Relatório (PDF)<span class="sr"> de Iracema</span></a><a href="RR/iracema/tabela_analise_iracema.pdf">Tabela (PDF)<span class="sr"> de Iracema</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="mucajai"><th scope="row" role="rowheader" data-v="mucajai"><a class="local" href="RR/mucajai/painel_mucajai.html">Mucajaí</a></th><td role="cell" class="num" data-label="Resultado" data-v="-61.32606101926028"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +61,3 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="17.231975455940006"><span class="c-lula">17,2%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="78.55803647520028"><span class="c-flavio">78,6%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="14">14</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="0">0</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="14">14</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="14383">14.383</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="16.547312799833136">16,5%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/mucajai/painel_mucajai.html">Painel<span class="sr"> de Mucajaí</span></a><a href="RR/mucajai/relatorio_mucajai.pdf">Relatório (PDF)<span class="sr"> de Mucajaí</span></a><a href="RR/mucajai/tabela_analise_mucajai.pdf">Tabela (PDF)<span class="sr"> de Mucajaí</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="normandia"><th scope="row" role="rowheader" data-v="normandia"><a class="local" href="RR/normandia/painel_normandia.html">Normandia</a></th><td role="cell" class="num" data-label="Resultado" data-v="-10.694798108403056"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +10,7 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="43.142961076755185"><span class="c-lula">43,1%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="53.83775918515824"><span class="c-flavio">53,8%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="18">18</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="9">9</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="9">9</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="9686">9.686</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="13.617592401404089">13,6%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/normandia/painel_normandia.html">Painel<span class="sr"> de Normandia</span></a><a href="RR/normandia/relatorio_normandia.pdf">Relatório (PDF)<span class="sr"> de Normandia</span></a><a href="RR/normandia/tabela_analise_normandia.pdf">Tabela (PDF)<span class="sr"> de Normandia</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="pacaraima"><th scope="row" role="rowheader" data-v="pacaraima"><a class="local" href="RR/pacaraima/painel_pacaraima.html">Pacaraima</a></th><td role="cell" class="num" data-label="Resultado" data-v="-19.56439632380713"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +19,6 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="38.587435477779174"><span class="c-lula">38,6%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="58.151831801586304"><span class="c-flavio">58,2%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="16">16</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="7">7</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="9">9</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="9762">9.762</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="17.189100594140545">17,2%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/pacaraima/painel_pacaraima.html">Painel<span class="sr"> de Pacaraima</span></a><a href="RR/pacaraima/relatorio_pacaraima.pdf">Relatório (PDF)<span class="sr"> de Pacaraima</span></a><a href="RR/pacaraima/tabela_analise_pacaraima.pdf">Tabela (PDF)<span class="sr"> de Pacaraima</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="rorainopolis"><th scope="row" role="rowheader" data-v="rorainopolis"><a class="local" href="RR/rorainopolis/painel_rorainopolis.html">Rorainópolis</a></th><td role="cell" class="num" data-label="Resultado" data-v="-50.086040008604"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +50,1 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="22.526349752634975"><span class="c-lula">22,5%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="72.61238976123897"><span class="c-flavio">72,6%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="21">21</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="2">2</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="19">19</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="23761">23.761</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="19.809772315979966">19,8%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/rorainopolis/painel_rorainopolis.html">Painel<span class="sr"> de Rorainópolis</span></a><a href="RR/rorainopolis/relatorio_rorainopolis.pdf">Relatório (PDF)<span class="sr"> de Rorainópolis</span></a><a href="RR/rorainopolis/tabela_analise_rorainopolis.pdf">Tabela (PDF)<span class="sr"> de Rorainópolis</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="sao joao da baliza"><th scope="row" role="rowheader" data-v="sao joao da baliza"><a class="local" href="RR/sao_joao_da_baliza/painel_sao_joao_da_baliza.html">São João da Baliza</a></th><td role="cell" class="num" data-label="Resultado" data-v="-45.781349122436026"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +45,8 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="24.40262211884119"><span class="c-lula">24,4%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="70.18397124127722"><span class="c-flavio">70,2%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="5">5</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="1">1</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="4">4</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="5728">5.728</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="15.45041899441341">15,5%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/sao_joao_da_baliza/painel_sao_joao_da_baliza.html">Painel<span class="sr"> de São João da Baliza</span></a><a href="RR/sao_joao_da_baliza/relatorio_sao_joao_da_baliza.pdf">Relatório (PDF)<span class="sr"> de São João da Baliza</span></a><a href="RR/sao_joao_da_baliza/tabela_analise_sao_joao_da_baliza.pdf">Tabela (PDF)<span class="sr"> de São João da Baliza</span></a></td></tr><tr role="row" data-lider="FLAVIO" data-busca="sao luiz"><th scope="row" role="rowheader" data-v="sao luiz"><a class="local" href="RR/sao_luiz/painel_sao_luiz.html">São Luiz</a></th><td role="cell" class="num" data-label="Resultado" data-v="-45.61509131045554"><span class="selo flavio"><span aria-hidden="true">◆</span><span>Flávio +45,6 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="24.88460766606462"><span class="c-lula">24,9%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="70.49969897652016"><span class="c-flavio">70,5%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="8">8</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="1">1</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="7">7</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="6082">6.082</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="15.915817165406116">15,9%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/sao_luiz/painel_sao_luiz.html">Painel<span class="sr"> de São Luiz</span></a><a href="RR/sao_luiz/relatorio_sao_luiz.pdf">Relatório (PDF)<span class="sr"> de São Luiz</span></a><a href="RR/sao_luiz/tabela_analise_sao_luiz.pdf">Tabela (PDF)<span class="sr"> de São Luiz</span></a></td></tr><tr role="row" data-lider="LULA" data-busca="uiramuta"><th scope="row" role="rowheader" data-v="uiramuta"><a class="local" href="RR/uiramuta/painel_uiramuta.html">Uiramutã</a></th><td role="cell" class="num" data-label="Resultado" data-v="39.10198845413727"><span class="selo lula"><span aria-hidden="true">●</span><span>Lula +39,1 p.p.</span></span></td><td role="cell" class="num" data-label="Lula (%)" data-v="68.9544579858884"><span class="c-lula">69,0%</span></td><td role="cell" class="num" data-label="Flávio (%)" data-v="29.852469531751126"><span class="c-flavio">29,9%</span></td><td role="cell" class="num" data-label="Locais de votação" data-v="21">21</td><td role="cell" class="num" data-label="Locais com Lula à frente" data-v="17">17</td><td role="cell" class="num" data-label="Locais com Flávio à frente" data-v="4">4</td><td role="cell" class="num" data-label="Eleitores aptos" data-v="9128">9.128</td><td role="cell" class="num" data-label="Abstenção (%)" data-v="13.168273444347065">13,2%</td><td role="cell" class="doc" data-label="Documentos"><a href="RR/uiramuta/painel_uiramuta.html">Painel<span class="sr"> de Uiramutã</span></a><a href="RR/uiramuta/relatorio_uiramuta.pdf">Relatório (PDF)<span class="sr"> de Uiramutã</span></a><a href="RR/uiramuta/tabela_analise_uiramuta.pdf">Tabela (PDF)<span class="sr"> de Uiramutã</span></a></td></tr></tbody></table></div></section>
+</main>
+</div>
+<script>
+(function(){
+  var tabela=document.querySelector('table.ordenavel'); if(!tabela){return;}
+  var corpo=tabela.tBodies[0], linhas=Array.prototype.slice.call(corpo.rows);
+  var cab=tabela.tHead.rows[0].cells;
+  var busca=document.getElementById('busca'), filtro=document.getElementById('filtro');
+  var ordem=document.getElementById('ordem'), contagem=document.getElementById('contagem');
+  var controles=document.getElementById('controles'), unidade=tabela.getAttribute('data-unidade')||'itens';
+  if(controles){controles.hidden=false;}
+  linhas.forEach(function(tr,i){tr._ini=i;});
+  function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+  function valor(tr,col,tipo){
+    var v=tr.cells[col].getAttribute('data-v');
+    if(v===null||v===''){return null;}
+    if(tipo==='num'){var n=parseFloat(v);return isNaN(n)?null:n;}
+    return v;
+  }
+  function ordenar(col,dir){
+    var tipo=cab[col].getAttribute('data-tipo')||'txt';
+    linhas.sort(function(a,b){
+      var x=valor(a,col,tipo), y=valor(b,col,tipo);
+      if(x===null&&y===null){return a._ini-b._ini;}
+      if(x===null){return 1;} if(y===null){return -1;}
+      var r=(tipo==='num')?(x-y):x.localeCompare(y,'pt-BR');
+      if(r===0){return a._ini-b._ini;}
+      return dir==='asc'?r:-r;
+    });
+    linhas.forEach(function(tr){corpo.appendChild(tr);});
+    for(var i=0;i<cab.length;i++){cab[i].setAttribute('aria-sort', i===col?(dir==='asc'?'ascending':'descending'):'none');}
+    if(ordem){ordem.value=col+':'+dir;}
+  }
+  function aplicar(){
+    var termos=norm(busca?busca.value:'').split(/\s+/).filter(Boolean), f=filtro?filtro.value:'todos', vis=0;
+    linhas.forEach(function(tr){
+      var txt=tr.getAttribute('data-busca')||'';
+      var achou=termos.every(function(t){return txt.indexOf(t)>-1;});   /* todas as palavras, em qualquer ordem */
+      var ok=achou&&(f==='todos'||tr.getAttribute('data-lider')===f);
+      tr.hidden=!ok; if(ok){vis++;}
+    });
+    if(contagem){contagem.textContent='Mostrando '+vis+' de '+linhas.length+' '+unidade;}
+  }
+  for(var i=0;i<cab.length;i++){
+    (function(col){
+      var b=cab[col].querySelector('button'); if(!b){return;}
+      b.addEventListener('click',function(){
+        var atual=cab[col].getAttribute('aria-sort');
+        var padrao=cab[col].getAttribute('data-tipo')==='num'?'desc':'asc';
+        var dir=(atual==='none'||!atual)?padrao:(atual==='ascending'?'descending':'ascending');
+        ordenar(col, dir==='ascending'||dir==='asc'?'asc':'desc');
+      });
+    })(i);
+  }
+  if(ordem){ordem.addEventListener('change',function(){var p=ordem.value.split(':');ordenar(parseInt(p[0],10),p[1]);});}
+  if(busca){busca.addEventListener('input',aplicar);}
+  if(filtro){filtro.addEventListener('change',aplicar);}
+  aplicar();
+})();
+</script>
+</body>
+</html>

@@ -26,7 +26,7 @@ def mapping_from_zip(path):
         if z.namelist().count(MEMBER)!=1:
             raise ValueError("CSV de correspondência ausente/duplicado")
         with z.open(MEMBER) as raw:
-            r=csv.DictReader(io.TextIOWrapper(raw,encoding="utf-8-sig",newline=""),delimiter=";")
+            r=csv.DictReader(io.TextIOWrapper(raw,encoding="latin-1",newline=""),delimiter=";")
             missing=REQUIRED-set(r.fieldnames or [])
             if missing:
                 raise ValueError("Colunas ausentes: "+str(sorted(missing)))

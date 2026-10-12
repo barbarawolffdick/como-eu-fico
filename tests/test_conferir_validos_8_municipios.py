@@ -5,10 +5,9 @@ from tests.test_reconciliar_8_municipios import ReconciliaTest
 from scripts.conferir_validos_8_municipios import verify
 
 class ValidVotesTests(ReconciliaTest):
-    def test_sem_categorias_nao_certifica_votos_validos(self):
-        checks=verify(self.tse)
-        self.assertTrue(all(result["status"]=="INCONCLUSIVO" for result in checks.values()))
-        self.assertTrue(all(result["votos_validos"] is None for result in checks.values()))
+    def test_esquema_incompleto_falha_com_mensagem_explicita(self):
+        with self.assertRaisesRegex(ValueError, "colunas ausentes"):
+            verify(self.tse)
 
     def test_compativel_em_cada_secao(self):
         path=self.tse/"votacao_secao_2026_BR.zip"

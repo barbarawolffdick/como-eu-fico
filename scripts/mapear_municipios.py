@@ -2,6 +2,7 @@
 """Mapeia municípios dos resumos eleitorais para códigos IBGE sem alterar originais."""
 import argparse
 import csv
+import gzip
 import json
 import re
 import unicodedata
@@ -43,7 +44,9 @@ def ibge_records(cache, refresh=False):
         req = urllib.request.Request(IBGE_URL, headers={"User-Agent":"como-eu-fico/1.0"})
         with urllib.request.urlopen(req, timeout=60) as response:
             payload = response.read()
-        records = json.loads(payload.decode("utf-8"))
+        if payload.startswith(b"\x1f\x8b"):
+            payload = gzip.decompress(payload)
+        records = json.loads(payload.decode("utf-8-sig"))
         if not isinstance(records, list) or len(records) < 5500:
             raise ValueError("Resposta IBGE incompleta; cache não atualizado")
         cache.parent.mkdir(parents=True, exist_ok=True)

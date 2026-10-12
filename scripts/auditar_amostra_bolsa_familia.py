@@ -67,13 +67,13 @@ def audit_bytes(blob, period, filename):
                 raise ValueError("mês inválido")
             for month in (competencia,referencia):
                 if not (1<=int(month[-2:])<=12): raise ValueError("mês fora do calendário")
-            if referencia != period: raise ValueError("mês referência diferente do arquivo esperado")
+            if competencia != period: raise ValueError("competência diferente do arquivo esperado")
             if not re.fullmatch(r"[A-Z]{2}",uf): raise ValueError("UF inválida")
             if not re.fullmatch(r"\d+",siafi): raise ValueError("SIAFI inválido")
             cents=value(r[km["VALOR PARCELA"]])
             competences.add(competencia)
             refs.add(referencia)
-            a=aggregates[(uf,siafi)]
+            a=aggregates[(competencia,referencia,uf,siafi)]
             a["parcelas"]+=1
             a["centavos"]+=cents
         except (ValueError,TypeError) as e:
@@ -81,15 +81,15 @@ def audit_bytes(blob, period, filename):
     if not rows: raise ValueError("Não há linhas de dados")
     result={
         "status":"PASS" if not errors else "BLOCKED",
-        "arquivo":filename,"mes_folha_esperado":period,
-        "linhas":rows,"municipios_siafi":len(aggregates),
+        "arquivo":filename,"mes_competencia_esperado":period,
+        "linhas":rows,"municipios_siafi":len(set((k[2],k[3]) for k in aggregates)),"grupos_municipio_referencia":len(aggregates),
         "meses_competencia":sorted(competences),
         "meses_referencia":sorted(refs),
         "colunas_encontradas":list(reader.fieldnames),
         "erros_amostra":errors,
         "total_centavos":sum(v["centavos"] for v in aggregates.values()),
-        "agregado_municipal":[{"uf":uf,"codigo_siafi":siafi,**v}
-                             for (uf,siafi),v in sorted(aggregates.items())]
+        "agregado_municipal":[{"mes_competencia":competencia,"mes_referencia":referencia,"uf":uf,"codigo_siafi":siafi,**v}
+                             for (competencia,referencia,uf,siafi),v in sorted(aggregates.items())]
     }
     return result
 

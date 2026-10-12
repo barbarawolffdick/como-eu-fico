@@ -7,6 +7,16 @@ from scripts.construir_base_tse_ibge import connect
 from scripts.aplicar_codigos_oficiais_tse_ibge import mapping_from_zip,validate
 
 class OfficialCodesTests(unittest.TestCase):
+    def test_csv_oficial_com_acentos_latin1(self):
+        with tempfile.TemporaryDirectory() as temp:
+            file=Path(temp)/"codigos.zip"
+            content=("SG_UF;CD_MUNICIPIO_TSE;CD_MUNICIPIO_IBGE;NM_MUNICIPIO_TSE;NM_MUNICIPIO_IBGE\n"
+                     "SP;071013;3550001;São Luís do Paraitinga;São Luís do Paraitinga\n")
+            with zipfile.ZipFile(file,"w") as z:
+                z.writestr("municipio_tse_ibge.csv",content.encode("latin-1"))
+            mapping=mapping_from_zip(file)
+            self.assertEqual(mapping[("SP","71013")][0],"3550001")
+
     def test_codigo_tse_com_zero_a_esquerda(self):
         with tempfile.TemporaryDirectory() as temp:
             file=Path(temp)/"codigos.zip"

@@ -34,9 +34,11 @@ class BaseTseTest(unittest.TestCase):
     def test_falta_ibge_bloqueia_correspondencia(self):
         self.db.execute("INSERT INTO apuracao VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         ("BA","123","MUNICIPIO INEXISTENTE","1","1","10",12,10,2,8,1,1,0,0))
+        self.db.execute("INSERT INTO votos VALUES (?,?,?,?,?,?,?,?,?)",
+                        ("BA","123","MUNICIPIO INEXISTENTE","1","1","10","13","LULA",8))
         issues=map_ibge(self.db)
         self.assertEqual(len(issues),1)
-        self.assertEqual(issues[0]["motivo"],"nome_tse_inconsistente" if False else "sem_correspondencia_ibge")
+        self.assertEqual(issues[0]["motivo"],"sem_correspondencia_ibge")
     def test_chave_votacao_duplicada_falha(self):
         self.insert_pair()
         with self.assertRaises(sqlite3.IntegrityError):

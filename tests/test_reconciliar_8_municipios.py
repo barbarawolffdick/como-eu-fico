@@ -52,6 +52,12 @@ class ReconciliaTest(unittest.TestCase):
         self.assertTrue(all(x["tse_votos_validos"]=="" for x in rows))
         self.assertTrue(all(x["status"]=="INCONCLUSIVO" for x in rows))
 
+    def test_nome_flavio_no_tse_2026(self):
+        from scripts.reconciliar_8_municipios import classify
+        self.assertEqual(classify("FLAVIO NANTES BOLSONARO"), "flavio")
+        self.assertEqual(classify("FLAVIO BOLSONARO"), "flavio")
+        self.assertIsNone(classify("OUTRO CANDIDATO"))
+
     def test_nao_aceita_selecao_incompleta(self):
         self.issues.write_text("uf,municipio_origem,codigo_ibge,regra\nBA,CRISTOPOLIS,1,votos_candidatos\n")
         with self.assertRaises(ValueError):

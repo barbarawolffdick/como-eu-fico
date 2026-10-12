@@ -8,10 +8,13 @@ import argparse
 import csv
 import io
 import json
+import sys
 import sqlite3
 import zipfile
 from pathlib import Path
 from datetime import datetime, timezone
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.construir_base_tse_ibge import norm
 from scripts.diagnosticar_base_tse import report as audit
 

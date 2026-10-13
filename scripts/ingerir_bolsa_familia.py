@@ -71,6 +71,16 @@ def bridge(path):
         if key in mapping and mapping[key]!=ibge:
             raise ValueError("Ponte conflitante: "+str(key))
         mapping[key]=ibge
+    # Atualização territorial documentada: Boa Esperança do Norte (MT), IBGE 5101837.
+    # O CSV do Tesouro utilizado nesta ingestão não inclui o código 1182.
+    # Prefeitura: https://www.boaesperancadonorte.mt.gov.br/pages/codigos-de-identificacao-do-municipio
+    # IBGE: https://www.ibge.gov.br/explica/codigos-dos-municipios.php
+    # O arquivo fonte permanece inalterado; aplicar exceção somente se não houver
+    # outro mapeamento, para não mascarar conflito com atualização posterior.
+    key=("MT","1182")
+    if key in mapping and mapping[key]!="5101837":
+        raise ValueError("Ponte conflitante com Boa Esperança do Norte: "+mapping[key])
+    mapping[key]="5101837"
     return mapping
 
 def transform(zip_path, mapping, mes, expected=None):

@@ -46,3 +46,18 @@ Janeiro precisa reproduzir **20.500.422 parcelas**, **1.373.577.033.000 centavos
 ## Próxima verificação
 
 Testar fevereiro, registrar totais e códigos únicos, conferir a cardinalidade de cada arquivo e a presença territorial no cadastro IBGE. Depois criar atualização mês a mês com relatório por competência e verificação de cobertura histórica.
+
+## Execução incremental sem Google Drive — procedimento obrigatório
+
+**A cópia no Colab não é persistente.** Depois de cada competência, baixar o backup para o computador antes de iniciar a próxima. Não executar loops com todos os meses numa única sessão sem persistência externa.
+
+1. Com o SQLite de janeiro+fevereiro presente no diretório do projeto, executar os testes:
+   `python -m unittest discover -s tests -p 'test_processar_mes_bolsa_seguro.py' -v`.
+2. Processar **somente março**: `python scripts/processar_mes_bolsa_seguro.py --mes 202503 --apagar-zip`.
+3. Conferir a mensagem `BACKUP DEPOIS`, apontando para `data/beneficios/backups/beneficios_ate_202503.sqlite`.
+4. Baixar o arquivo `beneficios_ate_202503.sqlite` usando a interface de arquivos do Colab, **antes** de qualquer outra competência.
+5. Se a sessão Colab encerrar, enviar o último arquivo de backup baixado, restaurá-lo como `data/beneficios/beneficios.sqlite`, e executar o próximo mês. Nunca reprocessar mês já registrado.
+
+O script cria um backup antes e depois de cada mês, valida `PRAGMA integrity_check` e os totais antes do backup final, recusa processar um banco inexistente, e permite `--apagar-zip` para remover **somente** o ZIP bruto correspondente ao mês recém-processado depois de salvar seu checkpoint local. **Não apaga o ZIP se houver erro**. O relatório de proveniência e os totais seguem em `origem`. O backup não é enviado automaticamente para Drive ou GitHub. Baixar o arquivo é uma ação manual essencial.
+
+O código desta versão foi atualizado no PR #9; execução end-to-end com março real e verificação dos testes pendente.

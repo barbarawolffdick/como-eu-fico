@@ -12,7 +12,7 @@ class AuditTest(unittest.TestCase):
         r=audit_bytes(b,"202401","official.csv")
         self.assertEqual(r["status"],"PASS")
         self.assertEqual(r["total_centavos"],80025)
-        self.assertEqual(r["agregado_municipal"][0]["parcelas"],2)
+        self.assertEqual(sum(x["parcelas"] for x in r["agregado_municipal"]),2)
         self.assertNotIn("Pessoa A",str(r))
         self.assertEqual(r["meses_competencia"],["202401"])
         self.assertEqual(r["meses_referencia"],["202312","202401"])

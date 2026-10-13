@@ -18,9 +18,9 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(mapping[("RO","0001")],"1100106")
             arc=root/"202501.zip"
             with zipfile.ZipFile(arc,"w",zipfile.ZIP_DEFLATED) as z:
-                z.writestr("202501_NovoBolsaFamilia.csv",HEADER+
+                z.writestr("202501_NovoBolsaFamilia.csv",(HEADER+
                  '202501;202501;RO;0001;TESTE;;;PESSOA A;600,00\n'+
-                 '202501;202412;RO;0001;TESTE;;;PESSOA B;200,25\n')
+                 '202501;202412;RO;0001;TESTE;;;PESSOA B;200,25\n').encode('latin-1'))
             groups,meta=transform(arc,mapping,"202501",{"parcelas":2,"total_centavos":80025,"municipios_ibge":1})
             self.assertEqual(meta["meses_referencia"],["202412","202501"])
             self.assertEqual(len(groups),2)
@@ -35,7 +35,7 @@ class PipelineTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             arc=Path(tmp)/"x.zip"
             with zipfile.ZipFile(arc,"w") as z:
-                z.writestr("x.csv",HEADER+'202501;202501;RO;0001;TESTE;;;PESSOA;600,00\n')
+                z.writestr("x.csv",(HEADER+'202501;202501;RO;0001;TESTE;;;PESSOA;600,00\n').encode('latin-1'))
             with self.assertRaisesRegex(ValueError,"sem ponte"):
                 transform(arc,{},"202501")
             with self.assertRaisesRegex(ValueError,"competência"):

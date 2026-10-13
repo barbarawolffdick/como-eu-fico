@@ -61,3 +61,15 @@ Testar fevereiro, registrar totais e códigos únicos, conferir a cardinalidade 
 O script cria um backup antes e depois de cada mês, valida `PRAGMA integrity_check` e os totais antes do backup final, recusa processar um banco inexistente, e permite `--apagar-zip` para remover **somente** o ZIP bruto correspondente ao mês recém-processado depois de salvar seu checkpoint local. **Não apaga o ZIP se houver erro**. O relatório de proveniência e os totais seguem em `origem`. O backup não é enviado automaticamente para Drive ou GitHub. Baixar o arquivo é uma ação manual essencial.
 
 O código desta versão foi atualizado no PR #9; execução end-to-end com março real e verificação dos testes pendente.
+
+## Exceção territorial detectada em outubro de 2025
+
+Durante a ingestão de `202510`, a linha 8.790.736 apresentou o código municipal `MT/1182`, ausente no `tabmun.csv` de referência. A execução bloqueou antes da escrita no SQLite, preservando setembro.
+
+Identificação verificada: **Boa Esperança do Norte (MT)**, IBGE `5101837`, código municipal `1182`, a partir dos portais oficiais da prefeitura e do IBGE:
+- https://www.boaesperancadonorte.mt.gov.br/pages/codigos-de-identificacao-do-municipio
+- https://www.ibge.gov.br/explica/codigos-dos-municipios.php
+
+A exceção exata `(MT,1182) -> 5101837` está implementada em `bridge()`; ela não modifica o CSV original e bloqueia conflitos com outra associação futura. **A coluna `sha256_ponte` na tabela `origem` continua representando o SHA do CSV do Tesouro, não o hash combinado das exceções em código**. A correspondência efetiva precisa ser interpretada junto ao commit da versão do código de ingestão, e uma versão posterior deve considerar registrar explicitamente a versão/hash das exceções no metadado do mês.
+
+Para retomar após falha: atualizar apenas `scripts/ingerir_bolsa_familia.py`, validar `bridge(...)[("MT","1182")]`, então processar `--inicio 202510 --quantidade 2`; os meses até `202509` permanecem inalterados. Não publicar conclusões sobre cobertura territorial ou comparabilidade longitudinal antes de avaliar o início da presença deste município no arquivo CGU.

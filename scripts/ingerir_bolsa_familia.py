@@ -14,7 +14,10 @@ import urllib.request
 import zipfile
 from collections import defaultdict
 from pathlib import Path
-from .auditar_amostra_bolsa_familia import norm, keymap, value
+try:
+    from scripts.auditar_amostra_bolsa_familia import keymap, value
+except ModuleNotFoundError:
+    from auditar_amostra_bolsa_familia import keymap, value
 
 CGU="https://portaldatransparencia.gov.br/download-de-dados/novo-bolsa-familia/{mes}"
 TESOURO=("https://www.tesourotransparente.gov.br/ckan/dataset/"

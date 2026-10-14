@@ -14,6 +14,8 @@ def exportar(banco, destino):
         raise FileNotFoundError("Banco de benefícios não encontrado: " + str(banco))
     if destino.exists():
         raise FileExistsError("Destino já existe; não sobrescrever: " + str(destino))
+    if not destino.name.lower().endswith(".csv"):
+        raise ValueError("A saída precisa ser um arquivo CSV")
     destino.parent.mkdir(parents=True, exist_ok=True)
     temporario = destino.with_suffix(destino.suffix + ".part")
     sql = """
@@ -41,8 +43,10 @@ def exportar(banco, destino):
                 writer = csv.writer(out)
                 writer.writerow(("mes_competencia", "codigo_ibge", "parcelas", "valor_centavos"))
                 for mes, codigo, parcelas, valor in cx.execute(sql):
-                    if len(codigo) != 7 or not codigo.isdigit():
-                        raise ValueError("Código IBGE inválido: " + str(codigo))
+                    if not isinstance(codigo, str) or len(codigo) != 7 or not codigo.isascii() or not codigo.isdigit():
+                        raise ValueError("Código IBGE inválido: " + repr(codigo))
+                    if parcelas is None or parcelas <= 0 or valor is None or valor < 0:
+                        raise ValueError("Agregado municipal inválido: " + repr((mes, codigo, parcelas, valor)))
                     writer.writerow((mes, codigo, parcelas, valor))
                     previous = totais.get(mes, (0, 0))
                     totais[mes] = (previous[0] + parcelas, previous[1] + valor)

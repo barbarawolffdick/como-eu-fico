@@ -1,0 +1,20 @@
+name: Extrair indicador pessoas MDS
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/provar_pessoas_mds.py
+      - .github/workflows/provar-pessoas-mds.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  analisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/provar_pessoas_mds.py

@@ -1,0 +1,24 @@
+name: Testes do MVP
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Testar ingestao CGU, correspondencia IBGE e exportacao
+        run: |
+          python -m unittest discover -s tests -p 'test_ingerir_bolsa_familia.py' -v
+          python -m unittest discover -s tests -p 'test_municipio_novo_bolsa.py' -v
+          python -m unittest discover -s tests -p 'test_banco_app.py' -v
+          python -m unittest discover -s tests -p 'test_integrar_fontes.py' -v

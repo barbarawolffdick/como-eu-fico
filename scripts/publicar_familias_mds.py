@@ -32,6 +32,9 @@ def extract(rows,period,codes):
         code=by_six[six]
         if code in result:raise ValueError("Município duplicado: "+code)
         raw=row[4].strip().replace(".","")
+        if raw=="":
+            result[code]=None
+            continue
         if not raw.isascii() or not raw.isdigit():raise ValueError("Famílias inválidas: "+repr(row))
         result[code]=int(raw)
     if set(result)!=codes:raise ValueError("Cobertura MDS divergente: "+str({"presentes":len(result),"faltantes":len(codes-set(result))}))

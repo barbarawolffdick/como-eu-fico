@@ -1,40 +1,36 @@
-# Estado técnico e evidências — 14/10/2026
+# Como verificar o estado atual — não é um snapshot
 
-## Repositório e documentação
-- Repositório público: https://github.com/barbarawolffdick/como-eu-fico
-- `main`: README e contrato editorial `docs/contrato-editorial-dados-v1.md`, catálogo `docs/catalogo-fontes-v0.md`.
-- PR de ingestão/auditoria Bolsa Família: https://github.com/barbarawolffdick/como-eu-fico/pull/9
-- Branch: `feat/validar-amostra-bolsa-familia`; **não presumir merge**.
-- A versão inicial do contrato contempla pesquisa desde 2023, mas a **primeira execução e o MVP** estão restritos a janeiro/2025–agosto/2026 pela disponibilidade real dos arquivos. O projeto planejou até setembro/2026; setembro não estava publicado na CGU quando tentaram baixar. Não representá-lo como zero.
+**Este arquivo não registra o estado atual do projeto.** Seu objetivo é impedir que um novo assistente trate um relatório histórico como fato contemporâneo.
 
-## TSE — voto presidencial
-- Fonte: primeiro turno presidencial TSE 2026.
-- Relato de validação do pipeline: **5.571 municípios**, **497.897 seções**, sem divergência de composição municipal de votos.
-- **6.588 divergências em códigos de locais de votação** continuam pendentes. Não usar agregado por local de votação como validado.
-- Dados eleitorais originais/canônicos independentes dos benefícios; confira no repo quais snapshots estão disponíveis para runtime/deploy e se a publicação do snapshot foi concluída. Não presumir que arquivos SQLite locais estão no GitHub.
+## Procedimento de reconstrução de contexto
 
-## Bolsa Família — CGU
-- Origem ZIP por competência: `https://portaldatransparencia.gov.br/download-de-dados/novo-bolsa-familia/AAAAMM`.
-- Ponte SIAFI–IBGE Tesouro: `tabmun.csv`, SHA-256 `3651c930ca1ddfde0bb7b47130795f332330d4c66b3db70f49f3ca3494e4242d`.
-- Correção territorial específica em código: SIAFI **MT/1182** → IBGE **5101837**, Boa Esperança do Norte. O hash da ponte só cobre CSV Tesouro original, não a exceção em código.
-- 20 competências consecutivas: **202501 a 202608**. Fonte de setembro/2026 indisponível em 13–14/10/2026.
-- **387.119.228 parcelas**; **R$ 260.005.670.043,00** em valores registrados.
-- Cobertura **5.570 municípios** em 202501–202509 e **5.571** em 202510–202608.
-- Auditoria longitudinal no Colab: **PASS**, zero alertas. Única alteração no conjunto mensal de municípios: entrada de IBGE `5101837` em 202510; nenhum município saiu.
-- Não houve grupos agregados com valores totais zero ou negativos (isso não avalia valores individuais brutos).
-- Parcela com `mes_referencia` anterior a `mes_competencia`: jan/2025 120.400 (**0,5873%**); jan/2026 865.053 (**4,4407%**); ago/2026 30.794 (**0,1637%**). Isso não prova atraso de pagamento.
-- Auditoria estrutural no Colab: cinco PASS (integridade, 20 meses, reconciliação de totais, consistência básica e integridade referencial).
-- Backup disponível no Mac do usuário: `beneficios_ate_202608.sqlite` (~29 MB), não publicado em GitHub. Relatórios enviados ao ChatGPT: `auditoria_bolsa_familia_202501_202608.json` e `auditoria_longitudinal_bolsa_202501_202608.json`.
-- Documentos do PR #9: `methodology/auditoria-consolidada-bolsa-familia-202501-202608.md`, `methodology/resultado-auditoria-longitudinal-202501-202608.md`. Script: `scripts/auditar_serie_bolsa_familia.py`.
+1. Abrir https://github.com/barbarawolffdick/como-eu-fico e ler o README **atual**.
+2. Listar branches e pull requests abertos/fechados e identificar qual versão do código é a relevante para a tarefa. Não presumir que um PR citado em conversa antiga segue aberto.
+3. Identificar stack e ponto de entrada do produto, scripts de ingestão, camada curada, schemas e testes a partir da árvore atual. Não presumir que um arquivo existe ou não existe sem verificar.
+4. Ler o contrato editorial e o catálogo de fontes **na revisão relevante**, considerando que documentos anteriores podem ter sido superados.
+5. Para cada fonte, verificar fonte oficial, granularidade, período realmente disponível, local de armazenamento, hashes/manifestos e **última evidência de auditoria reproduzível**.
+6. Distinguir relatórios históricos de auditoria de uma execução recente. Uma marca `PASS` atesta somente os testes e o dataset daquela execução.
+7. Conferir quais dados ou backups existem no repositório, em arquivos compartilhados na conversa e somente no computador/Colab do usuário; não declarar disponíveis os que não foram acessados.
+8. Antes de novos cruzamentos, conferir município de referência, versão territorial, candidaturas/turno eleitoral e consistência de totais.
 
-## IBGE
-- Chave IBGE de sete caracteres é base de joins.
-- Trabalho populacional em PR #6 descrito como **experimental**, não pronto para consumo sem conferência. Investigar no repo o estado atual de dados e testes populacionais, sem inventar população.
+## Onde encontrar evidências
 
-## Riscos / lacunas para o MVP
-1. Confirmar quais **snapshots municipais TSE** realmente existem em `main` ou no armazenamento local; gerar dataset de distribuição/deploy a partir de fonte oficial se necessário.
-2. Preparar/exportar a camada pública municipal de Bolsa Família do SQLite local, sem dados pessoais.
-3. Validar **IBGE/população** e joins TSE–IBGE–CGU, preservando a diferença de cobertura histórica.
-4. Implementar interface e hospedagem/deploy; ainda não localizada aplicação web nos caminhos usuais no início de 14/10/2026.
-5. Confirmar revisões e atualização da fonte CGU; dataset até 202608, não 202609.
-6. Auditar que a variável de voto usada no MVP corresponde ao primeiro turno presidencial e ao município IBGE correto; não trabalhar com seções/locais onde há divergências.
+- Documentos editoriais: `docs/` e `methodology/`.
+- Pipelines e auditorias: `scripts/` e `tests/`.
+- Relatórios de qualidade, manifestos e artefatos publicados: localizar pela árvore atual do repositório.
+- Evidência de mudanças: histórico Git, commits e PRs.
+- Bases SQLite e arquivos brutos podem existir **apenas fora do GitHub**. Solicite somente o arquivo necessário, se realmente faltar.
+
+## Como responder a “onde estamos?”
+
+Produzir um diagnóstico curto, datado e **gerado naquele momento**, separando:
+- **Confirmado por inspeção** (com caminhos, commits e testes consultados).
+- **Informado pelo usuário / relatório histórico** (sem fingir reprodução).
+- **Pendente ou não acessível**.
+- **Próxima entrega concreta**.
+
+Não copiar números de uma versão anterior deste arquivo como se fossem atuais. Se o usuário precisar congelar uma auditoria, registrar um relatório datado e identificável **separado** destas instruções.
+
+## Referências históricas (não estado atual)
+
+As auditorias sobre TSE, Bolsa Família e IBGE devem ser encontradas nas respectivas metodologias e registros de validação. Esses arquivos indicam o que foi examinado em determinado momento, mas **não constituem memória permanente da versão vigente**.

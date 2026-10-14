@@ -47,5 +47,29 @@ class ExportarMvpTests(unittest.TestCase):
                 exportar(db, output)
             self.assertFalse(output.exists())
 
+    def test_blocks_negative_aggregate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db = Path(tmp) / "beneficios.sqlite"
+            output = Path(tmp) / "mvp.csv"
+            with sqlite3.connect(db) as cx:
+                cx.executescript("""
+                    CREATE TABLE origem (mes_competencia TEXT, parcelas INTEGER, valor_centavos INTEGER);
+                    CREATE TABLE parcelas_municipais (
+                        mes_competencia TEXT, mes_referencia TEXT, codigo_ibge TEXT,
+                        valor_centavos INTEGER, quantidade_parcelas INTEGER);
+                    INSERT INTO origem VALUES ('202501', 1, -100);
+                    INSERT INTO parcelas_municipais VALUES ('202501','202501','3550308',-100,1);
+                """)
+            with self.assertRaisesRegex(ValueError, "Agregado municipal inválido"):
+                exportar(db, output)
+            self.assertFalse(output.exists())
+
+    def test_invalid_output_extension(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db = Path(tmp) / "beneficios.sqlite"
+            db.touch()
+            with self.assertRaisesRegex(ValueError, "arquivo CSV"):
+                exportar(db, Path(tmp) / "resultado.sqlite")
+
 if __name__ == "__main__":
     unittest.main()

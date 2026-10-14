@@ -12,6 +12,6 @@ print(json.dumps({"url":URL,"size":len(html),"scripts":scripts[:35],"links":link
 for key in ("Quantidade total de pessoas","pessoas em famílias","$.ajax","ajax:","url:","buscarIndicador","buscar_indicador","dataTable","data-explorer","vis/data3","api.php","v.php"):
  matches=list(re.finditer(re.escape(key),html,re.I))
  print(json.dumps({"pattern":key,"count":len(matches),"context":[html[max(0,m.start()-190):m.end()+340] for m in matches[:4]]},ensure_ascii=False))
-for phrase in ("function executa_pesquisa_itens","function visualiza_multiplos_registros","lista_view_qtd_registros","result.res","function pesquisaElementosVis3"):
- m=re.search(re.escape(phrase),html,re.I)
- print(json.dumps({"func":phrase,"context":html[m.start():m.start()+3500] if m else ""},ensure_ascii=False))
+for name in ("function executa_pesquisa_itens_solr","function exibeLoadingDataExplorer"):
+ m=re.search(re.escape(name),html,re.I)
+ print(json.dumps({"func":name,"block":html[m.start():m.start()+11500] if m else ""},ensure_ascii=False))

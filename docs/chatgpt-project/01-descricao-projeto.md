@@ -1,12 +1,20 @@
-# Como Eu Fico — descrição para projeto no ChatGPT
+# Como Eu Fico — identidade do projeto
 
-O Como Eu Fico é um projeto de jornalismo de dados e produto digital que permite ao cidadão explorar, por município brasileiro, **como o fluxo de verba federal chega à cidade e como a cidade votou na eleição presidencial de 2026**.
+O **Como Eu Fico** é um produto digital de investigação pública que permite observar, por município brasileiro, como fluxos de verba federal se relacionam descritivamente com os resultados eleitorais.
 
-A experiência coloca lado a lado a evolução temporal de benefícios, transferências, serviços e entregas federais e o resultado eleitoral municipal do primeiro turno de 2026. A pergunta é: **“Como a verba federal chega ao meu município e como ele votou?”**. O objetivo é tornar visível a presença federal no cotidiano, com linguagem simples, evidências verificáveis e comparações territoriais úteis.
+A experiência deve apresentar lado a lado:
+- **Voto:** resultados oficiais da eleição presidencial, com identificação clara da eleição, turno, cargo, candidatos e período.
+- **Fluxo de verba federal que impacta o município:** benefícios, transferências, recursos para serviços, obras e outras modalidades verificáveis, cada uma identificada pelo que efetivamente mede.
+- **Contexto:** município, território, população e outros denominadores provenientes de fontes oficiais.
 
-O termo editorial central é **“fluxo de verba federal que impacta o município”**, e não “investimento federal” como categoria genérica. Os fluxos têm naturezas distintas: benefícios a pessoas, recursos para serviços públicos, infraestrutura e transferências a governos locais. Uma soma geral só pode ser mostrada com escopo definido, deduplicação e metodologia explícita. Verba movimentada não comprova impacto causal.
+A pergunta editorial é: **como a verba federal chega à minha cidade e como ela votou?**
 
-O MVP prioritário deve ser navegável e conter **TSE 2026 + Bolsa Família CGU + identificação/população municipal IBGE**, em bases independentes ligadas pelo código IBGE de sete dígitos. Outros fluxos (BPC, Pé-de-Meia, PNAE, SUS etc.) serão integrados depois. A experiência precisa nascer eleitoral e territorial, não como dashboard genérico de assistência.
+O produto não existe para confirmar uma hipótese política. Contradições fazem parte dos resultados. Associação territorial não implica causalidade, nem permite inferir escolhas de eleitores individuais.
 
-GitHub público: https://github.com/barbarawolffdick/como-eu-fico
-Branch de trabalho de Bolsa Família e auditorias: `feat/validar-amostra-bolsa-familia`, PR #9.
+O termo “fluxo de verba federal” é um conceito de navegação/editorial, não uma licença para somar indiscriminadamente pagamentos a pessoas, transferências a entes públicos e financiamento de serviços. Agregações exigem escopo, unidade, estágio do recurso e eliminação de sobreposições comprovadas. Recursos movimentados não comprovam, por si só, impactos causais ou serviços efetivamente entregues.
+
+O projeto deve evoluir para uma experiência **navegável, acessível e verificável**. Sua arquitetura separa fontes originais e domínios de dados, relacionando-os por regras territoriais e temporais explícitas.
+
+**Fonte primária do trabalho técnico:** https://github.com/barbarawolffdick/como-eu-fico
+
+Este documento descreve a finalidade duradoura do projeto. **Não contém afirmações sobre implementação atual, números extraídos, branches, PRs ou próximos commits.** Esses fatos devem ser consultados na fonte atualizada.

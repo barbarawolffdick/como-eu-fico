@@ -36,4 +36,24 @@ options=[]
 for attrs,label in opts:
  attrs_dict=dict(re.findall(r'([a-zA-Z0-9_-]+)="([^"]*)"',attrs))
  options.append({"label":h.unescape(re.sub("<[^>]+>","",label)).strip(),**attrs_dict})
-print(json.dumps({"opcoes":options},ensure_ascii=False))
+
+qe=options[0]["value"]
+mapurl="https://aplicacoes.cidadania.gov.br/vis/dash/sv-mapa-faixas.php?qe="+qe
+base={"ref":"2026-09-01","ag":"p","area":"","area_user":"","temp":"1",
+      "mes_ou_ano":"mes","p_ibge":"0","nr":"","ma":""}
+for name,extra in [("faixas",{"q":"4"}),("valores",{"op":"1","wt":"json","f0":"0","f1":"99999999","cor":"#195b49",
+    "v":options[0]["label"],"vf":"numero"})]:
+ req=urllib.request.Request(mapurl,data=urllib.parse.urlencode({**base,**extra}).encode(),
+   headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"},method="POST")
+ try:
+  with urllib.request.urlopen(req,timeout=140) as response:raw=response.read()
+  try:
+   parsed=json.loads(raw)
+   if isinstance(parsed,dict):
+    feats=parsed.get("features",parsed.get("r",[]))
+    summ={"keys":list(parsed.keys())[:20],"items":len(feats) if isinstance(feats,list) else None,
+     "sample":feats[:2] if isinstance(feats,list) else None}
+   else:summ={"tipo":type(parsed).__name__,"items":len(parsed),"sample":parsed[:2]}
+  except Exception:summ={"prefix":raw[:300].decode("utf-8","replace")}
+  print(json.dumps({"teste":name,"bytes":len(raw),"resultado":summ},ensure_ascii=False))
+ except Exception as e:print(json.dumps({"teste":name,"erro":str(e)},ensure_ascii=False))

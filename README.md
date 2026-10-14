@@ -69,8 +69,51 @@ O comando gera `inventario-limpeza.json` sem excluir nada. Antes de apagar ou mo
 
 Veja também `methodology/codigos-oficiais-tse-ibge.md`.
 
-## MVP — organização de dados
+## MVP local — execução oficial
 
-A primeira versão do produto combina **votação presidencial TSE 2026**, **território e população IBGE** e **fluxo federal do Bolsa Família**. As fontes originais são independentes, mas o **aplicativo usa um banco operacional SQLite** derivado desses dados.
+A aplicação funcional é **FastAPI + SQLite**. A interface web já está servida pelo próprio FastAPI em `app/server.py`. Não se trata de um app React/Next.js e o v0 não consegue inicializar diretamente esse backend nem substituir o SQLite real.
 
-A estrutura do banco do aplicativo e a carga a partir das fontes existentes estão descritas em [Dados do MVP](docs/dados-mvp.md). Não é necessário reprocessar 20 competências já auditadas quando o backup SQLite estiver disponível. A primeira aplicação web ainda precisa consumir os datasets municipais reais e ser publicada.
+O banco operacional `data/app/como_eu_fico.sqlite` está em **Git LFS**. É obrigatório baixar o conteúdo LFS real; o ponteiro de 133 bytes não é um banco SQLite. Nenhum processamento nacional de TSE ou Bolsa Família deve ser refeito.
+
+Na raiz do repositório, no macOS:
+
+```bash
+git switch main
+git pull --ff-only origin main
+git lfs install
+git lfs pull
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -p 'test_integrar_fontes.py' -v
+python -m unittest discover -s tests -p 'test_integrar_ibge_populacao.py' -v
+python -m uvicorn app.server:app --host 127.0.0.1 --port 8001
+```
+
+Abra `http://127.0.0.1:8001/` (API em `/docs`). O terminal que executa uvicorn fica aberto. Se aparecer erro de porta ocupada, pare a instância anterior ou escolha outra porta.
+
+Verificação inicial do banco, em **outro terminal** na raiz do repositório:
+
+```bash
+file data/app/como_eu_fico.sqlite
+python3 -c "import sqlite3; c=sqlite3.connect('data/app/como_eu_fico.sqlite'); print(c.execute('PRAGMA integrity_check').fetchone()); print(c.execute('SELECT COUNT(*) FROM municipios').fetchone())"
+curl -f http://127.0.0.1:8001/api/municipios?q=3550308
+```
+
+Se `file` indicar apenas texto ASCII ou ponteiro Git LFS, a etapa `git lfs pull` não foi concluída. Se o navegador apresentar falha, registre o traceback do processo uvicorn para identificar a causa real. O CI testa o código e sua importação; **não executa uma sessão FastAPI com o SQLite LFS real**.
+
+### Integração da população municipal IBGE
+
+A fonte contratada é a estimativa oficial de 1º de julho de 2026, IBGE SIDRA tabela 6579, variável 9324, prevista em [metodologia](methodology/ibge-populacao.md). O pipeline de extração já existe, e a carga do banco agora aceita diretamente o CSV produzido, usando seu `validacao.json` e hash SHA-256. Atualiza **somente** população e ano; não altera nome, UF, eleições nem Bolsa Família.
+
+Após assegurar a presença local de `data/curated/eleicoes_2026_t1/` (os dados curated são deliberadamente ignorados pelo Git), execute uma única vez:
+
+```bash
+python scripts/integrar_ibge_populacao.py
+python app/integrar_fontes.py --db data/app/como_eu_fico.sqlite --populacao data/curated/ibge_populacao_2026/municipios_populacao_2026.csv
+python -c "import sqlite3; c=sqlite3.connect('data/app/como_eu_fico.sqlite'); print(c.execute('SELECT ano_populacao,COUNT(*) FROM municipios GROUP BY ano_populacao').fetchall())"
+```
+
+Se a extração SIDRA falhar por cobertura ou indisponibilidade, **não force a carga**. Se o CSV validado já existir, não execute o extrator de novo: execute apenas `app/integrar_fontes.py --populacao ...`. Depois de conferir a população em vários municípios e o resultado dos testes, versionar a atualização do SQLite via Git LFS.
+
+A página web exibe a população quando disponível e informa quando ainda não foi carregada. Publicação/hospedagem permanecem fora do escopo.

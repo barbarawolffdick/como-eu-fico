@@ -22,10 +22,10 @@ class Table(HTMLParser):
    if self.row:self.rows.append(self.row)
    self.row=None
 
-def get(period="2026-08-01",page=1):
+def get(period="2026-08-01",page=1,registros=100):
  params={"cfc":f"prog=1$banco=Producao$referencia={period}|$vars=bf_qtd_fam",
          "exibe_num":"1","exibir_codigo_divisao":"1","iuid":"78273",
-         "pagina":str(page),"paginacao":"1","registros":"100","tipo_divisao":"m"}
+         "pagina":str(page),"paginacao":"1","registros":str(registros),"tipo_divisao":"m"}
  url=BASE+"?"+urllib.parse.urlencode(params)
  req=urllib.request.Request(url,headers={"User-Agent":"ComoEuFico/1.0","Accept":"text/html"})
  with urllib.request.urlopen(req,timeout=90) as response:
@@ -35,5 +35,5 @@ def get(period="2026-08-01",page=1):
          "amostra":parser.rows[:8],"codigos_encontrados":len({x for row in parser.rows for x in row if re.fullmatch(r"\\d{6,7}",x)})}
 
 if __name__=="__main__":
- p=argparse.ArgumentParser();p.add_argument("--periodo",default="2026-08-01");a=p.parse_args()
- print(json.dumps(get(a.periodo),ensure_ascii=False,indent=2))
+ p=argparse.ArgumentParser();p.add_argument("--periodo",default="2026-08-01");p.add_argument("--registros",type=int,default=100);a=p.parse_args()
+ print(json.dumps(get(a.periodo,registros=a.registros),ensure_ascii=False,indent=2))

@@ -28,9 +28,7 @@ chosen=next((v for v in cand if "Quantidade total de pessoas em famílias benefi
 url=urllib.parse.urljoin(BASE,chosen[1])
 with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"}),timeout=90) as res:
  page=res.read().decode("utf-8","replace")
-patterns=("município","servicos/","tabelas/","csv","fetch(","$.ajax","dataTable","beneficiárias","referencia")
-report={}
+patterns=("url_export_csv_table","function export_csv(","getInfoMetadadoPagina","Quantidade total de pessoas em famílias beneficiárias","bf_qtd_","dataSrc:","ajax:","getMunicipiosEstado","getTabela","tabela.php","../tabelas/")
 for key in patterns:
- ms=list(re.finditer(re.escape(key),page,re.I))
- report[key]={"count":len(ms),"samples":[page[max(0,m.start()-130):m.end()+250] for m in ms[:4]]}
-print(json.dumps({"escolhido":chosen[0][:260],"url":url,"len":len(page),"indicadores":report},ensure_ascii=False))
+ matches=list(re.finditer(re.escape(key),page,re.I))
+ print(json.dumps({"termo":key,"count":len(matches),"samples":[page[max(0,m.start()-200):m.end()+1300] for m in matches[:3]]},ensure_ascii=False))

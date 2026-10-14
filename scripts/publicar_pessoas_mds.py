@@ -79,8 +79,9 @@ def run():
     sets=[set(x) for x in extracts]
     if sets[0]!=sets[1] or sets[0]!=sets[2]:raise ValueError("Faixas com cobertura municipal diferente")
     extra=sets[0]-set(keys)
-    if extra:raise ValueError("Municípios MDS sem correspondência IBGE: "+repr(sorted(extra)[:20]))
-    available=sets[0]
+    if len(extra)>50:raise ValueError("Mais de 50 nomes territoriais sem correspondência IBGE: "+repr(sorted(extra)[:20]))
+    print(json.dumps({"nomes_mds_sem_correspondencia":sorted(extra)},ensure_ascii=False),flush=True)
+    available=sets[0]&set(keys)
     data={}
     excess=[]
     for key,m in keys.items():
@@ -94,6 +95,7 @@ def run():
        "periodo":PERIODO,"referencia_populacao":2026,
        "municipios_ibge":5571,"municipios_com_dado":len(available),
        "municipios_sem_dado":sorted(m["codigo_ibge"] for key,m in keys.items() if key not in available),
+       "nomes_mds_sem_correspondencia":[list(x) for x in sorted(extra)],
        "data_extracao":datetime.now(timezone.utc).isoformat(),
        "pagina_fonte":pageurl,"metodo":"Soma de três faixas de renda disjuntas apresentadas pelo MDS; ausência municipal não é zero.",
        "proveniencia":provenance,"registros":data}

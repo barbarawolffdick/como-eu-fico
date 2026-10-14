@@ -27,7 +27,7 @@ def extract(rows,period,codes):
     for row in rows:
         if len(row)<5:continue
         six=row[2].strip()
-        if not re.fullmatch(r"\\d{6}",six):continue
+        if not (len(six)==6 and six.isascii() and six.isdigit()):continue
         if six not in by_six:raise ValueError("Município MDS desconhecido: "+six)
         code=by_six[six]
         if code in result:raise ValueError("Município duplicado: "+code)

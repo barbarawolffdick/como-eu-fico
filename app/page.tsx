@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Search, ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 
 type Municipio = { codigo_ibge: string; nome: string | null; uf: string | null; populacao: number | null; ano_populacao: number | null };
 type Bolsa = { mes_competencia: string; parcelas: number; valor_centavos: number };
@@ -83,7 +84,7 @@ export default function Home() {
 
   return <>
     <header className="masthead"><div className="shell">
-      <div className="topbar"><span className="brand">Como Eu Fico</span><span className="tag">Dados públicos · Brasil</span></div>
+      <div className="topbar"><span className="brand">Como Eu Fico</span><Link href="/explorar" className="tag">Explorar o Brasil →</Link></div>
       <div className="hero"><div className="eyebrow">O Brasil, município por município</div>
         <h1>O que acontece na sua cidade?</h1>
         <p>Consulte dados públicos sobre o Bolsa Família, a eleição presidencial de 2026 e o território onde você vive. Sem presumir relações de causa e efeito.</p>

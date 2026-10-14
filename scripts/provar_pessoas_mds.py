@@ -28,7 +28,6 @@ chosen=next((v for v in cand if "Quantidade total de pessoas em famílias benefi
 url=urllib.parse.urljoin(BASE,chosen[1])
 with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"}),timeout=90) as res:
  page=res.read().decode("utf-8","replace")
-patterns=("url_export_csv_table","function export_csv(","getInfoMetadadoPagina","Quantidade total de pessoas em famílias beneficiárias","bf_qtd_","dataSrc:","ajax:","getMunicipiosEstado","getTabela","tabela.php","../tabelas/")
-for key in patterns:
- matches=list(re.finditer(re.escape(key),page,re.I))
- print(json.dumps({"termo":key,"count":len(matches),"samples":[page[max(0,m.start()-200):m.end()+1300] for m in matches[:3]]},ensure_ascii=False))
+for key in ("url+='&tpconsulta","&tpconsulta","function export_csv(","function inicializaTabela","type:'POST'","ajax: {","url_aux_export","getInfoMetadadoPagina"):
+ pos=page.find(key)
+ print(json.dumps({"chave":key,"ocorrencia":pos,"codigo":page[max(0,pos-180):pos+4100] if pos>=0 else ""},ensure_ascii=False))

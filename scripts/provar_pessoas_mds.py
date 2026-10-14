@@ -29,7 +29,6 @@ url=urllib.parse.urljoin(BASE,chosen[1])
 with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"}),timeout=90) as res:
  page=res.read().decode("utf-8","replace")
 
-i=page.find("function mapaCamadasVis3")
-block=page[i:i+65000] if i>=0 else ""
-matches=sorted(set(re.findall(r"[A-Za-z0-9_./-]+[.]php",block)))
-print(json.dumps({"mapa_funcao":i,"php":matches,"trechos":[block[max(0,m.start()-220):m.end()+420] for m in list(re.finditer(".php",block,re.I))[:18]]},ensure_ascii=False))
+for marker in ("sltVariavelMapa","sltReferencia","sv-mapa-faixas.php?qe="):
+ indexes=[m.start() for m in re.finditer(re.escape(marker),page)]
+ print(json.dumps({"marker":marker,"count":len(indexes),"samples":[page[max(0,i-250):i+1900] for i in indexes[-3:]]},ensure_ascii=False))

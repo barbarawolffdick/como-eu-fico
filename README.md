@@ -71,6 +71,6 @@ Veja também `methodology/codigos-oficiais-tse-ibge.md`.
 
 ## MVP — organização de dados
 
-A primeira versão do produto combina **votação presidencial TSE 2026**, **território e população IBGE** e **fluxo federal do Bolsa Família**. Não usamos um banco único para unir as fontes.
+A primeira versão do produto combina **votação presidencial TSE 2026**, **território e população IBGE** e **fluxo federal do Bolsa Família**. As fontes originais são independentes, mas o **aplicativo usa um banco operacional SQLite** derivado desses dados.
 
-O pipeline essencial do Bolsa Família e a exportação agregada para a aplicação estão descritos em [Dados do MVP](docs/dados-mvp.md). Não é necessário reprocessar 20 competências já auditadas quando o backup SQLite estiver disponível. A primeira aplicação web ainda precisa consumir os datasets municipais reais e ser publicada.
+A estrutura do banco do aplicativo e a carga a partir das fontes existentes estão descritas em [Dados do MVP](docs/dados-mvp.md). Não é necessário reprocessar 20 competências já auditadas quando o backup SQLite estiver disponível. A primeira aplicação web ainda precisa consumir os datasets municipais reais e ser publicada.

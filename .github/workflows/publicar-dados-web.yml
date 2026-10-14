@@ -29,6 +29,19 @@ jobs:
           python -c "import sqlite3; c=sqlite3.connect('data/app/como_eu_fico.sqlite'); print('municipios:',c.execute('SELECT COUNT(*) FROM municipios').fetchone()[0])"
       - name: Gerar snapshots públicos
         run: python scripts/exportar_rankings_web.py
+      - name: Validar JSON e cobertura dos snapshots
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("data/public/rankings_2026.json").read_text())
+          d=json.loads(Path("data/public/detalhes_2026.json").read_text())
+          assert r["municipios"]==5571 and len(r["registros"])==5571
+          assert d["municipios"]==5571 and len(d["registros"])==5571
+          assert "3550308" in d["registros"]
+          assert d["registros"]["3550308"]["votos_presidenciais"]
+          assert d["registros"]["3550308"]["bolsa_familia"]
+          PY
       - name: Publicar JSONs na main
         run: |
           git config user.name "github-actions[bot]"

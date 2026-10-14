@@ -30,7 +30,7 @@ export async function GET(req:NextRequest){
    for(const key of ["13","22"]){
     const subset=all.filter(x=>group(x)===key);
     const pop=subset.reduce((s,x)=>s+x.populacao!,0);
-    const cents=subset.reduce((s,x)=>s+(d.registros[x.codigo_ibge] as Detail)?.bolsa_familia.find(y=>y.mes_competencia===mes)?.valor_centavos||0,0);
+    const cents=subset.reduce((s,x)=>s+((d.registros[x.codigo_ibge] as Detail)?.bolsa_familia.find(y=>y.mes_competencia===mes)?.valor_centavos??0),0);
     z[key]=pop?cents/pop/100:0;
    }return z;
  });

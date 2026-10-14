@@ -68,3 +68,9 @@ python3 scripts/inventariar_legado.py
 O comando gera `inventario-limpeza.json` sem excluir nada. Antes de apagar ou mover qualquer caminho legado, confirmar a situação dos arquivos rastreados e não rastreados no Mac e a existência de outros consumidores do repositório.
 
 Veja também `methodology/codigos-oficiais-tse-ibge.md`.
+
+## MVP — organização de dados
+
+A primeira versão do produto combina **votação presidencial TSE 2026**, **território e população IBGE** e **fluxo federal do Bolsa Família**. Não usamos um banco único para unir as fontes.
+
+O pipeline essencial do Bolsa Família e a exportação agregada para a aplicação estão descritos em [Dados do MVP](docs/dados-mvp.md). Não é necessário reprocessar 20 competências já auditadas quando o backup SQLite estiver disponível. A primeira aplicação web ainda precisa consumir os datasets municipais reais e ser publicada.

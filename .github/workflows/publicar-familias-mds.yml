@@ -1,0 +1,33 @@
+name: Publicar famílias MDS
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/publicar_familias_mds.py
+      - .github/workflows/publicar-familias-mds.yml
+permissions:
+  contents: write
+concurrency:
+  group: familias-mds
+  cancel-in-progress: false
+jobs:
+  coleta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Capturar e validar 5571 municípios em 2 competências
+        run: python -m scripts.publicar_familias_mds
+      - name: Publicar snapshot com proveniência
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/public/familias_mds.json
+          git commit -m "data: famílias beneficiárias por município, fonte MDS" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main

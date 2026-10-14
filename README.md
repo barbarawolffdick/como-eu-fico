@@ -69,6 +69,12 @@ O comando gera `inventario-limpeza.json` sem excluir nada. Antes de apagar ou mo
 
 Veja também `methodology/codigos-oficiais-tse-ibge.md`.
 
+## Consulta Next.js sem FastAPI remoto
+
+A busca, o detalhe municipal e o ranking em `/explorar` agora usam snapshots JSON versionados em `data/public/`. Não exigem URL do FastAPI no v0. Os snapshots são derivados do SQLite existente pelo workflow `Atualizar dados web`, após validação de 5.571 municípios, e atualizados automaticamente quando `data/app/como_eu_fico.sqlite` é publicado na `main`.
+
+**Limitação atual:** o SQLite publicado no GitHub pode estar atrasado em relação ao arquivo do Mac. O indicador por habitante só será liberado quando a versão publicada tiver população IBGE nos 5.571 municípios. A interface não deve apresentar cobertura de beneficiários como se fosse valor por habitante.
+
 ## Frontend Next.js para v0
 
 A raiz do repositório agora é também uma aplicação **Next.js App Router**, com `package.json`, `app/page.tsx` e `app/api/[...path]/route.ts`. O código Python em `app/server.py` permanece independente e conserva o acesso oficial ao SQLite.

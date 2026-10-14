@@ -1,38 +1,37 @@
-# MVP — definição e ordem de execução
+# MVP — princípio de produto e critérios permanentes
 
-## Resultado esperado
-Uma aplicação web responsiva, publicável e navegável chamada **Como Eu Fico**. A pessoa escolhe um município (nome, UF, código IBGE) e vê **votos presidenciais de 2026 e fluxos federais juntos**, com uma série real do Bolsa Família e contextualização IBGE. Cada indicador mostra fonte, período, unidade e ressalvas relevantes.
+## Produto mínimo utilizável
 
-## Experiência mínima
-1. Busca de municípios com desambiguação por UF; URL compartilhável para a cidade.
-2. Cabeçalho territorial: município, UF, contexto demográfico validado.
-3. Resultado do **primeiro turno presidencial de 2026**, com candidatos, votos e proporções conforme fonte oficial.
-4. Fluxo federal — Bolsa Família: número de **parcelas**, valores agregados em R$, série de 202501 a 202608, opção de período e contexto de Brasil conforme cálculo verificado. Sempre dizer 'parcelas', não 'famílias'.
-5. Quadro comparativo descritivo: o que a série do fluxo mostra **ao lado** do voto, sem insinuar voto causado por benefício; informações metodológicas fáceis de consultar.
-6. Estados de falta de dados, atraso de publicação e diferenças de cobertura (Boa Esperança do Norte 5101837 entra em 202510).
+O primeiro produto publicável deve permitir que uma pessoa encontre um município brasileiro e veja, **na mesma experiência**, o resultado presidencial municipal e pelo menos um indicador real e auditado de fluxo federal, com contexto territorial.
+
+Não desviar para um dashboard de benefícios sem votos. Não exigir a integração de todos os programas federais antes de oferecer uma interface navegável.
+
+## Funcionalidades essenciais
+- Localizar município pelo nome e UF, com identificador territorial inequívoco e URL compartilhável.
+- Apresentar votos presidenciais com eleição, turno, candidatos, totais e percentuais corretos e rastreáveis.
+- Apresentar série temporal de fluxo federal com rótulos precisos: programa, natureza, unidade, periodicidade, valores, quantidades, fonte e cobertura.
+- Contextualizar territorialmente com dado oficial apropriado, explicitando o ano e a unidade.
+- Permitir comparação descritiva, sem sugerir causalidade do benefício sobre o voto.
+- Mostrar claramente ausências, períodos ainda não publicados, mudanças territoriais e ressalvas de qualidade.
+- Oferecer visualização responsiva, acessível e legível.
 
 ## Critérios de aceite
-- Município recuperável pelo código IBGE e por busca.
-- Nenhum dado de exemplo passa por dado real; números vêm dos datasets validados.
-- Totais de Bolsa Família por competência preservados na camada derivada.
-- Chaves de junção sem multiplicação indevida de votos/parcelas.
-- Histórico eleitoral de primeiro turno correto e identificável.
-- Responsivo, leve e navegável, com fontes e limitações claras.
-- Não publicar CPF/NIS/nomes e não alterar bancos originais.
-- Indicadores de saúde/educação não são necessários para primeira versão.
+- Nenhum número fictício apresentado como real.
+- Cada dado público é reproduzível a partir de fonte e transformação declaradas.
+- Relações entre dados preservam chaves, granularidades e totais sem multiplicação por JOIN.
+- Domínios originais são independentes e não modificados pelas consultas do produto.
+- Privacidade protegida; publicação restrita a dados públicos agregados adequados.
+- Existe uma URL navegável (ou entrega executável definida pelo usuário), com funcionamento conferido.
+- Lacunas e limitações são mostradas ao usuário final sem inferências indevidas.
 
-## Execução priorizada
-**Passo 1 — inventário técnico:** identificar stack, arquivos efetivamente versionados, snapshots TSE disponíveis, presença/ausência do SQLite municipal e situação do PR #9. Selecionar deploy simples; evitar refazer pipelines já auditados.
+## Como priorizar trabalho — não é uma fila fixa
 
-**Passo 2 — contrato do dataset de interface:** definir arquivo(s) municipais pequenos para front-end, esquema `codigo_ibge`, `municipio`, `uf`, `candidatos_2026_t1`, `bolsa_familia_serie`, `populacao_referencia`; unidades, chaves, fontes, versão e estratégia para lacunas. Dados brutos ficam fora do site.
+A prioridade padrão é **desbloquear a menor fatia funcional que coloque votos e fluxo federal lado a lado**. Antes de fazer a próxima tarefa:
 
-**Passo 3 — gerar dados públicos mínimos:** exportar o SQLite da CGU para agregados municipais por competência, validar totais, preparar snapshot eleitoral municipal e população IBGE verificada. Não misturar arquivos-fonte nem inferir famílias únicas.
+1. Inspecione o estado **atual** do repositório, dos dados e da implantação.
+2. Identifique o menor bloqueio real para produzir essa fatia utilizável.
+3. Proponha ou implemente a menor mudança testável que remova o bloqueio.
+4. Verifique o resultado; informe o que foi entregue e o que falta.
+5. Só depois incremente dimensões adicionais de fluxos federais, sempre sem perder a experiência eleitoral.
 
-**Passo 4 — construir interface:** busca, página municipal, resultado eleitoral, gráfico e tabela do Bolsa Família, comparações e fontes. Testar com municípios de tamanhos diferentes e com Boa Esperança do Norte.
-
-**Passo 5 — lançar versão pública:** testes, acessibilidade, build, hospedagem e URL compartilhável. Registrar dataset e commit usado.
-
-**Passo 6 — evoluir:** ampliar para BPC, Pé-de-Meia, PNAE, SUS e outras dimensões do fluxo federal, uma fonte validada de cada vez. Evitar ciclo infinito de ingestão antes de entregar o MVP.
-
-## Proposta de primeiro prompt no novo projeto
-“Leia todos os arquivos de continuidade do Como Eu Fico e inspecione o repositório público https://github.com/barbarawolffdick/como-eu-fico e seus PRs. Nosso objetivo imediato é publicar um MVP web municipal que mostre lado a lado os votos do primeiro turno presidencial de 2026, a série de fluxo federal do Bolsa Família (202501–202608) e dados de contexto do IBGE. Identifique os arquivos reais disponíveis, os bloqueios objetivos de dados/deploy e comece a implementação em passos pequenos, sem reprocessar as fontes já auditadas. Não confunda planejamento com execução. Registre commits e testes realizados.”
+**Esta seção não afirma que o MVP está ou não está construído, nem fixa 2025/2026 como limite eterno de dados.** Essas informações pertencem aos registros técnicos versionados e às decisões atuais do usuário.

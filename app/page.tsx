@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Search, ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 
 type Municipio = { codigo_ibge: string; nome: string | null; uf: string | null; populacao: number | null; ano_populacao: number | null };
 type Bolsa = { mes_competencia: string; parcelas: number; valor_centavos: number };
@@ -83,7 +84,7 @@ export default function Home() {
 
   return <>
     <header className="masthead"><div className="shell">
-      <div className="topbar"><span className="brand">Como Eu Fico</span><span className="tag">Dados públicos · Brasil</span></div>
+      <div className="topbar"><span className="brand">Como Eu Fico</span><Link href="/explorar" className="tag">Explorar o Brasil →</Link></div>
       <div className="hero"><div className="eyebrow">O Brasil, município por município</div>
         <h1>O que acontece na sua cidade?</h1>
         <p>Consulte dados públicos sobre o Bolsa Família, a eleição presidencial de 2026 e o território onde você vive. Sem presumir relações de causa e efeito.</p>
@@ -113,13 +114,13 @@ export default function Home() {
           <article className="card"><h3>Bolsa Família</h3>
             {ultimo ? <><span className="kicker">Última competência: {competencia(ultimo.mes_competencia)}</span>
               <div className="big" style={{marginTop:10}}>{reais(ultimo.valor_centavos)}</div>
-              <p className="sub">{br.format(ultimo.parcelas)} parcelas registradas nessa competência</p>
+              <p className="sub">{br.format(ultimo.parcelas)} registros de parcelas do benefício nessa competência</p>
               <div className="chart" role="img" aria-label={"Evolução mensal dos valores registrados do Bolsa Família, de " + competencia(serie[0].mes_competencia) + " até " + competencia(ultimo.mes_competencia)}>
                 {serie.map(p => <div key={p.mes_competencia} className="bar" title={competencia(p.mes_competencia) + ": " + reais(p.valor_centavos)} style={{height:(100 * p.valor_centavos / maior) + "%"}} />)}
               </div><div className="chartlabels"><span>{competencia(serie[0].mes_competencia)}</span><span>{competencia(ultimo.mes_competencia)}</span></div>
               <p className="sub">Acumulado das {serie.length} competências: {reais(serie.reduce((s,p) => s+p.valor_centavos,0))}</p>
             </> : <p className="sub">Sem registros mensais disponíveis. Ausência não significa zero.</p>}
-            <div className="footnote">Fonte: CGU / Portal da Transparência. Valores agregados por competência. Parcelas não equivalem a famílias únicas nem comprovam saque.</div>
+            <div className="footnote">Fonte: CGU / Portal da Transparência. Valores agregados por competência. Parcelas são registros de parcelas do benefício na base CGU, não famílias únicas. Os registros não comprovam saque.</div>
           </article>
           <article className="card"><h3>Votação presidencial · 2026</h3>
             {votos.length && totalVotos > 0 ? <>{votos.map(v => {

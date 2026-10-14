@@ -1,0 +1,54 @@
+name: Atualizar dados web
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/exportar_rankings_web.py"
+      - ".github/workflows/publicar-dados-web.yml"
+      - "data/app/como_eu_fico.sqlite"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publicar-dados-web-main
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          persist-credentials: true
+      - name: Verificar banco LFS
+        run: |
+          file data/app/como_eu_fico.sqlite
+          python -c "import sqlite3; c=sqlite3.connect('data/app/como_eu_fico.sqlite'); print('municipios:',c.execute('SELECT COUNT(*) FROM municipios').fetchone()[0])"
+      - name: Gerar snapshots públicos
+        run: python scripts/exportar_rankings_web.py
+      - name: Validar JSON e cobertura dos snapshots
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("data/public/rankings_2026.json").read_text())
+          d=json.loads(Path("data/public/detalhes_2026.json").read_text())
+          assert r["municipios"]==5571 and len(r["registros"])==5571
+          assert d["municipios"]==5571 and len(d["registros"])==5571
+          assert "3550308" in d["registros"]
+          assert d["registros"]["3550308"]["votos_presidenciais"]
+          assert d["registros"]["3550308"]["bolsa_familia"]
+          PY
+      - name: Publicar JSONs na main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/public/rankings_2026.json data/public/detalhes_2026.json
+          if ! git diff --cached --quiet; then
+            git commit -m "data: publica snapshots municipais para Next.js"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

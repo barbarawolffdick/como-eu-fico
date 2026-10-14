@@ -23,15 +23,18 @@ def population(payload):
     if not isinstance(payload,list) or len(payload)<2:
         raise ValueError("SIDRA: resposta vazia ou inesperada")
     header=payload[0]
-    if not all(k in header for k in ("D1C","D2C","V")):
-        raise ValueError("SIDRA: esquema não reconhecido; faltam D1C, D2C ou V")
+    if not all(k in header for k in ("D1C","D2C","D3C","V")):
+        raise ValueError("SIDRA: esquema não reconhecido; faltam D1C, D2C, D3C ou V")
     result={}
     for r in payload[1:]:
         code=str(r.get("D1C","")).strip()
-        period=str(r.get("D2C","")).strip()
+        variable=str(r.get("D2C","")).strip()
+        period=str(r.get("D3C","")).strip()
         raw=str(r.get("V","")).strip()
         if not (code.isdigit() and len(code)==7):
             raise ValueError("SIDRA: município inválido "+repr(code))
+        if variable!="9324":
+            raise ValueError("SIDRA: variável não é 9324: "+variable)
         if period!=str(YEAR):
             raise ValueError("SIDRA: período não é 2026: "+period)
         if not raw.isascii() or not raw.isdigit():

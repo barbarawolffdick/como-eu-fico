@@ -27,3 +27,4 @@ jobs:
           python -m unittest discover -s tests -p 'test_banco_app.py' -v
           python -m unittest discover -s tests -p 'test_integrar_fontes.py' -v
           python -m unittest discover -s tests -p 'test_integrar_ibge_populacao.py' -v
+          python -m unittest discover -s tests -p 'test_server.py' -v

@@ -2,6 +2,7 @@
 import argparse
 import csv
 import json
+import hashlib
 import sqlite3
 from pathlib import Path
 
@@ -17,10 +18,50 @@ def campo(linha, nomes, obrigatorio=True):
         raise ValueError("Coluna ausente: " + repr(nomes))
     return None
 
-def importar(db_path, tse_dir=None, ibge_csv=None):
+def carregar_populacao(db, csv_path):
+    """Carrega somente população IBGE a partir de snapshot municipal validado."""
+    validacao = csv_path.parent / "validacao.json"
+    if not validacao.is_file():
+        raise FileNotFoundError("Validação de população ausente: " + str(validacao))
+    meta = json.loads(validacao.read_text(encoding="utf-8"))
+    digest = hashlib.sha256(csv_path.read_bytes()).hexdigest()
+    if not (meta.get("resultado") == "PASS"
+            and meta.get("fonte") == "IBGE SIDRA"
+            and meta.get("tabela") == 6579
+            and meta.get("variavel") == 9324
+            and meta.get("ano_referencia") == 2026
+            and meta.get("municipios") == 5571
+            and meta.get("sha256_saida") == digest):
+        raise ValueError("Snapshot de população IBGE não validado ou hash divergente")
+    existentes = {r[0] for r in db.execute("SELECT codigo_ibge FROM municipios")}
+    if len(existentes) != 5571:
+        raise ValueError("Banco operacional sem 5571 municípios")
+    populacoes = {}
+    for row in ler(csv_path):
+        codigo = campo(row, ("codigo_ibge",))
+        valor = campo(row, ("populacao_estimada_2026",))
+        if (len(codigo) != 7 or not codigo.isascii() or not codigo.isdigit()
+                or codigo in populacoes or not valor.isascii() or not valor.isdigit()
+                or int(valor) <= 0):
+            raise ValueError("População IBGE inválida/duplicada: " + codigo)
+        populacoes[codigo] = int(valor)
+    if set(populacoes) != existentes:
+        raise ValueError("Cobertura territorial da população não corresponde ao banco")
+    db.executemany(
+        "UPDATE municipios SET populacao=?,ano_populacao=2026 WHERE codigo_ibge=?",
+        [(valor, codigo) for codigo, valor in populacoes.items()]
+    )
+    db.execute("INSERT OR REPLACE INTO origem_dados(dominio,arquivo,nota) VALUES(?,?,?)",
+               ("populacao_ibge", meta.get("url", str(csv_path)),
+                "Estimativa municipal IBGE SIDRA 6579/9324; 1º de julho de 2026; "
+                "SHA-256 do CSV: " + digest))
+    return len(populacoes)
+
+
+def importar(db_path, tse_dir=None, ibge_csv=None, populacao_csv=None):
     if not db_path.is_file():
         raise FileNotFoundError(db_path)
-    if not tse_dir and not ibge_csv:
+    if not tse_dir and not ibge_csv and not populacao_csv:
         raise ValueError("Informe TSE e/ou IBGE")
     with sqlite3.connect(db_path) as db:
         db.execute("PRAGMA foreign_keys=ON")
@@ -51,6 +92,8 @@ def importar(db_path, tse_dir=None, ibge_csv=None):
             db.execute("INSERT OR REPLACE INTO origem_dados VALUES(?,?,?)",
                        ("territorio",str(ibge_csv),"Cadastro IBGE; população e ano quando disponíveis"))
             result["ibge_municipios"]=len(codes)
+        if populacao_csv:
+            result["populacao_municipios"] = carregar_populacao(db, populacao_csv)
         if tse_dir:
             for name in ("municipios.csv","candidatos_municipios.csv","validacao.json"):
                 if not (tse_dir/name).is_file():
@@ -95,8 +138,9 @@ def main():
     parser.add_argument("--db",type=Path,required=True)
     parser.add_argument("--tse",type=Path)
     parser.add_argument("--ibge",type=Path)
+    parser.add_argument("--populacao",type=Path,help="CSV validado de população IBGE 2026; não modifica nomes/UF")
     args=parser.parse_args()
-    print(json.dumps(importar(args.db,args.tse,args.ibge),ensure_ascii=False,indent=2))
+    print(json.dumps(importar(args.db,args.tse,args.ibge,args.populacao),ensure_ascii=False,indent=2))
 
 if __name__=="__main__":
     main()

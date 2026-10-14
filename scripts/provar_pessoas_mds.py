@@ -10,14 +10,17 @@ post={"q":"Quantidade total de pessoas em famílias beneficiárias do Programa B
 req=urllib.request.Request(END,data=urllib.parse.urlencode(post).encode(),
  headers={"User-Agent":"Mozilla/5.0","Content-Type":"application/x-www-form-urlencoded"})
 with urllib.request.urlopen(req,timeout=70) as res: info=json.loads(res.read())
-cards=re.split(r'(?=<div class="card card-shadow card-item-)',info["res"])
+cards=info["res"].split('<div class="card card-shadow card-item-')
 cand=[]
 for card in cards:
- match=re.search(r'href="(v\\.php\\?q\\[\\]=[^"]+)"',card)
- if not match:continue
- text=h.unescape(re.sub(r"<[^>]+>"," ",card))
- text=" ".join(text.split())
- cand.append((text[:320],h.unescape(match.group(1))))
+ marker='href="v.php?q[]='
+ start=card.find(marker)
+ if start<0:continue
+ encrypted=card[start+len(marker):].split('"',1)[0]
+ url='v.php?q[]='+encrypted
+ plain=h.unescape(re.sub("<[^>]+>"," ",card))
+ plain=" ".join(plain.split())
+ cand.append((plain[:320],url))
 print(json.dumps({"found":info.get("numFound"),"cards":len(cand),
  "titles":[{"texto":v[0][:260],"url_inicio":v[1][:90]} for v in cand[:12]]},ensure_ascii=False))
 if not cand:raise SystemExit("Nenhum link v.php identificado")

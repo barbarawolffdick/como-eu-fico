@@ -10,7 +10,22 @@ type Detalhe = { municipio: Municipio; bolsa_familia: Bolsa[]; votos_presidencia
 
 const br = new Intl.NumberFormat("pt-BR");
 const reais = (centavos: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(centavos / 100);
-const candidato = (n: string) => ({ "13": "Lula", "22": "Flávio Bolsonaro" } as Record<string, string>)[n] ?? "Candidato " + n;
+// Nomes de urna para Presidente, eleição 2026. Fonte: catálogo TSE 2026.
+const nomesDeUrna: Record<string, string> = {
+  "13": "Lula",
+  "14": "Renan Santos",
+  "16": "Hertz Dias",
+  "21": "Edmilson Costa",
+  "22": "Flávio Bolsonaro",
+  "27": "Clariana Barão",
+  "29": "Rui Costa Pimenta",
+  "30": "Zema",
+  "35": "Veterinário Wilson Grassi",
+  "55": "Ronaldo Caiado",
+  "70": "Escritor Augusto Cury",
+  "80": "Samara",
+};
+const candidato = (n: string) => nomesDeUrna[n] ?? "Candidato " + n;
 const competencia = (m: string) => m.slice(4, 6) + "/" + m.slice(0, 4);
 async function getJson<T>(url: string): Promise<T> {
   const response = await fetch(url, { cache: "no-store" });

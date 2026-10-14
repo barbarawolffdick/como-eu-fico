@@ -29,23 +29,9 @@ url=urllib.parse.urljoin(BASE,chosen[1])
 with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"}),timeout=90) as res:
  page=res.read().decode("utf-8","replace")
 
-cases=[
- ("top-paginacao",url+"&tpconsulta=1",{"start":"0","length":"6000"}),
- ("top-export",url+"&tpconsulta=1",{"start":"0","length":"6000","export":"1","export_tipo":"csv"}),
- ("consulta-export",url+"&wt=json&tp_funcao_consulta=0",{"start":"0","length":"6000","export":"1","export_tipo":"csv"}),
- ("consulta-json",url+"&wt=json&tp_funcao_consulta=0",{"start":"0","length":"6000"}),
-]
-for nome,link,params in cases:
- try:
-  req=urllib.request.Request(link,data=urllib.parse.urlencode(params).encode(),
-    headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"},method="POST")
-  with urllib.request.urlopen(req,timeout=100) as resp:
-   raw=resp.read()
-   mime=resp.headers.get("Content-Type","")
-  try:
-   obj=json.loads(raw)
-   sections=[{"key":k,"qtd":len(v.get("dados",[])),"total":v.get("dados",[{}])[0].get("num_total_rows") if v.get("dados") else None,
-      "sample":v.get("dados",[])[:1]} for k,v in obj.items() if isinstance(v,dict)]
-  except Exception:sections=[]
-  print(json.dumps({"teste":nome,"bytes":len(raw),"mime":mime,"sections":sections,"prefix":raw[:220].decode("utf-8","replace") if not sections else ""},ensure_ascii=False))
- except Exception as e:print(json.dumps({"teste":nome,"erro":str(e)}))
+for name in ("function iniciaMapaVis3","function ativaSelect2CamposMapa","function consultaDadosMapaVis3","function export_csv(e"):
+ i=page.find(name)
+ block=page[i:i+16000] if i>=0 else ""
+ php=sorted(set(re.findall(r"[a-zA-Z0-9_./-]+\\.php",block)))
+ urls=list(re.finditer(r"\\$\\.ajax|\\.php|wt=json|tpconsulta",block,re.I))
+ print(json.dumps({"funcao":name,"php":php,"trechos":[block[max(0,m.start()-170):m.end()+390] for m in urls[:25]]},ensure_ascii=False))

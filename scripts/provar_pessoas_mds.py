@@ -29,8 +29,7 @@ url=urllib.parse.urljoin(BASE,chosen[1])
 with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"}),timeout=90) as res:
  page=res.read().decode("utf-8","replace")
 
-for name in ("function iniciaMapaVis3","function ativaSelect2CamposMapa"):
- i=page.find(name)
- block=page[i:i+16000] if i>=0 else ""
- print(json.dumps({"nome":name,"found":i,"php":sorted(set(re.findall(r"[A-Za-z0-9_./-]+[.]php",block))),
-   "codigo":block[3800:11600]},ensure_ascii=False))
+i=page.find("function mapaCamadasVis3")
+block=page[i:i+65000] if i>=0 else ""
+matches=sorted(set(re.findall(r"[A-Za-z0-9_./-]+[.]php",block)))
+print(json.dumps({"mapa_funcao":i,"php":matches,"trechos":[block[max(0,m.start()-220):m.end()+420] for m in list(re.finditer(".php",block,re.I))[:18]]},ensure_ascii=False))

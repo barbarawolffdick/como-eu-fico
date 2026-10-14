@@ -134,13 +134,52 @@ def criar_banco(tse_dir, bolsa_db, saida):
     finally:
         temp.unlink(missing_ok=True)
 
+
+def criar_banco_bolsa(bolsa_db, saida):
+    """Cria o banco operacional com CGU real; votos/IBGE são carregados depois."""
+    if not bolsa_db.is_file():
+        raise FileNotFoundError(bolsa_db)
+    if saida.exists():
+        raise FileExistsError(saida)
+    saida.parent.mkdir(parents=True, exist_ok=True)
+    temp = saida.with_suffix(saida.suffix + ".part")
+    try:
+        with sqlite3.connect(bolsa_db.resolve().as_uri() + "?mode=ro", uri=True) as cgu, sqlite3.connect(temp) as app:
+            if cgu.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
+                raise ValueError("Banco CGU inválido")
+            app.executescript(DDL)
+            app.executemany("INSERT INTO municipios(codigo_ibge) VALUES (?)",
+                            cgu.execute("SELECT DISTINCT codigo_ibge FROM parcelas_municipais ORDER BY codigo_ibge"))
+            app.executemany("INSERT INTO bolsa_familia VALUES (?,?,?,?,?)",
+                            cgu.execute("SELECT codigo_ibge,mes_competencia,mes_referencia,quantidade_parcelas,valor_centavos FROM parcelas_municipais"))
+            expected = dict((m,(q,v)) for m,q,v in cgu.execute(
+                "SELECT mes_competencia,parcelas,valor_centavos FROM origem"))
+            found = dict((m,(q,v)) for m,q,v in app.execute(
+                "SELECT mes_competencia,SUM(parcelas),SUM(valor_centavos) FROM bolsa_familia GROUP BY mes_competencia"))
+            if not expected or found != expected:
+                raise ValueError("Totais CGU divergentes")
+            if app.execute("PRAGMA foreign_key_check").fetchall():
+                raise ValueError("Chave estrangeira inválida")
+            app.execute("INSERT INTO origem_dados VALUES(?,?,?)",
+                        ("bolsa_familia",str(bolsa_db),"CGU: dados reais por competência e referência"))
+            app.commit()
+            result = {"municipios":app.execute("SELECT COUNT(*) FROM municipios").fetchone()[0],
+                      "competencias":len(expected),
+                      "parcelas":sum(x[0] for x in expected.values()),
+                      "valor_centavos":sum(x[1] for x in expected.values())}
+        temp.replace(saida)
+        return result
+    finally:
+        temp.unlink(missing_ok=True)
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--tse", type=Path, default=Path("data/curated/eleicoes_2026_t1"))
     p.add_argument("--bolsa", type=Path, required=True)
     p.add_argument("--saida", type=Path, default=Path("data/app/como_eu_fico.sqlite"))
     a = p.parse_args()
-    print(json.dumps(criar_banco(a.tse, a.bolsa, a.saida), ensure_ascii=False, indent=2))
+    result = criar_banco(a.tse, a.bolsa, a.saida) if (a.tse / "municipios.csv").is_file() else criar_banco_bolsa(a.bolsa, a.saida)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
 
 if __name__ == "__main__":
     main()

@@ -43,5 +43,29 @@ class BancoAppTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 criar_banco(tse, src, dest)
 
+
+    def test_banco_cgu_real_sem_snapshot_eleitoral(self):
+        from app.database import criar_banco_bolsa
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "cgu.sqlite"
+            dest = root / "app.sqlite"
+            with sqlite3.connect(source) as cx:
+                cx.executescript("""
+                    CREATE TABLE origem(mes_competencia TEXT, parcelas INTEGER, valor_centavos INTEGER);
+                    CREATE TABLE parcelas_municipais(
+                        mes_competencia TEXT, mes_referencia TEXT, codigo_ibge TEXT,
+                        valor_centavos INTEGER, quantidade_parcelas INTEGER);
+                    INSERT INTO origem VALUES('202501',2,15000);
+                    INSERT INTO parcelas_municipais VALUES('202501','202501','3550308',15000,2);
+                """)
+            result = criar_banco_bolsa(source, dest)
+            self.assertEqual(result["municipios"], 1)
+            with sqlite3.connect(dest) as cx:
+                self.assertEqual(cx.execute("SELECT SUM(parcelas) FROM bolsa_familia").fetchone()[0], 2)
+                self.assertEqual(cx.execute("SELECT COUNT(*) FROM votos_presidenciais").fetchone()[0], 0)
+            with self.assertRaises(FileExistsError):
+                criar_banco_bolsa(source, dest)
+
 if __name__ == "__main__":
     unittest.main()

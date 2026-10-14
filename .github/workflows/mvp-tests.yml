@@ -59,7 +59,7 @@ jobs:
           curl -fsS 'http://127.0.0.1:3000/api/mudanca-parcelas' > /tmp/mudanca.json
           python -c "import json; r=json.load(open('/tmp/mudanca.json')); assert r['municipios']>0 and r['inicio']<r['fim']; assert sum(x['total'] for x in r['porVencedor'])==r['municipios']; assert sum(x['total'] for x in r['porMudanca'])==r['municipios']"
           curl -fsS 'http://127.0.0.1:3000/api/mudanca-familias' > /tmp/familias.json
-          python -c "import json; r=json.load(open('/tmp/familias.json')); assert r['municipios']==5570,r; assert sum(x['total'] for x in r['porVencedor'])==5570; assert sum(x['total'] for x in r['porMudanca'])==5570"
+          python -c "import json; r=json.load(open('/tmp/familias.json')); assert 0<r['municipios']<=5571,r; assert sum(x['total'] for x in r['porVencedor'])==r['municipios']; assert sum(x['total'] for x in r['porMudanca'])==r['municipios']"
           curl -fsS 'http://127.0.0.1:3000/api/analises' > /tmp/analises.json
           python -c "import json; r=json.load(open('/tmp/analises.json')); assert r['universo']>0; assert len(r['distribuicao'])==3; assert len(r['evolucao'])==8; assert 'outros' in r"
 

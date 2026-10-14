@@ -64,7 +64,7 @@ small{color:#53665d}svg{width:100%;height:150px}
 </style></head><body><header><h1>Como Eu Fico</h1>
 <p>Como a verba federal chega ao seu município? E como ele votou?</p></header>
 <main><label>Município ou código IBGE<input id="search" placeholder="Digite o nome ou código"></label>
-<div id="choices"></div><h2 id="title"></h2><section id="panels" hidden>
+<div id="choices"></div><h2 id="title"></h2><p id="population"></p><section id="panels" hidden>
 <article><h3>Bolsa Família</h3><strong id="total"></strong><p id="parcelas"></p><svg id="chart" viewBox="0 0 600 150"></svg>
 <small>CGU; valores registrados por competência. Parcelas não são famílias únicas nem comprovam saque.</small></article>
 <article><h3>Votação presidencial 2026</h3><p id="votes"></p>
@@ -83,10 +83,10 @@ async function show(code){qs('#error').textContent='';const res=await fetch('/ap
 if(!res.ok){qs('#error').textContent='Município indisponível';return}
 const d=await res.json(),m=d.municipio,b=d.bolsa_familia,v=d.votos_presidenciais;
 history.replaceState({},'', '?municipio='+code);qs('#choices').replaceChildren();qs('#panels').hidden=false;
-qs('#title').textContent=(m.nome||'Município IBGE '+code)+(m.uf?' — '+m.uf:'');
+qs('#title').textContent=(m.nome||'Município IBGE '+code)+(m.uf?' — '+m.uf:'');qs('#population').textContent=m.populacao!=null?'População: '+m.populacao.toLocaleString('pt-BR')+' (IBGE, '+m.ano_populacao+')':'População IBGE ainda não carregada';
 qs('#total').textContent=money(b.reduce((s,x)=>s+x.valor_centavos,0));
 qs('#parcelas').textContent=b.reduce((s,x)=>s+x.parcelas,0).toLocaleString('pt-BR')+' parcelas registradas';
-qs('#votes').textContent=v.length?v.map(x=>x.candidato+': '+x.votos.toLocaleString('pt-BR')).join(' • '):
+qs('#votes').textContent=v.length?v.map(x=>x.candidato+': '+x.votos.toLocaleString('pt-BR')+' votos ('+(x.votos*100/v.reduce((s,i)=>s+i.votos,0)).toFixed(1).replace('.',',')+'%)').join(' • '):
 'Dados eleitorais ainda não carregados. Ausência não significa zero.';
 const svg=qs('#chart');svg.replaceChildren();const max=Math.max(1,...b.map(x=>x.valor_centavos));
 if(b.length){const points=b.map((x,i)=>(10+i*580/Math.max(1,b.length-1))+','+(140-120*x.valor_centavos/max)).join(' ');

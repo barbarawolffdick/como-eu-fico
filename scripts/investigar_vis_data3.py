@@ -19,10 +19,11 @@ for word in ("Quantidade total de pessoas em famílias beneficiárias","pessoas"
   matchs=list(re.finditer("pessoas em famílias|pessoas|beneficiárias|v.php\\?",page,re.I))
   print(json.dumps({"termo":word,"bytes":len(page),"matches":len(matchs),"samples":[page[max(0,m.start()-240):m.end()+360] for m in matchs[:9]]},ensure_ascii=False))
  except Exception as e:print(json.dumps({"termo":word,"erro":str(e)}))
-for pattern in (r'["\\\'][^"\\\']{0,150}\\.php(?:\\?[^"\\\']*)?["\\\']',r'\\$\\.ajax\\(',r'url\\s*:\\s*["\\\'][^"\\\']+',r'function\\s+seleciona',r'servicos/[^"\\\']+'):
- ms=list(re.finditer(pattern,html,re.I))
- items=list(dict.fromkeys(html[m.start():m.end()].replace("\\n"," ")[:160] for m in ms))
- print(json.dumps({"pattern":pattern,"count":len(ms),"items":items[:80]},ensure_ascii=False))
+items=sorted(set(re.findall(r"[a-zA-Z0-9_./-]+\\.php",html)))
+print(json.dumps({"endpoints_php":items[:180]},ensure_ascii=False))
+for word in ("selecionaOuRemoveFiltro","data_explorer_lista_selecao_multipla","registros encontrados","filtrarRegistros"):
+ found=list(re.finditer(re.escape(word),html,re.I))
+ print(json.dumps({"termo":word,"count":len(found),"samples":[html[max(0,m.start()-180):m.end()+650] for m in found[:3]]},ensure_ascii=False))
 for src in scripts:
  if "vis" not in src and (src.startswith("https:") or src.startswith("//")):continue
  full=urllib.parse.urljoin(URL,src)

@@ -19,7 +19,7 @@ def validate_db():
             header = stream.read(64)
         if header.startswith(b"version https://git-lfs.github.com"):
             return "Arquivo é ponteiro do Git LFS, não SQLite. Execute git lfs pull."
-        if not header.startswith(b"SQLite format 3\\x00"):
+        if not header.startswith(b"SQLite format 3\x00"):
             return "Arquivo do banco não é SQLite válido: " + str(DB)
         with sqlite3.connect(DB.resolve().as_uri() + "?mode=ro", uri=True) as cx:
             required = {"municipios", "votos_presidenciais", "bolsa_familia_mensal", "origem_dados"}

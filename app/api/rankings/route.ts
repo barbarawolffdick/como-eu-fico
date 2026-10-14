@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 type Registro = {codigo_ibge:string;nome:string;uf:string;populacao:number|null;ano_populacao:number|null;valor_centavos:number|null;parcelas:number|null;competencias:number|null;vencedor:string|null;votos_vencedor:number|null;votos_total:number|null;empatados:number|null};
-type Snapshot = {esquema:number;inicio:string;fim:string;municipios:number;registros:Registro[]};
+type Snapshot = {esquema:number;inicio:string;fim:string;municipios:number;populacao_completa:boolean;registros:Registro[]};
 
 export async function GET(req: NextRequest) {
   let data: Snapshot;
@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
       !Number.isInteger(limite) || limite < 1 || limite > 100) {
     return NextResponse.json({detail:"Parâmetros inválidos ou período não publicado."},{status:422});
   }
+  if (metrica==="valor_habitante" && !data.populacao_completa) return NextResponse.json({metrica,inicio,fim,disponivel:false,motivo:"População IBGE ainda não está no SQLite publicado no GitHub.",resultados:[]});
   const rows = data.registros.filter(m=>m.valor_centavos!==null && m.empatados===1 &&
     !!m.vencedor && (!uf || m.uf===uf) &&
     (vencedor==="todos" || (vencedor==="outros" ? !["13","22"].includes(m.vencedor) : m.vencedor===vencedor)) &&

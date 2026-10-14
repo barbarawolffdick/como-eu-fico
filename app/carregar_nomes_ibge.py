@@ -3,6 +3,7 @@
 Não altera votos nem Bolsa Família; preserva as fontes originais.
 """
 import argparse
+import gzip
 import json
 import sqlite3
 import urllib.request
@@ -64,7 +65,10 @@ def main():
         origem=str(a.json)
     else:
         with urllib.request.urlopen(urllib.request.Request(URL,headers={"User-Agent":"ComoEuFico/1.0"}),timeout=45) as response:
-            dados=json.load(response)
+            conteudo=response.read()
+            if conteudo.startswith(b'\x1f\x8b'):
+                conteudo=gzip.decompress(conteudo)
+            dados=json.loads(conteudo.decode('utf-8-sig'))
         origem=URL
     print(json.dumps(carregar_nomes(a.db,dados,origem),ensure_ascii=False,indent=2))
 

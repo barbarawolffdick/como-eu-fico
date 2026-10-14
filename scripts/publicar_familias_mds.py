@@ -52,5 +52,6 @@ def run():
     OUT.parent.mkdir(parents=True,exist_ok=True)
     OUT.write_text(json.dumps(document,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
     print(json.dumps({"arquivo":str(OUT),"periodos":list(series),"municipios":len(codes),
-      "familias_nacionais":{k:sum(v.values()) for k,v in series.items()}},ensure_ascii=False))
+      "familias_nacionais":{k:sum(n for n in v.values() if n is not None) for k,v in series.items()},
+      "municipios_sem_dado":{k:sum(n is None for n in v.values()) for k,v in series.items()}},ensure_ascii=False))
 if __name__=="__main__":run()

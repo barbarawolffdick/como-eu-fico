@@ -12,5 +12,5 @@ print(json.dumps({"url":URL,"size":len(html),"scripts":scripts[:35],"links":link
 for key in ("Quantidade total de pessoas","pessoas em famílias","$.ajax","ajax:","url:","buscarIndicador","buscar_indicador","dataTable","data-explorer","vis/data3","api.php","v.php"):
  matches=list(re.finditer(re.escape(key),html,re.I))
  print(json.dumps({"pattern":key,"count":len(matches),"context":[html[max(0,m.start()-190):m.end()+340] for m in matches[:4]]},ensure_ascii=False))
-m=re.search(r"busca_metadados_mis2\\.php",html,re.I)
-print(json.dumps({"endpoint_block":html[max(0,m.start()-600):m.start()+1900] if m else ""},ensure_ascii=False))
+ix=html.find("busca_metadados_mis2.php")
+print(json.dumps({"endpoint_block":html[max(0,ix-800):ix+3200] if ix>=0 else ""},ensure_ascii=False))

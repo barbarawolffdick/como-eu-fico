@@ -42,3 +42,17 @@ jobs:
         run: npm run lint
       - name: Compilar Next.js
         run: npm run build
+      - name: Testar rotas Next.js com dados reais publicados
+        run: |
+          npm run start -- --port 3000 > /tmp/como-eu-fico-next.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3000/api/municipios?q=3550308 > /tmp/busca.json; then break; fi
+            sleep 1
+          done
+          python -c "import json; r=json.load(open('/tmp/busca.json')); assert any(x['codigo_ibge']=='3550308' for x in r),r"
+          curl -fsS http://127.0.0.1:3000/api/municipios/3550308 > /tmp/detalhe.json
+          python -c "import json; r=json.load(open('/tmp/detalhe.json')); assert r['municipio']['codigo_ibge']=='3550308'; assert r['votos_presidenciais']; assert r['bolsa_familia']"
+          curl -fsS 'http://127.0.0.1:3000/api/rankings?metrica=valor_total' > /tmp/rankings.json
+          python -c "import json; r=json.load(open('/tmp/rankings.json')); assert r['disponivel'] and len(r['resultados'])==10,r"

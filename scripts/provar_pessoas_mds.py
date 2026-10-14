@@ -41,11 +41,15 @@ qe=options[0]["value"]
 mapurl="https://aplicacoes.cidadania.gov.br/vis/dash/sv-mapa-faixas.php?qe="+qe
 base={"ref":"2026-09-01","ag":"p","area":"","area_user":"","temp":"1",
       "mes_ou_ano":"mes","p_ibge":"0","nr":"","ma":""}
-for ref in ("","2026-09-01","2026-02-01"):
- for ma in ("mes","m"):
-  req=urllib.request.Request(mapurl,data=urllib.parse.urlencode({**base,"ref":ref,"mes_ou_ano":ma,"q":"4"}).encode(),
-    headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"},method="POST")
-  try:
-   with urllib.request.urlopen(req,timeout=80) as res:raw=res.read()
-   print(json.dumps({"ref":ref,"ma":ma,"resposta":raw[:1000].decode("utf-8","replace")},ensure_ascii=False))
-  except Exception as e:print(json.dumps({"ref":ref,"ma":ma,"erro":str(e)}))
+params={**base,"ref":"","op":"1","wt":"json","f0":"0","f1":"2000000",
+ "cor":"#195b49","v":options[0]["label"],"vf":"numero"}
+req=urllib.request.Request(mapurl,data=urllib.parse.urlencode(params).encode(),
+ headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"},method="POST")
+try:
+ with urllib.request.urlopen(req,timeout=145) as response:raw=response.read()
+ geo=json.loads(raw)
+ feats=geo.get("features",[]) if isinstance(geo,dict) else []
+ samples=[{"properties":x.get("properties"),"geometry_type":x.get("geometry",{}).get("type")} for x in feats[:3]]
+ print(json.dumps({"bytes":len(raw),"type":geo.get("type"),"features":len(feats),
+  "samples":samples,"keys":list(geo)},ensure_ascii=False))
+except Exception as e:print(json.dumps({"erro":str(e)}))

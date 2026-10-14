@@ -7,6 +7,7 @@ import Link from "next/link";
 type Municipio = { codigo_ibge: string; nome: string | null; uf: string | null; populacao: number | null; ano_populacao: number | null };
 type Bolsa = { mes_competencia: string; parcelas: number; valor_centavos: number };
 type Voto = { candidato: string; votos: number };
+type Cobertura = {periodo:string;fonte:string;disponivel:boolean;municipio:{pessoas:number|null;populacao:number;cobertura_pct:number|null}};
 type Detalhe = { municipio: Municipio; bolsa_familia: Bolsa[]; votos_presidenciais: Voto[]; eleitoral_disponivel: boolean };
 
 const br = new Intl.NumberFormat("pt-BR");
@@ -42,6 +43,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [choices, setChoices] = useState<Municipio[]>([]);
   const [detail, setDetail] = useState<Detalhe | null>(null);
+  const [cobertura, setCobertura] = useState<Cobertura | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -75,6 +77,17 @@ export default function Home() {
     } catch (e) { setError((e as Error).message); }
     finally { setLoading(false); }
   }
+
+  useEffect(() => {
+    const codigo=detail?.municipio.codigo_ibge;
+    if(!codigo){setCobertura(null);return;}
+    let ativo=true;
+    setCobertura(null);
+    getJson<Cobertura>("/api/cobertura?municipio="+codigo)
+      .then(x=>{if(ativo)setCobertura(x);})
+      .catch(()=>{if(ativo)setCobertura(null);});
+    return ()=>{ativo=false};
+  },[detail?.municipio.codigo_ibge]);
 
   const serie = detail?.bolsa_familia ?? [];
   const ultimo = serie.at(-1);
@@ -111,6 +124,15 @@ export default function Home() {
           <div className="population">{detail.municipio.populacao != null ? "População estimada: " + br.format(detail.municipio.populacao) + " habitantes · IBGE " + detail.municipio.ano_populacao : "População IBGE ainda não disponível nesta base"}</div>
         </div><ArrowUpRight size={24} aria-hidden="true" /></div>
         <div className="cards">
+          <article className="card"><h3>Alcance do Bolsa Família</h3>
+            {cobertura?.disponivel && cobertura.municipio.cobertura_pct!=null ?
+              <><span className="kicker">Pessoas integrantes de famílias beneficiárias · {competencia(cobertura.periodo)}</span>
+                <div className="big" style={{marginTop:10}}>{cobertura.municipio.cobertura_pct.toLocaleString("pt-BR",{maximumFractionDigits:1})}%</div>
+                <p className="sub">{br.format(cobertura.municipio.pessoas!)} pessoas em famílias beneficiárias em uma população estimada de {br.format(cobertura.municipio.populacao)} habitantes.</p>
+              </> :
+              <p className="sub">Cobertura populacional ainda não disponível para este município. Ausência não é zero.</p>}
+            <div className="footnote">Fonte: MDS / VIS DATA 3. População: IBGE 2026. É a proporção de moradores que integram famílias beneficiárias, não de titulares que recebem pagamentos. {cobertura?.fonte && <a href={cobertura.fonte} target="_blank" rel="noreferrer">Ver fonte.</a>}</div>
+          </article>
           <article className="card"><h3>Bolsa Família</h3>
             {ultimo ? <><span className="kicker">Última competência: {competencia(ultimo.mes_competencia)}</span>
               <div className="big" style={{marginTop:10}}>{reais(ultimo.valor_centavos)}</div>

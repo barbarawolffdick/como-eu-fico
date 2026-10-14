@@ -86,7 +86,7 @@ history.replaceState({},'', '?municipio='+code);qs('#choices').replaceChildren()
 qs('#title').textContent=(m.nome||'Município IBGE '+code)+(m.uf?' — '+m.uf:'');qs('#population').textContent=m.populacao!=null?'População: '+m.populacao.toLocaleString('pt-BR')+' (IBGE, '+m.ano_populacao+')':'População IBGE ainda não carregada';
 qs('#total').textContent=money(b.reduce((s,x)=>s+x.valor_centavos,0));
 qs('#parcelas').textContent=b.reduce((s,x)=>s+x.parcelas,0).toLocaleString('pt-BR')+' parcelas registradas';
-qs('#votes').textContent=v.length?v.map(x=>x.candidato+': '+x.votos.toLocaleString('pt-BR')+' votos ('+(x.votos*100/v.reduce((s,i)=>s+i.votos,0)).toFixed(1).replace('.',',')+'%)').join(' • '):
+qs('#votes').textContent=v.length?v.map(x=>({'13':'Lula','22':'Flávio Bolsonaro'}[x.candidato]||'Candidato '+x.candidato)+' ('+x.candidato+'): '+x.votos.toLocaleString('pt-BR')+' votos ('+(x.votos*100/v.reduce((s,i)=>s+i.votos,0)).toFixed(1).replace('.',',')+'%)').join(' • '):
 'Dados eleitorais ainda não carregados. Ausência não significa zero.';
 const svg=qs('#chart');svg.replaceChildren();const max=Math.max(1,...b.map(x=>x.valor_centavos));
 if(b.length){const points=b.map((x,i)=>(10+i*580/Math.max(1,b.length-1))+','+(140-120*x.valor_centavos/max)).join(' ');

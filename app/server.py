@@ -6,15 +6,49 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
-DB = Path(os.environ.get("COMO_EU_FICO_DB", "data/app/como_eu_fico.sqlite"))
+ROOT = Path(__file__).resolve().parent.parent
+DB = Path(os.environ.get("COMO_EU_FICO_DB", str(ROOT / "data/app/como_eu_fico.sqlite"))).expanduser()
 app = FastAPI(title="Como Eu Fico")
 
-def connect():
+def validate_db():
+    """Identifica banco ausente, ponteiro LFS e esquema incompleto."""
     if not DB.is_file():
-        raise HTTPException(503, "Banco do aplicativo indisponível")
+        return "Banco SQLite não encontrado em " + str(DB) + ". Execute git lfs pull na raiz do repositório."
+    try:
+        with DB.open("rb") as stream:
+            header = stream.read(64)
+        if header.startswith(b"version https://git-lfs.github.com"):
+            return "Arquivo é ponteiro do Git LFS, não SQLite. Execute git lfs pull."
+        if not header.startswith(b"SQLite format 3\\x00"):
+            return "Arquivo do banco não é SQLite válido: " + str(DB)
+        with sqlite3.connect(DB.resolve().as_uri() + "?mode=ro", uri=True) as cx:
+            required = {"municipios", "votos_presidenciais", "bolsa_familia_mensal", "origem_dados"}
+            available = {r[0] for r in cx.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')")}
+            missing = required - available
+            if missing:
+                return "Banco operacional incompleto. Tabelas/views ausentes: " + ", ".join(sorted(missing))
+            if cx.execute("SELECT COUNT(*) FROM municipios").fetchone()[0] != 5571:
+                return "Banco operacional não possui os 5.571 municípios esperados."
+    except (OSError, sqlite3.Error) as exc:
+        return "Falha ao ler banco SQLite: " + str(exc)
+    return None
+
+
+def connect():
+    error = validate_db()
+    if error:
+        raise HTTPException(503, error)
     cx = sqlite3.connect(DB.resolve().as_uri() + "?mode=ro", uri=True)
     cx.row_factory = sqlite3.Row
     return cx
+
+
+@app.get("/api/health")
+def health():
+    error = validate_db()
+    if error:
+        raise HTTPException(503, error)
+    return {"status": "ok", "database": "ready"}
 
 @app.get("/api/fontes")
 def fontes():

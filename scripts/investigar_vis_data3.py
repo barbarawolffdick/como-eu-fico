@@ -12,6 +12,13 @@ print(json.dumps({"url":URL,"size":len(html),"scripts":scripts[:35],"links":link
 for key in ("Quantidade total de pessoas","pessoas em famílias","$.ajax","ajax:","url:","buscarIndicador","buscar_indicador","dataTable","data-explorer","vis/data3","api.php","v.php"):
  matches=list(re.finditer(re.escape(key),html,re.I))
  print(json.dumps({"pattern":key,"count":len(matches),"context":[html[max(0,m.start()-190):m.end()+340] for m in matches[:4]]},ensure_ascii=False))
+for word in ("Quantidade total de pessoas em famílias beneficiárias","pessoas","beneficiárias"):
+ url=URL+"?search="+urllib.parse.quote(word)
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"}),timeout=40) as response: page=response.read().decode("utf-8","replace")
+  matchs=list(re.finditer("pessoas em famílias|pessoas|beneficiárias|v.php\\?",page,re.I))
+  print(json.dumps({"termo":word,"bytes":len(page),"matches":len(matchs),"samples":[page[max(0,m.start()-240):m.end()+360] for m in matchs[:9]]},ensure_ascii=False))
+ except Exception as e:print(json.dumps({"termo":word,"erro":str(e)}))
 for src in scripts:
  if "vis" not in src and (src.startswith("https:") or src.startswith("//")):continue
  full=urllib.parse.urljoin(URL,src)

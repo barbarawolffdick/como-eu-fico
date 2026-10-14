@@ -73,7 +73,7 @@ def run(database=DATABASE, destination=DESTINATION):
             "eleitoral_disponivel": bool(votos.get(item["codigo_ibge"]))
         } for item in rows
     }
-    detail_bytes = (json.dumps({"esquema":1,"municipios":count,"registros":detalhes},ensure_ascii=False,separators=(",",":"))+"\\n").encode("utf-8")
+    detail_bytes = json.dumps({"esquema":1,"municipios":count,"registros":detalhes},ensure_ascii=False,separators=(",",":")).encode("utf-8")
     DETAILS.write_bytes(detail_bytes)
     print(json.dumps({"detalhes":str(DETAILS),"sha256_detalhes":hashlib.sha256(detail_bytes).hexdigest()},ensure_ascii=False))
 

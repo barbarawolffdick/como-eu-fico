@@ -28,3 +28,17 @@ jobs:
           python -m unittest discover -s tests -p 'test_integrar_fontes.py' -v
           python -m unittest discover -s tests -p 'test_integrar_ibge_populacao.py' -v
           python -m unittest discover -s tests -p 'test_server.py' -v
+
+  next-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências web
+        run: npm install --no-audit --no-fund
+      - name: Verificar TypeScript
+        run: npm run lint
+      - name: Compilar Next.js
+        run: npm run build

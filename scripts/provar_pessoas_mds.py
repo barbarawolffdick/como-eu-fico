@@ -37,19 +37,21 @@ for attrs,label in opts:
  attrs_dict=dict(re.findall(r'([a-zA-Z0-9_-]+)="([^"]*)"',attrs))
  options.append({"label":h.unescape(re.sub("<[^>]+>","",label)).strip(),**attrs_dict})
 
-qe=options[0]["value"]
-mapurl="https://aplicacoes.cidadania.gov.br/vis/dash/sv-mapa-faixas.php?qe="+qe
-base={"ref":"2026-09-01","ag":"p","area":"","area_user":"","temp":"1",
+
+meta=page.find("objItensVisualizacaoInfo.push({'cab':'Quantidade total de pessoas em famílias beneficiárias do Programa Bolsa Família'")
+if meta<0:raise SystemExit("Expressão oficial de total não encontrada")
+fragment=page[meta:meta+2000]
+qt=fragment.split("'u':'",1)[1].split("'",1)[0]
+api="https://aplicacoes.cidadania.gov.br/vis/dash/sv-mapa-faixas.php?qe="+qt
+params={"ref":"","ag":"p","area":"","area_user":"","temp":"1",
       "mes_ou_ano":"mes","p_ibge":"0","nr":"","ma":""}
-params={**base,"ref":"","op":"1","wt":"json","f0":"0","f1":"2000000",
- "cor":"#195b49","v":options[0]["label"],"vf":"numero"}
-req=urllib.request.Request(mapurl,data=urllib.parse.urlencode(params).encode(),
- headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"},method="POST")
-try:
- with urllib.request.urlopen(req,timeout=145) as response:raw=response.read()
- geo=json.loads(raw)
- feats=geo.get("features",[]) if isinstance(geo,dict) else []
- samples=[{"properties":x.get("properties"),"geometry_type":x.get("geometry",{}).get("type")} for x in feats[:3]]
- print(json.dumps({"bytes":len(raw),"type":geo.get("type"),"features":len(feats),
-  "samples":samples,"keys":list(geo)},ensure_ascii=False))
-except Exception as e:print(json.dumps({"erro":str(e)}))
+for nome,extra in [("faixas",{"q":"4"}),("amostra",{"op":"1","wt":"json","f0":"1","f1":"10000","cor":"#195b49","v":"Quantidade total de pessoas em famílias beneficiárias do Programa Bolsa Família","vf":"numero"})]:
+ req=urllib.request.Request(api,data=urllib.parse.urlencode({**params,**extra}).encode(),
+  headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"},method="POST")
+ try:
+  with urllib.request.urlopen(req,timeout=140) as response:raw=response.read()
+  obj=json.loads(raw)
+  feats=obj.get("features",[])
+  print(json.dumps({"teste":nome,"bytes":len(raw),"info":obj if nome=="faixas" else
+    {"features":len(feats),"amostra":[x.get("properties") for x in feats[:4]]}},ensure_ascii=False))
+ except Exception as e:print(json.dumps({"teste":nome,"erro":str(e)}))

@@ -21,3 +21,4 @@ jobs:
           python -m unittest discover -s tests -p 'test_ingerir_bolsa_familia.py' -v
           python -m unittest discover -s tests -p 'test_municipio_novo_bolsa.py' -v
           python -m unittest discover -s tests -p 'test_exportar_bolsa_mvp.py' -v
+          python -m unittest discover -s tests -p 'test_banco_app.py' -v

@@ -34,7 +34,7 @@ def value(s):
         raise ValueError("Valor ausente")
     if "," in s:
         s = s.replace(".", "").replace(",", ".")
-    elif re.fullmatch(r"-?\\d{1,3}(?:\\.\\d{3})+", s):
+    elif re.fullmatch(r"-?\d{1,3}(?:\.\d{3})+", s):
         s = s.replace(".", "")
     try:
         v = Decimal(s)

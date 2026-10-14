@@ -29,6 +29,11 @@ url=urllib.parse.urljoin(BASE,chosen[1])
 with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"}),timeout=90) as res:
  page=res.read().decode("utf-8","replace")
 
-for marker in ("sltVariavelMapa","sltReferencia","sv-mapa-faixas.php?qe="):
- indexes=[m.start() for m in re.finditer(re.escape(marker),page)]
- print(json.dumps({"marker":marker,"count":len(indexes),"samples":[page[max(0,i-250):i+1900] for i in indexes[-3:]]},ensure_ascii=False))
+match=re.search(r'<select[^>]+id="sltVariavelMapa[^"]+"[^>]*>(.*?)</select>',page,re.S|re.I)
+if not match:raise SystemExit("Seleção do mapa não localizada")
+opts=re.findall(r'<option([^>]*)>(.*?)</option>',match.group(1),re.S|re.I)
+options=[]
+for attrs,label in opts:
+ attrs_dict=dict(re.findall(r'([a-zA-Z0-9_-]+)="([^"]*)"',attrs))
+ options.append({"label":h.unescape(re.sub("<[^>]+>","",label)).strip(),**attrs_dict})
+print(json.dumps({"opcoes":options},ensure_ascii=False))

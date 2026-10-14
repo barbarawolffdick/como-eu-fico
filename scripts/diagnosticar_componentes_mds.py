@@ -32,7 +32,7 @@ for attrs,label in opts:
   key=(p.get("uf"),p.get("nome"))
   if key in counts:raise ValueError("Duplicidade territorial "+repr(key))
   popup=p.get("popupContent","")
-  m=re.search(r":\\s*([0-9][0-9.]*)<br>",popup)
+  m=re.search(r":\s*([0-9][0-9.]*)<br>",popup)
   if not m:raise ValueError("Sem valor no mapa "+popup[:220])
   counts[key]=int(m.group(1).replace(".",""))
   dates.add(p.get("referencia"))

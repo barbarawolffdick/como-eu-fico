@@ -65,6 +65,78 @@ def municipios(q: str = "", limit: int = 30):
             ("%" + q + "%", "%" + q + "%", min(max(limit,1),100))
         )]
 
+@app.get("/api/rankings")
+def rankings(metrica: str = "valor_total", vencedor: str = "todos",
+             uf: str = "", inicio: str = "202601", fim: str = "202608", limite: int = 10):
+    """Ranking descritivo por competência; não mede cobertura de famílias."""
+    if metrica not in ("valor_total", "valor_habitante"):
+        raise HTTPException(422, "Métrica inválida")
+    if vencedor not in ("todos", "13", "22", "outros"):
+        raise HTTPException(422, "Filtro de vencedor inválido")
+    if not (len(inicio) == len(fim) == 6 and inicio.isdigit() and fim.isdigit()
+            and "202501" <= inicio <= fim <= "202608"
+            and "01" <= inicio[4:] <= "12" and "01" <= fim[4:] <= "12"):
+        raise HTTPException(422, "Período fora das competências disponíveis")
+    if uf and (len(uf) != 2 or not uf.isalpha() or not uf.isupper()):
+        raise HTTPException(422, "UF inválida")
+    if not 1 <= limite <= 100:
+        raise HTTPException(422, "Limite inválido")
+    with connect() as cx:
+        # Cada domínio é agregado por município antes do relacionamento.
+        total = cx.execute("""
+            SELECT COUNT(*) FROM municipios WHERE populacao > 0 AND ano_populacao IS NOT NULL
+        """).fetchone()[0]
+        if metrica == "valor_habitante" and total == 0:
+            return {"metrica": metrica, "inicio": inicio, "fim": fim,
+                    "disponivel": False, "motivo": "População IBGE ainda não integrada ao banco operacional.",
+                    "resultados": []}
+        query = """
+        WITH bf AS (
+          SELECT codigo_ibge, SUM(valor_centavos) AS valor_centavos,
+                 SUM(parcelas) AS parcelas, COUNT(*) AS competencias
+          FROM bolsa_familia_mensal
+          WHERE mes_competencia BETWEEN ? AND ?
+          GROUP BY codigo_ibge
+        ), votes AS (
+          SELECT codigo_ibge, candidato, votos,
+                 SUM(votos) OVER (PARTITION BY codigo_ibge) AS votos_total,
+                 RANK() OVER (PARTITION BY codigo_ibge ORDER BY votos DESC) AS posicao
+          FROM votos_presidenciais
+          WHERE eleicao = 2026 AND turno = 1
+        ), leaders AS (
+          SELECT codigo_ibge, MAX(CASE WHEN posicao=1 THEN candidato END) AS vencedor,
+                 MAX(CASE WHEN posicao=1 THEN votos END) AS votos_vencedor,
+                 MAX(votos_total) AS votos_total,
+                 SUM(CASE WHEN posicao=1 THEN 1 ELSE 0 END) AS empatados
+          FROM votes GROUP BY codigo_ibge
+        )
+        SELECT m.codigo_ibge,m.nome,m.uf,m.populacao,m.ano_populacao,
+               bf.valor_centavos,bf.parcelas,bf.competencias,
+               leaders.vencedor,leaders.votos_vencedor,leaders.votos_total,
+               CASE WHEN leaders.votos_total>0 THEN
+                 100.0*leaders.votos_vencedor/leaders.votos_total END AS percentual_vencedor,
+               CASE WHEN m.populacao>0 THEN
+                 1.0*bf.valor_centavos/m.populacao END AS centavos_por_habitante
+        FROM bf
+        JOIN municipios m USING(codigo_ibge)
+        JOIN leaders USING(codigo_ibge)
+        WHERE leaders.empatados=1
+          AND (?='' OR m.uf=?)
+          AND (?='todos' OR leaders.vencedor=? OR
+               (?='outros' AND leaders.vencedor NOT IN ('13','22')))
+          AND (?='valor_total' OR (m.populacao>0 AND m.ano_populacao IS NOT NULL))
+        ORDER BY CASE WHEN ?='valor_total' THEN bf.valor_centavos
+                      ELSE 1.0*bf.valor_centavos/m.populacao END DESC,
+                 m.codigo_ibge ASC LIMIT ?
+        """
+        rows = [dict(row) for row in cx.execute(query, (
+            inicio, fim, uf, uf, vencedor, vencedor, vencedor,
+            metrica, metrica, limite))]
+        return {"metrica": metrica, "inicio": inicio, "fim": fim, "uf": uf,
+                "vencedor": vencedor, "disponivel": True, "resultados": rows,
+                "nota": "Valor por habitante não é cobertura de famílias beneficiárias; períodos são competências da CGU."}
+
+
 @app.get("/api/municipios/{codigo_ibge}")
 def municipio(codigo_ibge: str):
     with connect() as cx:

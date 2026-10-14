@@ -28,6 +28,14 @@ chosen=next((v for v in cand if "Quantidade total de pessoas em famílias benefi
 url=urllib.parse.urljoin(BASE,chosen[1])
 with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"}),timeout=90) as res:
  page=res.read().decode("utf-8","replace")
-for key in ("url+='&tpconsulta","&tpconsulta","function export_csv(","function inicializaTabela","type:'POST'","ajax: {","url_aux_export","getInfoMetadadoPagina"):
- pos=page.find(key)
- print(json.dumps({"chave":key,"ocorrencia":pos,"codigo":page[max(0,pos-180):pos+4100] if pos>=0 else ""},ensure_ascii=False))
+for key in ("function inicializaAbaMapaVis3","function getInfoMetadadoPagina","function export_csv","tp_funcao_consulta=0"):
+ ix=page.find(key)
+ print(json.dumps({"chave":key,"context":page[ix:ix+8000] if ix>=0 else ""},ensure_ascii=False))
+for kind in ("0","1"):
+ addr=url+"&tpconsulta="+kind
+ try:
+  req=urllib.request.Request(addr,data=b"",headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"},method="POST")
+  with urllib.request.urlopen(req,timeout=90) as resp:
+   data=resp.read()
+  print(json.dumps({"tipo":kind,"bytes":len(data),"prefix":data[:1300].decode("utf-8","replace")},ensure_ascii=False))
+ except Exception as e:print(json.dumps({"tipo":kind,"erro":str(e)}))

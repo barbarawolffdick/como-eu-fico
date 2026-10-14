@@ -1,0 +1,20 @@
+name: Sondar fonte MDS VIS DATA
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/sondar_mds_vis.py
+      - .github/workflows/sondar-mds.yml
+permissions:
+  contents: read
+jobs:
+  fonte:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Sondar relatório municipal público do MDS
+        run: python scripts/sondar_mds_vis.py --periodo 2026-08-01

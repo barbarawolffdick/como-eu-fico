@@ -14,3 +14,11 @@ inventario-limpeza*.json
 
 # Legado secundário (preservar cópia local, não versionar)
 dados-municipios/
+
+# Next.js / v0
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.env
+.env.local

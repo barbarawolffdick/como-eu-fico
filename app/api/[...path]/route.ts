@@ -7,7 +7,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   if (!base) return NextResponse.json({ detail: "API de dados não configurada. Defina FASTAPI_BASE_URL para conectar ao FastAPI com o SQLite real." }, { status: 503 });
   const { path } = await context.params;
   // Only publicly exposed read-only endpoints are proxied.
-  if (request.method !== "GET" || !["municipios", "fontes", "health"].includes(path[0]) || (path[0] !== "municipios" && path.length !== 1) || path.length > 2 || (path.length === 2 && !/^\d{7}$/.test(path[1]))) {
+  if (request.method !== "GET" || !["municipios", "fontes", "health", "rankings"].includes(path[0]) || (path[0] !== "municipios" && path.length !== 1) || path.length > 2 || (path.length === 2 && !/^\d{7}$/.test(path[1]))) {
     return NextResponse.json({ detail: "Rota não permitida" }, { status: 404 });
   }
   const url = new URL(base + "/api/" + path.join("/"));

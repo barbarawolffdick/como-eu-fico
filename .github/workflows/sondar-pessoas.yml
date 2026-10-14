@@ -1,0 +1,21 @@
+name: Sondar indicador pessoas MDS
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/sondar_pessoas_vis.py
+      - .github/workflows/sondar-pessoas.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  identificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Identificar indicador municipal de pessoas
+        run: python -m scripts.sondar_pessoas_vis

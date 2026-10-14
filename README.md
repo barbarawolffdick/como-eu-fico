@@ -69,6 +69,24 @@ O comando gera `inventario-limpeza.json` sem excluir nada. Antes de apagar ou mo
 
 Veja também `methodology/codigos-oficiais-tse-ibge.md`.
 
+## Frontend Next.js para v0
+
+A raiz do repositório agora é também uma aplicação **Next.js App Router**, com `package.json`, `app/page.tsx` e `app/api/[...path]/route.ts`. O código Python em `app/server.py` permanece independente e conserva o acesso oficial ao SQLite.
+
+**Desenvolvimento local com dados reais:** execute o FastAPI em `127.0.0.1:8001` como documentado acima. Em outro terminal na raiz:
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Abra `http://localhost:3000`. A rota Next.js `/api/municipios` encaminha solicitações à API Python indicada por `FASTAPI_BASE_URL`; nomes, valores e votos vêm somente do SQLite real.
+
+**No v0:** importe a branch `main` do GitHub e execute como projeto Next.js. A interface visual renderiza sem banco. Para buscas e resultados reais, configure `FASTAPI_BASE_URL` com uma URL HTTP(S) **que o servidor Next.js do v0 consiga alcançar**. `http://127.0.0.1:8001` do Mac não é acessível dentro do v0. Não há mock de dados reais e não existe hospedagem configurada. Sem essa URL, as consultas mostram uma mensagem explícita de API não configurada.
+
+Assim, podemos editar e visualizar a interface no v0 **sem migrar ou duplicar** os pipelines TSE/CGU/IBGE. O app completo com consultas permanece funcional localmente com FastAPI + SQLite + Next.js.
+
 ## MVP local — execução oficial
 
 A aplicação funcional é **FastAPI + SQLite**. A interface web já está servida pelo próprio FastAPI em `app/server.py`. Não se trata de um app React/Next.js e o v0 não consegue inicializar diretamente esse backend nem substituir o SQLite real.

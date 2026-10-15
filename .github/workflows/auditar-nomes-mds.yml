@@ -1,0 +1,17 @@
+name: Auditoria de nomes MDS e IBGE
+on:
+  push:
+    branches: [main]
+    paths: [scripts/auditar_nomes_pessoas_mds.py, .github/workflows/auditar-nomes-mds.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m scripts.auditar_nomes_pessoas_mds

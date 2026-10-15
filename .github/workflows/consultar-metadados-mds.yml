@@ -1,0 +1,20 @@
+name: Consultar metadados pessoas MDS
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/consultar_metadados_pessoas.py
+      - .github/workflows/consultar-metadados-mds.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  buscar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/consultar_metadados_pessoas.py

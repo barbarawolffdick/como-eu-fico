@@ -1,0 +1,45 @@
+name: Publicar cobertura pessoas MDS
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/publicar_pessoas_mds.py
+      - .github/workflows/publicar-pessoas-mds.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publicar-cobertura-pessoas
+  cancel-in-progress: false
+jobs:
+  cobertura:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Extrair e conferir medidas MDS IBGE
+        run: python -m scripts.publicar_pessoas_mds
+      - name: Validar snapshot
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('data/public/pessoas_mds.json'))
+          assert d['municipios_ibge']==5571
+          assert d['municipios_com_dado']>=5500
+          assert len(d['registros'])==5571
+          assert all(0<=v['cobertura_pct']<=100 for v in d['registros'].values() if v['cobertura_pct'] is not None)
+          assert len(d['proveniencia'])==3
+          PY
+      - name: Publicar arquivo de cobertura
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/public/pessoas_mds.json
+          if ! git diff --cached --quiet; then
+            git commit -m "data: cobertura municipal de pessoas beneficiárias MDS 2026"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

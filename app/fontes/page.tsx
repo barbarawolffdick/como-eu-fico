@@ -23,6 +23,7 @@ export default async function Fontes() {
         <ul>{dados.pessoas.municipios_sem_dado.map(m => <li key={m.codigo_ibge}><Link href={`/?municipio=${m.codigo_ibge}`}>{m.nome} — {m.uf}</Link> (IBGE {m.codigo_ibge})</li>)}</ul>
         <p>Os totais municipais disponíveis não devem ser apresentados como cobertura nacional completa. Os seis casos exigem uma fonte oficial validada antes de qualquer preenchimento.</p>
         <h2>Arquivos e versões</h2>
+        <p>Saúde: piloto em {dados.saude.municipios_piloto.length} cidades. Os valores são observados, sem projeção. Repasses FNS acumulados de janeiro a julho de 2026; equipes e Mais Médicos têm suas próprias datas indicadas na página de cada cidade. Repasses a fundos estaduais registrados na cidade ficam separados dos repasses municipais. Financiamento, estrutura e atendimento são medidas distintas.</p>
         <p>{dados.commit ? `Commit desta versão: ${dados.commit}.` : "Commit do deploy não informado neste ambiente; os hashes abaixo identificam os arquivos em uso."}</p>
         <ul className="snapshot-list">{dados.arquivos.map(arquivo => <li key={arquivo.arquivo}><a href={arquivo.url} target="_blank" rel="noreferrer">{arquivo.arquivo}</a><br /><code>SHA-256: {arquivo.sha256}</code></li>)}</ul>
         <p>Os snapshots MDS preservam URLs e hashes das respostas oficiais. O ranking registra as origens TSE, CGU e IBGE; os arquivos brutos e o SQLite pertencem ao pipeline de dados, separado da aplicação web.</p>

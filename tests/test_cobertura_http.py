@@ -1,11 +1,12 @@
 """Testes HTTP do Next.js para cobertura com o snapshot MDS+IBGE publicado."""
 import json
+import os
 import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
 
-BASE = "http://127.0.0.1:3000"
+BASE = os.environ.get("COMO_EU_FICO_TEST_URL", "http://127.0.0.1:3000").rstrip("/")
 SNAPSHOT = json.loads(Path("data/public/pessoas_mds.json").read_text(encoding="utf-8"))
 RANKS = json.loads(Path("data/public/rankings_2026.json").read_text(encoding="utf-8"))
 

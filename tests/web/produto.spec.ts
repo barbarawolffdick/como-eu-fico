@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { evolucaoMensal } from "../../lib/evolucao";
@@ -8,16 +8,6 @@ const pessoas = carregar("pessoas_mds.json");
 const detalhes = carregar("detalhes_2026.json");
 const rankings = carregar("rankings_2026.json");
 
-test.beforeEach(async ({ page }) => {
-  const token = process.env.VERCEL_OIDC_TOKEN;
-  const base = process.env.PLAYWRIGHT_BASE_URL;
-  if (token && base) {
-    const origin = new URL(base).origin;
-    await page.route(`${origin}/**`, route => route.continue({ headers: {
-      ...route.request().headers(), "x-vercel-trusted-oidc-idp-token": token,
-    } }));
-  }
-});
 
 test("busca, detalhe e links funcionam com dados publicados", async ({ page }, testInfo) => {
   const erros: string[] = [];
@@ -100,7 +90,7 @@ test("metadados identificam arquivos reais e seis ausências", async ({ request,
   }
   await page.goto("/fontes");
   await expect(page.getByRole("heading", { name: "Fontes e metodologia" })).toBeVisible();
-  await expect(page.getByText("SHA-256:", { exact: false })).toHaveCount(4);
+  await expect(page.getByText("SHA-256:", { exact: false })).toHaveCount(fontes.arquivos.length);
   await expect(page.getByRole("link", { name: "Mojuí dos Campos — PA" })).toBeVisible();
 });
 

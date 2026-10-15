@@ -51,7 +51,8 @@ def main():
              "/api/municipios?q=3550308", "/api/municipios/3550308",
              "/api/rankings?metrica=valor_habitante&uf=SP&vencedor=13",
              "/api/cobertura?municipio=3550308", "/api/cobertura?municipio=1504752",
-             "/api/analises", "/api/mudanca-familias", "/api/mudanca-parcelas"]
+             "/api/analises", "/api/mudanca-familias", "/api/mudanca-parcelas",
+             "/api/saude/3550308", "/api/saude/5101837", "/api/saude/1504752"]
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
         respostas = dict(pool.map(consultar, paths))
     for path, titulo in [("/", "Encontre seu município"), ("/explorar", "Alcance do Bolsa Família"),
@@ -72,6 +73,10 @@ def main():
     assert len(ranking) == 10 and all(x["uf"] == "SP" and x["vencedor"] == "13" for x in ranking)
     assert all(a["centavos_por_habitante"] >= b["centavos_por_habitante"] for a, b in zip(ranking, ranking[1:]))
     assert dados["/api/analises"]["universo"] > 0
+    assert dados["/api/saude/3550308"]["disponivel"] is True
+    assert dados["/api/saude/3550308"]["dados"] == json.loads((root / "data/public/saude_piloto.json").read_text())["registros"]["3550308"]
+    assert dados["/api/saude/5101837"]["dados"]["mais_medicos"]["ultimo"] is None
+    assert dados["/api/saude/1504752"]["disponivel"] is False
     for path in ("/api/mudanca-familias", "/api/mudanca-parcelas"):
         mudanca = dados[path]
         assert sum(x["total"] for x in mudanca["porVencedor"]) == mudanca["municipios"] > 0

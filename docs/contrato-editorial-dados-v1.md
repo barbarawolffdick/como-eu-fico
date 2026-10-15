@@ -119,3 +119,11 @@ Questões pendentes para etapa 2: janela histórica para fontes que não têm 20
 - TSE, Resultados 2026: https://dadosabertos.tse.jus.br/dataset/resultados-2026
 - IBGE, Códigos dos municípios: https://www.ibge.gov.br/explica/codigos-dos-municipios.php
 - CGU, documentação de dados do Portal da Transparência: https://api.portaldatransparencia.gov.br/swagger-ui/index.html
+
+## Adendo aprovado em conversa — 15/10/2026
+
+- **A cidade é o centro de todo o produto.** Cada indicador deve chegar à página municipal. Estado, região de saúde, estabelecimento regional e país podem fornecer contexto, sem substituir esse ponto de entrada.
+- Uma relação regional deve declarar município de localização, município de residência/atendimento e ente recebedor quando a fonte permitir. A sede de um fundo estadual não autoriza atribuir seu orçamento aos moradores da cidade.
+- Todo indicador publicado deve mostrar na interface, inclusive em nota de rodapé, a data ou o intervalo efetivamente coberto, a fonte e sua unidade. Parcela de financiamento, competência CNES, pagamento e extração são datas distintas.
+- Médias, projeções e cruzamentos estão autorizados como evolução futura, quando houver base suficiente e método validado. Devem permanecer separados dos valores observados, com janela, fórmula/modelo, hipóteses, versão e limites visíveis. Ausência não vira zero nem observação fictícia.
+- Primeiro piloto autorizado: repasses federais de atenção primária, equipes financiadas e profissionais do Mais Médicos, em cinco cidades, com expansão condicionada à validação da integração.

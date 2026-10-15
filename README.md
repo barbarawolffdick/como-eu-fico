@@ -153,3 +153,15 @@ python -c "import sqlite3; c=sqlite3.connect('data/app/como_eu_fico.sqlite'); pr
 Se a extração SIDRA falhar por cobertura ou indisponibilidade, **não force a carga**. Se o CSV validado já existir, não execute o extrator de novo: execute apenas `app/integrar_fontes.py --populacao ...`. Depois de conferir a população em vários municípios e o resultado dos testes, versionar a atualização do SQLite via Git LFS.
 
 A página web exibe a população quando disponível e informa quando ainda não foi carregada. O frontend publicado consulta os snapshots derivados, sem depender deste processo Python.
+
+## Saúde na página da cidade — piloto
+
+A consulta municipal inclui saúde para São Paulo, Recife, Sobral, Dourados e Boa Esperança do Norte. `/api/saude/{codigo_ibge}` consulta `data/public/saude_piloto.json`. Cidades fora da amostra são identificadas como fora do piloto, sem inferir inexistência de serviço.
+
+- FNS: repasses líquidos do grupo Atenção Primária, janeiro–julho/2026. Fundos municipais e estaduais ficam separados; saldo em conta não é somado.
+- APS: equipes homologadas e financiadas na parcela outubro/2026, com referência CNES agosto/2026.
+- Mais Médicos: última observação agregada disponível em cada cidade. Ausências ficam indisponíveis, não zero.
+
+Fonte, data e limites aparecem em cada cartão. A rastreabilidade e os critérios estão em [metodologia da saúde](methodology/saude-piloto.md). A aplicação não consulta APIs oficiais ao abrir uma cidade: serve o snapshot validado, como os demais domínios. Não há projeção nesta versão.
+
+Para reproduzir: `pip install -r requirements-dados.txt` e `python scripts/publicar_saude_piloto.py`. O cache em `data/raw/saude/piloto/` preserva respostas brutas; `--atualizar` consulta novamente as fontes. `--fns-arquivo CAMINHO` reutiliza a planilha oficial já baixada. Nenhuma ingestão TSE/CGU é reexecutada.

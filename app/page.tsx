@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Search, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import SaudeMunicipal from "./components/saude-municipal";
 
 type Municipio = { codigo_ibge: string; nome: string | null; uf: string | null; populacao: number | null; ano_populacao: number | null };
 type Bolsa = { mes_competencia: string; parcelas: number; valor_centavos: number };
@@ -108,7 +109,7 @@ export default function Home() {
       <div className="topbar"><span className="brand">Como Eu Fico</span><Link href="/explorar" className="tag">Explorar o Brasil →</Link></div>
       <div className="hero"><div className="eyebrow">O Brasil, município por município</div>
         <h1>O que acontece na sua cidade?</h1>
-        <p>Consulte dados públicos sobre o Bolsa Família, a eleição presidencial de 2026 e o território onde você vive. Sem presumir relações de causa e efeito.</p>
+        <p>Consulte dados públicos sobre saúde, Bolsa Família, a eleição presidencial de 2026 e o território onde você vive. Sem presumir relações de causa e efeito.</p>
       </div>
     </div></header>
     <main className="shell main">
@@ -162,7 +163,8 @@ export default function Home() {
             <div className="footnote">Fonte: TSE. Primeiro turno da eleição presidencial de 2026. Dados agregados por município não demonstram comportamento individual ou causalidade com políticas públicas.</div>
           </article>
         </div>
-        <div className="sources">Fontes: TSE (votação), CGU (Bolsa Família) e IBGE (território e população, quando disponível). Os períodos e conceitos das fontes são independentes.</div>
+        <SaudeMunicipal key={detail.municipio.codigo_ibge} codigo={detail.municipio.codigo_ibge} />
+        <div className="sources">Fontes: TSE (votação), CGU (Bolsa Família), IBGE (território e população) e Ministério da Saúde (indicadores do SUS). Os períodos e conceitos das fontes são independentes.</div>
       </div> : <div className="empty"><strong>Comece pelo seu município.</strong><span>Escolha uma cidade para conhecer os indicadores disponíveis.</span></div>}
     </main>
     <footer className="footer"><div className="shell">Como Eu Fico · Consulta descritiva de dados públicos. Nenhuma associação apresentada implica causalidade.</div></footer>

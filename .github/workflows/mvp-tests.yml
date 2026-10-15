@@ -62,4 +62,5 @@ jobs:
           python -c "import json; r=json.load(open('/tmp/familias.json')); assert 0<r['municipios']<=5571,r; assert sum(x['total'] for x in r['porVencedor'])==r['municipios']; assert sum(x['total'] for x in r['porMudanca'])==r['municipios']"
           curl -fsS 'http://127.0.0.1:3000/api/analises' > /tmp/analises.json
           python -c "import json; r=json.load(open('/tmp/analises.json')); assert r['universo']>0; assert len(r['distribuicao'])==3; assert len(r['evolucao'])==8; assert 'outros' in r"
+          python tests/test_cobertura_http.py
 

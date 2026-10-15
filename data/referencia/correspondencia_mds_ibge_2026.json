@@ -1,0 +1,105 @@
+{
+  "versao": 1,
+  "criterio": "Aliases nominativos MDS para código oficial IBGE, homologados caso a caso. Não gera correspondências por distância textual.",
+  "aliases": [
+    {
+      "uf": "MG",
+      "nome_mds_normalizado": "BARAODEMONTEALTO",
+      "codigo_ibge": "3105509",
+      "nome_ibge": "Barão do Monte Alto",
+      "evidencia_oficial": "https://www.ibge.gov.br/biblioteca/visualizacao/dtb/minasgerais/baraodemontealto.pdf",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "MG",
+      "nome_mds_normalizado": "DONAEUSEBIA",
+      "codigo_ibge": "3122900",
+      "nome_ibge": "Dona Euzébia",
+      "evidencia_oficial": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "MG",
+      "nome_mds_normalizado": "SAOTHOMEDASLETRAS",
+      "codigo_ibge": "3165206",
+      "nome_ibge": "São Tomé das Letras",
+      "evidencia_oficial": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "MT",
+      "nome_mds_normalizado": "SANTOANTONIODOLEVERGER",
+      "codigo_ibge": "5107800",
+      "nome_ibge": "Santo Antônio de Leverger",
+      "evidencia_oficial": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "RN",
+      "nome_mds_normalizado": "ACU",
+      "codigo_ibge": "2400208",
+      "nome_ibge": "Assú",
+      "evidencia_oficial": "https://agenciabrasil.ebc.com.br/geral/noticia/2026-03/ibge-atualiza-limites-territoriais-do-brasil-veja-o-que-mudou",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "RN",
+      "nome_mds_normalizado": "ARES",
+      "codigo_ibge": "2401206",
+      "nome_ibge": "Arez",
+      "evidencia_oficial": "https://agenciabrasil.ebc.com.br/geral/noticia/2026-03/ibge-atualiza-limites-territoriais-do-brasil-veja-o-que-mudou",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "RN",
+      "nome_mds_normalizado": "BOASAUDE",
+      "codigo_ibge": "2405306",
+      "nome_ibge": "Januário Cicco",
+      "evidencia_oficial": "https://cnes2.datasus.gov.br/Mod_Conjunto.asp?VCo_Unidade=2405306365930",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "RR",
+      "nome_mds_normalizado": "SAOLUIZ",
+      "codigo_ibge": "1400605",
+      "nome_ibge": "São Luiz do Anauá",
+      "evidencia_oficial": "https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_para_fins_de_levantamentos_estatisticos/censo_demografico_2022/mapas_municipais_estatisticos/RR/sao_luiz_1400605/sao_luiz_1400605_mme_a0.pdf",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "SE",
+      "nome_mds_normalizado": "AMPARODESAOFRANCISCO",
+      "codigo_ibge": "2800100",
+      "nome_ibge": "Amparo do São Francisco",
+      "evidencia_oficial": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "SE",
+      "nome_mds_normalizado": "GRACHOCARDOSO",
+      "codigo_ibge": "2802601",
+      "nome_ibge": "Graccho Cardoso",
+      "evidencia_oficial": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    },
+    {
+      "uf": "TO",
+      "nome_mds_normalizado": "FORTALEZADOTABOCAO",
+      "codigo_ibge": "1708254",
+      "nome_ibge": "Tabocão",
+      "evidencia_oficial": "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/areas_territoriais/2002/Resolucao_PR_Areas_Municipios_2001.pdf",
+      "fonte_codigo_ibge": "https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
+      "criterio": "Correspondência territorial nominal revisada; a chave definitiva é o código IBGE e não distância textual."
+    }
+  ]
+}

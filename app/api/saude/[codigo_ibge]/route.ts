@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { NextResponse } from "next/server";
-import type { SaudeMunicipal } from "@/lib/saude";
+import type { SaudeMunicipal, FinanciamentoSaude, OrigemSaude } from "@/lib/saude";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,16 +20,30 @@ function carregarSnapshot() {
   return snapshotPromise;
 }
 
+let financiamentoPromise: Promise<{ esquema: number; municipios: number; registros: Record<string, FinanciamentoSaude>;
+  fontes: Record<string, OrigemSaude> }> | undefined;
+function carregarFinanciamento() {
+  financiamentoPromise ??= readFile(join(process.cwd(), "data/public/financiamento_saude.json"), "utf8")
+    .then(raw => {
+      const snapshot = JSON.parse(raw);
+      if (snapshot.esquema !== 1 || Object.keys(snapshot.registros).length !== snapshot.municipios) throw Error("Financiamento inválido");
+      return snapshot;
+    }).catch(erro => { financiamentoPromise = undefined; throw erro; });
+  return financiamentoPromise;
+}
+
 export async function GET(_request: Request, context: { params: Promise<{ codigo_ibge: string }> }) {
   const { codigo_ibge } = await context.params;
   if (!/^\d{7}$/.test(codigo_ibge)) return NextResponse.json({ detail: "Código IBGE inválido" }, { status: 400 });
   try {
-    const snapshot = await carregarSnapshot();
+    const [snapshot, financiamento] = await Promise.all([carregarSnapshot(), carregarFinanciamento()]);
     const dados = snapshot.registros[codigo_ibge];
     if (!dados) {
       return NextResponse.json({ detail: "Município não encontrado" }, { status: 404 });
     }
+    if (!financiamento.registros[codigo_ibge]) throw Error("Financiamento municipal ausente");
     return NextResponse.json({ status: "NACIONAL", disponivel: true, dados,
+      financiamento: financiamento.registros[codigo_ibge], fontes_financiamento: financiamento.fontes,
       municipios_referencia: snapshot.municipios_referencia });
   } catch {
     return NextResponse.json({ detail: "Não foi possível carregar os indicadores de saúde." }, { status: 503 });

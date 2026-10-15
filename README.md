@@ -175,3 +175,9 @@ python -m unittest discover -s tests -p 'test_saude*.py' -v
 O cache `data/raw/saude/nacional/` preserva os arquivos brutos e metadados com SHA-256. A coleta usa uma planilha FNS, a lista de parcelas, um relatório nacional APS e um ZIP agregado do Mais Médicos; não realiza milhares de consultas municipais. `--atualizar` renova respostas; sem a opção, a execução retoma os arquivos já verificados. A publicação é atômica após os controles das três fontes. Nenhuma ingestão TSE/CGU é reexecutada.
 
 O snapshot e a [metodologia do piloto](methodology/saude-piloto.md) foram preservados como histórico, sem uso nas rotas públicas atuais.
+
+## Financiamento e rede municipal de saúde
+
+A página da cidade apresenta o total federal fundo a fundo de todas as áreas, valor por habitante, grupos/finalidades, emendas identificadas dentro do total e evolução nominal entre os anos completos de 2024 e 2025. O parcial de 2026 (até julho) fica separado. Despesas SIOPS de 2025 são apresentadas por fonte e por fase (liquidadas/pagas), sem serem tratadas como receitas. CNES acrescenta unidades, UBS/postos, hospitais/leitos e equipamentos, com datas e recortes próprios. Valores da AgSUS sediada em Brasília não integram os repasses municipais, mesmo quando a planilha os classifica como municipais.
+
+Reprodução: `python -m scripts.publicar_financiamento_saude`, com `requirements-dados.txt`. O cache `data/raw/saude/expansao/` permite reutilizar as fontes verificadas; `--atualizar` renova a coleta. O novo snapshot é `data/public/financiamento_saude.json`; veja [método, fontes e limites](methodology/financiamento-saude.md). Não exige novas ingestões eleitorais ou do Bolsa Família.

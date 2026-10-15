@@ -78,6 +78,9 @@ def main():
     assert dados["/api/saude/5101837"]["dados"]["mais_medicos"]["ultimo"]["vagas_ocupadas"] == 0
     assert dados["/api/saude/1504752"]["disponivel"] is True
     assert fontes["saude"]["municipios_referencia"] == fontes["municipios"]
+    financiamento = json.loads((root / "data/public/financiamento_saude.json").read_text())
+    assert dados["/api/saude/3550308"]["financiamento"] == financiamento["registros"]["3550308"]
+    assert fontes["financiamento_saude"]["municipios"] == fontes["municipios"]
     for path in ("/api/mudanca-familias", "/api/mudanca-parcelas"):
         mudanca = dados[path]
         assert sum(x["total"] for x in mudanca["porVencedor"]) == mudanca["municipios"] > 0

@@ -18,7 +18,7 @@ test("saúde aparece na cidade com períodos independentes e fundo estadual sepa
   await page.getByRole("navigation", { name: "Indicadores da cidade" }).getByRole("link", { name: "Saúde", exact: true }).click();
   await expect(saude.getByRole("heading", { name: "Saúde na sua cidade" })).toBeInViewport();
   expect(await saude.locator(".health-table").evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
-  await saude.screenshot({ path: `test-results/saude-${testInfo.project.name}.png` });
+  await saude.locator(".cards").last().screenshot({ path: `test-results/saude-${testInfo.project.name}.png` });
   await saude.getByText("Repasses ao fundo estadual registrado nesta cidade", { exact: true }).click();
   await expect(saude).toContainText("Não somamos esse montante ao repasse municipal");
 });
@@ -68,7 +68,7 @@ for (const codigo of ["1302603", "2611606", "3304557", "4314902", "5208707"]) {
     const doc = await r.json();
     expect(r.ok()).toBeTruthy();
     expect(doc.dados).toEqual(snapshot.registros[codigo]);
-    expect(JSON.stringify(doc).length).toBeLessThan(30_000);
+    expect(JSON.stringify(doc).length).toBeLessThan(150_000);
   });
 }
 

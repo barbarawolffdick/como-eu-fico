@@ -131,3 +131,7 @@ Questões pendentes para etapa 2: janela histórica para fontes que não têm 20
 ### Expansão nacional da saúde — 15/10/2026
 
 Expansão autorizada após validação do piloto. As páginas do cadastro municipal completo apresentam repasses, equipes e vagas do provimento federal, com cobertura e datas independentes. A versão nacional utiliza o consolidado de vagas ocupadas (`total_ocupadas`) do Mais Médicos, incluindo instituições vinculadas, em vez de apresentar registros antigos da série histórica como situação atual. Zeros explicitamente publicados são distintos de ausência. DSEI e registros estaduais do provimento não são municipalizados. Não há novo programa, projeção ou atribuição causal nesta expansão.
+
+### Financiamento e estrutura de saúde — expansão autorizada
+
+Total municipal e valor por habitante abrangem transferências FNS fundo a fundo de todas as áreas; emendas e atenção primária já integram o total. A evolução usa anos completos comparáveis (2024/2025), mantendo 2026 parcial separado. Composição de despesas SIOPS é identificada como despesa por fonte, sem ser apresentada como composição de receitas. A rede CNES descreve localização e cadastro, sem inferir compra federal, residência dos atendidos ou acesso efetivo. Destinatários não municipais sediados na cidade ficam separados, incluindo a AgSUS identificada em Brasília. Traços de equipamentos e ausência de linha permanecem indisponíveis.

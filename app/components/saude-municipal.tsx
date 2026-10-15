@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { RespostaSaude } from "@/lib/saude";
+import FinanciamentoSaude from "./financiamento-saude";
 
 const numero = (valor: number | null) => valor == null ? "Indisponível" : valor.toLocaleString("pt-BR");
 const moeda = (valor: number | null) => valor == null ? "Indisponível" : (valor / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -30,6 +31,7 @@ export default function SaudeMunicipal({ codigo }: { codigo: string }) {
       : !resposta ? <p role="status">Carregando indicadores de saúde…</p>
       : !dados ? <div className="card"><p>{resposta.motivo || "Não há indicadores de saúde disponíveis para esta cidade."}</p></div>
       : <>
+        {resposta.financiamento && <FinanciamentoSaude dados={resposta.financiamento} fontes={resposta.fontes_financiamento} />}
         <div className="cards">
           <article className="card"><h3>Repasses federais para atenção primária</h3>
             <span className="kicker">Acumulado de {periodo(dados.fns.periodo_inicio)} a {periodo(dados.fns.periodo_fim)}</span>

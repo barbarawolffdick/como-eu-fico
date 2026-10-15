@@ -40,17 +40,20 @@ test("SIOPS apresenta despesas por fonte com seu próprio exercício", async ({ 
   await expect(card).toContainText("Impostos e transferências de impostos");
 });
 
-test("equipamentos preservam traços e distinguem aparelhos de estabelecimentos SUS", async ({ page }, testInfo) => {
+test("equipamentos distinguem locais SUS do inventário e preservam ausências", async ({ page }, testInfo) => {
   await page.goto("/?municipio=1504752");
-  const card = page.getByTestId("financiamento-saude").getByRole("article").filter({ has: page.getByRole("heading", { name: "Equipamentos na cidade" }) });
-  const ultrassom = card.getByRole("row").filter({ hasText: "Ultrassom" });
-  await expect(ultrassom.getByRole("cell").nth(1)).toHaveText("6");
-  await expect(ultrassom.getByRole("cell").nth(2)).toHaveText("3");
-  const mamografo = card.getByRole("row").filter({ hasText: "Mamógrafo" });
-  await expect(mamografo.getByRole("cell").nth(1)).toHaveText("Indisponível");
-  await expect(card).toContainText("08/2026");
-  expect(await card.locator(".health-equipment-table").evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
-  await card.screenshot({ path: `test-results/equipamentos-${testInfo.project.name}.png` });
+  const card = page.getByTestId("equipamentos-saude");
+  const ultrassom = card.locator('[data-equipamento="Ultrassom"]');
+  await expect(ultrassom).toContainText("3 locais");
+  await expect(ultrassom).toContainText("informado para o SUS");
+  await expect(card.locator('[data-equipamento="Mamógrafo"]')).toContainText("Sem informação");
+  await expect(card).toContainText("agosto de 2026");
+  await expect(card.locator("dl")).not.toBeVisible();
+  await card.getByText("Ver o total de equipamentos na rede pública e privada", { exact: true }).click();
+  await expect(card.locator("dl")).toContainText("6 aparelhos de ultrassom");
+  await expect(card).toContainText("não informa quantos aparelhos são do SUS");
+  expect(await card.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+  await card.screenshot({ style: ".city-sections, .skip-link { visibility: hidden !important; }", path: `test-results/equipamentos-${testInfo.project.name}.png` });
 });
 
 test("Brasília separa AgSUS, recurso distrital e valor municipal ausente", async ({ page, request }) => {

@@ -1,3 +1,4 @@
+import EquipamentosSaude from "./equipamentos-saude";
 import type { FinanciamentoSaude, OrigemSaude } from "@/lib/saude";
 
 const moeda = (v: number | null | undefined) => v == null ? "Indisponível" : (v / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -102,14 +103,7 @@ export default function FinanciamentoSaude({ dados, fontes }: { dados: Financiam
           <details className="health-details"><summary>Hospitais com leitos SUS registrados</summary>{hospitais.length ? <ul>{hospitais.slice(0, 10).map(u => <li key={u.cnes}>{u.nome}<small>CNES {u.cnes} · {numero(u.leitos_sus)} leitos SUS de internação · {numero(u.uti_sus)} de UTI</small></li>)}</ul> : <p>Nenhum registro com leitos SUS positivos nesta seleção.</p>}{hospitais.length > 10 && <p>Exibindo 10 de {hospitais.length} unidades com leitos SUS positivos.</p>}</details></> : <p>Não há registro hospitalar validado nesta competência para a cidade. Ausência não é zero.</p>}
         <div className="footnote">Fonte: <a href={fontes.leitos.url}>CNES — hospitais e leitos, agosto/2026</a>. Internação e UTI são categorias apresentadas separadamente. São leitos cadastrados, não vagas disponíveis agora. Hospitais podem atender moradores de outras cidades; a base não identifica aqui a residência dos pacientes ou o destino de cada repasse.</div>
       </article>
-      <article className="card health-wide"><h4>Equipamentos na cidade</h4>
-        <p className="kicker">CNES / Tabnet · {mes(dados.equipamentos.competencia)}</p>
-        <div className="ranking-scroll health-equipment-table"><table className="health-compact-table"><caption>Tipos selecionados no DATASUS; as colunas medem unidades diferentes.</caption><thead><tr><th>Tipo</th><th>Equipamentos em uso — rede total</th><th>Estabelecimentos com equipamento SUS</th></tr></thead><tbody>
-          {(dados.equipamentos.equipamentos_em_uso || dados.equipamentos.estabelecimentos_com_equipamento_sus || []).map((e, i) => <tr key={e.tipo}><td>{e.tipo}</td><td>{numero(dados.equipamentos.equipamentos_em_uso?.[i]?.valor)}</td><td>{numero(dados.equipamentos.estabelecimentos_com_equipamento_sus?.[i]?.valor)}</td></tr>)}
-        </tbody></table></div>
-        {!dados.equipamentos.equipamentos_em_uso && <p>Não há observação validada para esta cidade na tabela de equipamentos em uso.</p>}
-        <div className="footnote">Fonte: <a href="https://tabnet.datasus.gov.br/cgi/deftohtm.exe?cnes/cnv/equipobr.def">DATASUS — CNES, agosto/2026</a>. Equipamentos em uso incluem a rede pública e privada. A outra coluna conta estabelecimentos que informam equipamentos SUS, não a quantidade desses equipamentos nem agendamentos disponíveis. Traços da fonte são mantidos como “Indisponível”, sem preencher com zero. Os cadastros não comprovam aquisição com recursos federais.</div>
-      </article>
+      <article className="card health-wide"><EquipamentosSaude dados={dados.equipamentos} /></article>
     </div>
     <h3 className="health-subtitle">Equipes e provimento federal</h3>
   </div>;

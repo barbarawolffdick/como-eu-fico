@@ -69,33 +69,45 @@ O comando gera `inventario-limpeza.json` sem excluir nada. Antes de apagar ou mo
 
 Veja também `methodology/codigos-oficiais-tse-ibge.md`.
 
-## Consulta Next.js sem FastAPI remoto
+## Aplicação web — Next.js no v0/Vercel
 
-A busca, o detalhe municipal e o ranking em `/explorar` agora usam snapshots JSON versionados em `data/public/`. Não exigem URL do FastAPI no v0. Os snapshots são derivados do SQLite existente pelo workflow `Atualizar dados web`, após validação de 5.571 municípios, e atualizados automaticamente quando `data/app/como_eu_fico.sqlite` é publicado na `main`.
-
-**Limitação atual:** o SQLite publicado no GitHub pode estar atrasado em relação ao arquivo do Mac. O indicador por habitante só será liberado quando a versão publicada tiver população IBGE nos 5.571 municípios. A interface não deve apresentar cobertura de beneficiários como se fosse valor por habitante.
-
-## Frontend Next.js para v0
-
-A raiz do repositório agora é também uma aplicação **Next.js App Router**, com `package.json`, `app/page.tsx` e `app/api/[...path]/route.ts`. O código Python em `app/server.py` permanece independente e conserva o acesso oficial ao SQLite.
-
-**Desenvolvimento local com dados reais:** execute o FastAPI em `127.0.0.1:8001` como documentado acima. Em outro terminal na raiz:
+A raiz é uma aplicação Next.js App Router. Busca, detalhe municipal, rankings, cobertura, análises e fontes consultam **somente os snapshots versionados em `data/public/`**. Não precisam de FastAPI remoto, SQLite, Git LFS ou variáveis de ambiente para funcionar na web.
 
 ```bash
-npm install
-cp .env.example .env.local
-npm run dev
+# Node.js 22, como no CI e no deploy
+npm ci
+npm run lint
+npm run build
+npm run start
 ```
 
-Abra `http://localhost:3000`. A rota Next.js `/api/municipios` encaminha solicitações à API Python indicada por `FASTAPI_BASE_URL`; nomes, valores e votos vêm somente do SQLite real.
+Abra `http://localhost:3000`. Para desenvolvimento: `npm run dev`.
 
-**No v0:** importe a branch `main` do GitHub e execute como projeto Next.js. A interface visual renderiza sem banco. Para buscas e resultados reais, configure `FASTAPI_BASE_URL` com uma URL HTTP(S) **que o servidor Next.js do v0 consiga alcançar**. `http://127.0.0.1:8001` do Mac não é acessível dentro do v0. Não há mock de dados reais e não existe hospedagem configurada. Sem essa URL, as consultas mostram uma mensagem explícita de API não configurada.
+- `/`: busca e detalhe municipal, votos e série CGU.
+- `/explorar`: rankings financeiros e cobertura populacional, com filtros.
+- `/analises`: comparações territoriais descritivas.
+- `/fontes` e `/api/fontes`: períodos, unidades, ausências, URLs e hashes SHA-256 dos snapshots em uso.
 
-Assim, podemos editar e visualizar a interface no v0 **sem migrar ou duplicar** os pipelines TSE/CGU/IBGE. O app completo com consultas permanece funcional localmente com FastAPI + SQLite + Next.js.
+**Cobertura publicada:** população IBGE 2026 nos 5.571 municípios; pessoas em famílias beneficiárias MDS em 5.565 municípios, competência agosto de 2026. Seis ausências ficam indisponíveis, nunca zero. Famílias MDS têm observações em janeiro/2025 e agosto/2026. A série CGU vai de janeiro/2025 a agosto/2026, com cobertura histórica variável por município; os rankings financeiros usam janeiro–agosto/2026.
 
-## MVP local — execução oficial
+Os JSONs de detalhe e rankings derivam do SQLite pelo workflow `Atualizar dados web`. Consultar a web não executa ingestões nem modifica fontes. `FASTAPI_BASE_URL` é opcional e serve apenas às rotas legadas do proxy; não apontar a Vercel para o localhost do Mac.
 
-A aplicação funcional é **FastAPI + SQLite**. A interface web já está servida pelo próprio FastAPI em `app/server.py`. Não se trata de um app React/Next.js e o v0 não consegue inicializar diretamente esse backend nem substituir o SQLite real.
+### Publicação e verificação
+
+`vercel.json` fixa o preset **Next.js**, instalação com `npm ci` e build com `npm run build`. No projeto Vercel `barbaras-projects-f33a375a/como-eu-fico`, a raiz deve ser `.` e a branch de produção `main`. Manter o diretório de saída no padrão do Next.js; não usar o preset `Other` ou exigir uma pasta `public`. Ver [operação do deploy](docs/deploy-vercel.md).
+
+O v0 deve sincronizar a versão desejada do GitHub. A branch `v0/project-overview-3a142983` pode conter mudanças próprias; não substituir a `main` por ela sem revisão. Os snapshots precisam acompanhar o código na prévia.
+
+```bash
+npx playwright install chromium
+npm run test:web
+```
+
+Os testes abrem o app compilado na porta 3100, em desktop e celular, com os dados publicados. Exercitam busca, detalhe, ausência MDS, filtros, fontes e falhas de rede. A regressão da série incompleta remove uma observação real **somente em memória** e exige `null`. Para uma prévia acessível: `PLAYWRIGHT_BASE_URL=https://URL-DA-PREVIA npm run test:web` (com os mesmos snapshots). As simulações de falha de rede são restritas aos testes; nenhum dado fictício é publicado.
+
+## Backend Python — pipeline e consultas locais
+
+O backend **FastAPI + SQLite** em `app/server.py` permanece disponível para consultas locais e tarefas do pipeline. É independente do frontend Next.js descrito acima e não é necessário hospedá-lo para o MVP web.
 
 O banco operacional `data/app/como_eu_fico.sqlite` está em **Git LFS**. É obrigatório baixar o conteúdo LFS real; o ponteiro de 133 bytes não é um banco SQLite. Nenhum processamento nacional de TSE ou Bolsa Família deve ser refeito.
 
@@ -140,4 +152,4 @@ python -c "import sqlite3; c=sqlite3.connect('data/app/como_eu_fico.sqlite'); pr
 
 Se a extração SIDRA falhar por cobertura ou indisponibilidade, **não force a carga**. Se o CSV validado já existir, não execute o extrator de novo: execute apenas `app/integrar_fontes.py --populacao ...`. Depois de conferir a população em vários municípios e o resultado dos testes, versionar a atualização do SQLite via Git LFS.
 
-A página web exibe a população quando disponível e informa quando ainda não foi carregada. Publicação/hospedagem permanecem fora do escopo.
+A página web exibe a população quando disponível e informa quando ainda não foi carregada. O frontend publicado consulta os snapshots derivados, sem depender deste processo Python.

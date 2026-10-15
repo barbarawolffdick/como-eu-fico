@@ -38,7 +38,7 @@ jobs:
         with:
           node-version: '22'
       - name: Instalar dependências web
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Verificar TypeScript
         run: npm run lint
       - name: Compilar Next.js
@@ -70,4 +70,8 @@ jobs:
           grep -q "Relações territoriais" /tmp/analises.html
           curl -fsS http://127.0.0.1:3000/ > /tmp/home.html
           grep -q "Encontre seu município" /tmp/home.html
+      - name: Instalar navegador de teste
+        run: npx playwright install --with-deps chromium
+      - name: Testar navegação em desktop e celular
+        run: npm run test:web
 

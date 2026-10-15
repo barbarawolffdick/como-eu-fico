@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
@@ -29,8 +29,8 @@ const nomesDeUrna: Record<string, string> = {
 };
 const candidato = (n: string) => nomesDeUrna[n] ?? "Candidato " + n;
 const competencia = (m: string) => m.slice(4, 6) + "/" + m.slice(0, 4);
-async function getJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, { cache: "no-store" });
+async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {
+  const response = await fetch(url, { cache: "no-store", signal });
   if (!response.ok) {
     let message = "A consulta falhou.";
     try { const body = await response.json(); message = body.detail || message; } catch {}
@@ -44,6 +44,9 @@ export default function Home() {
   const [choices, setChoices] = useState<Municipio[]>([]);
   const [detail, setDetail] = useState<Detalhe | null>(null);
   const [cobertura, setCobertura] = useState<Cobertura | null>(null);
+  const [erroCobertura, setErroCobertura] = useState("");
+  const [tentativaCobertura, setTentativaCobertura] = useState(0);
+  const consultaAtual = useRef(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -59,7 +62,7 @@ export default function Home() {
     const controller = new AbortController();
     const timeout = setTimeout(async () => {
       try {
-        const rows = await getJson<Municipio[]>("/api/municipios?q=" + encodeURIComponent(query.trim()));
+        const rows = await getJson<Municipio[]>("/api/municipios?q=" + encodeURIComponent(query.trim()), controller.signal);
         if (!controller.signal.aborted) { setChoices(rows); setError(""); }
       } catch (e) {
         if (!controller.signal.aborted) { setChoices([]); setError((e as Error).message); }
@@ -69,25 +72,30 @@ export default function Home() {
   }, [query]);
 
   async function show(code: string) {
+    const consulta = ++consultaAtual.current;
     setLoading(true); setError("");
+    setDetail(null); setCobertura(null);
     try {
       const data = await getJson<Detalhe>("/api/municipios/" + code);
+      if (consulta !== consultaAtual.current) return;
       setDetail(data); setChoices([]); setQuery("");
       window.history.replaceState(null, "", "?municipio=" + code);
-    } catch (e) { setError((e as Error).message); }
-    finally { setLoading(false); }
+    } catch (e) { if (consulta === consultaAtual.current) setError((e as Error).message); }
+    finally { if (consulta === consultaAtual.current) setLoading(false); }
   }
 
   useEffect(() => {
     const codigo=detail?.municipio.codigo_ibge;
     if(!codigo){setCobertura(null);return;}
     let ativo=true;
+    const controller = new AbortController();
     setCobertura(null);
-    getJson<Cobertura>("/api/cobertura?municipio="+codigo)
+    setErroCobertura("");
+    getJson<Cobertura>("/api/cobertura?municipio="+codigo, controller.signal)
       .then(x=>{if(ativo)setCobertura(x);})
-      .catch(()=>{if(ativo)setCobertura(null);});
-    return ()=>{ativo=false};
-  },[detail?.municipio.codigo_ibge]);
+      .catch(()=>{if(ativo)setErroCobertura("Não foi possível carregar a cobertura. Tente novamente.");});
+    return ()=>{ativo=false;controller.abort()};
+  },[detail?.municipio.codigo_ibge,tentativaCobertura]);
 
   const serie = detail?.bolsa_familia ?? [];
   const ultimo = serie.at(-1);
@@ -125,7 +133,7 @@ export default function Home() {
         </div><ArrowUpRight size={24} aria-hidden="true" /></div>
         <div className="cards">
           <article className="card"><h3>Alcance do Bolsa Família</h3>
-            {cobertura?.disponivel && cobertura.municipio.cobertura_pct!=null ?
+            {erroCobertura ? <div role="alert"><p>{erroCobertura}</p><button onClick={()=>setTentativaCobertura(x=>x+1)}>Tentar novamente</button></div> : !cobertura ? <p role="status">Carregando cobertura…</p> : cobertura.disponivel && cobertura.municipio.cobertura_pct!=null ?
               <><span className="kicker">Pessoas integrantes de famílias beneficiárias · {competencia(cobertura.periodo)}</span>
                 <div className="big" style={{marginTop:10}}>{cobertura.municipio.cobertura_pct.toLocaleString("pt-BR",{maximumFractionDigits:1})}%</div>
                 <p className="sub">{br.format(cobertura.municipio.pessoas!)} pessoas em famílias beneficiárias em uma população estimada de {br.format(cobertura.municipio.populacao)} habitantes.</p>

@@ -1,5 +1,7 @@
 # Banco de dados do Como Eu Fico (MVP)
 
+> Este documento descreve a montagem histórica do backend Python. Para o estado operacional atual, consulte o README e `docs/deploy-vercel.md`: Next.js usa `data/public/`, com população publicada nos 5.571 municípios. As pendências de carga abaixo registram uma etapa anterior.
+
 O aplicativo tem **um banco operacional SQLite** em `data/app/como_eu_fico.sqlite`, criado por `app/database.py`. Ele é **derivado** das fontes independentes e auditadas, sem alterar os dados originais.
 
 ## Estrutura do app

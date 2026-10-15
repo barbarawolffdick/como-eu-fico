@@ -2,6 +2,7 @@
 Não publica nem preenche dados faltantes.
 """
 import json,re,urllib.parse,urllib.request
+from scripts.sondar_mds_vis import Table
 SEARCH="https://aplicacoes.cidadania.gov.br/vis/tabelas/busca_metadados_mis2.php"
 BASE="https://aplicacoes.cidadania.gov.br/vis/data3/"
 params={"q":"Quantidade total de pessoas em famílias beneficiárias do Programa Bolsa Família",
@@ -41,8 +42,12 @@ for variable in ("n_pess_cad_pbf","bf_qtd_fam","n_pess_070_140_cad_pbf"):
   with urllib.request.urlopen(urllib.request.Request(uri,headers={"User-Agent":"Mozilla/5.0"}),timeout=35) as response:
    body=response.read()
   decoded=body.decode("utf-8","replace")
-  marker=decoded.find("Moju")
-  print(json.dumps({"variavel":variable,"bytes":len(body),"tem_mojui":marker>=0,
-        "amostra":decoded[marker-120:marker+170] if marker>=0 else decoded[:180]},ensure_ascii=False))
+  parsed=Table();parsed.feed(decoded)
+  probes={}
+  for fragment in ("Moju","MOJU","150475","510183","421265","Pescaria","Boa Esper","São Paulo","355030"):
+   k=decoded.lower().find(fragment.lower())
+   probes[fragment]=decoded[max(0,k-130):k+260] if k>=0 else None
+  print(json.dumps({"variavel":variable,"bytes":len(body),"tr":decoded.lower().count("<tr"),
+    "headers":parsed.rows[:3],"rows":len(parsed.rows),"tail":parsed.rows[-2:],"probes":probes},ensure_ascii=False))
  except Exception as error:
   print(json.dumps({"variavel":variable,"erro":str(error)},ensure_ascii=False))

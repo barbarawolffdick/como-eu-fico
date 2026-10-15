@@ -47,7 +47,7 @@ test("cidade antes fora do piloto agora tem os três indicadores", async ({ page
 test("ausência de repasse municipal permanece indisponível", async ({ page }) => {
   await page.goto("/?municipio=2605459");
   const saude = page.getByTestId("saude-municipal");
-  const fns = saude.getByRole("article").filter({ has: page.getByRole("heading", { name: "Repasses federais para atenção primária" }) });
+  const fns = saude.getByRole("article").filter({ has: page.getByRole("heading", { name: "Dinheiro federal para os cuidados básicos de saúde" }) });
   await expect(fns.locator(".big")).toHaveText("Indisponível");
   await expect(fns).toContainText("Não há repasse municipal validado neste recorte. Ausência não é zero.");
 });
@@ -84,6 +84,6 @@ test("falha de rede na saúde pode ser recuperada sem virar ausência", async ({
   await expect(saude.getByRole("alert")).toContainText("Não foi possível carregar os indicadores de saúde");
   await page.unroute("**/api/saude/*");
   await saude.getByRole("button", { name: "Tentar novamente", exact: true }).click();
-  await expect(saude.getByRole("heading", { name: "Repasses federais para atenção primária" })).toBeVisible();
+  await expect(saude.getByRole("heading", { name: "Dinheiro federal para os cuidados básicos de saúde" })).toBeVisible();
   await expect(saude.getByRole("alert")).toHaveCount(0);
 });

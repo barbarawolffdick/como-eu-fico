@@ -1,173 +1,57 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import { Search, ArrowUpRight } from "lucide-react";
+import { DataBar } from "@/app/components/ui/data-bar";
+import { Card, CardLink } from "@/app/components/ui/card";
+import { ActionLink } from "@/app/components/ui/button";
 import Link from "next/link";
-import SaudeMunicipal from "./components/saude-municipal";
-
-type Municipio = { codigo_ibge: string; nome: string | null; uf: string | null; populacao: number | null; ano_populacao: number | null };
-type Bolsa = { mes_competencia: string; parcelas: number; valor_centavos: number };
-type Voto = { candidato: string; votos: number };
-type Cobertura = {periodo:string;fonte:string;disponivel:boolean;municipio:{pessoas:number|null;populacao:number;cobertura_pct:number|null}};
-type Detalhe = { municipio: Municipio; bolsa_familia: Bolsa[]; votos_presidenciais: Voto[]; eleitoral_disponivel: boolean };
-
-const br = new Intl.NumberFormat("pt-BR");
-const reais = (centavos: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(centavos / 100);
-// Nomes de urna para Presidente, eleição 2026. Fonte: catálogo TSE 2026.
-const nomesDeUrna: Record<string, string> = {
-  "13": "Lula",
-  "14": "Renan Santos",
-  "16": "Hertz Dias",
-  "21": "Edmilson Costa",
-  "22": "Flávio Bolsonaro",
-  "27": "Clariana Barão",
-  "29": "Rui Costa Pimenta",
-  "30": "Zema",
-  "35": "Veterinário Wilson Grassi",
-  "55": "Ronaldo Caiado",
-  "70": "Escritor Augusto Cury",
-  "80": "Samara",
-};
-const candidato = (n: string) => nomesDeUrna[n] ?? "Candidato " + n;
-const competencia = (m: string) => m.slice(4, 6) + "/" + m.slice(0, 4);
-async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {
-  const response = await fetch(url, { cache: "no-store", signal });
-  if (!response.ok) {
-    let message = "A consulta falhou.";
-    try { const body = await response.json(); message = body.detail || message; } catch {}
-    throw new Error(message);
-  }
-  return response.json() as Promise<T>;
-}
-
-export default function Home() {
-  const [query, setQuery] = useState("");
-  const [choices, setChoices] = useState<Municipio[]>([]);
-  const [detail, setDetail] = useState<Detalhe | null>(null);
-  const [cobertura, setCobertura] = useState<Cobertura | null>(null);
-  const [erroCobertura, setErroCobertura] = useState("");
-  const [tentativaCobertura, setTentativaCobertura] = useState(0);
-  const consultaAtual = useRef(0);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get("municipio");
-    if (code && /^\d{7}$/.test(code)) void show(code);
-    // Restore a direct-link lookup once, without resetting it during typing.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!query.trim()) { setChoices([]); return; }
-    const controller = new AbortController();
-    const timeout = setTimeout(async () => {
-      try {
-        const rows = await getJson<Municipio[]>("/api/municipios?q=" + encodeURIComponent(query.trim()), controller.signal);
-        if (!controller.signal.aborted) { setChoices(rows); setError(""); }
-      } catch (e) {
-        if (!controller.signal.aborted) { setChoices([]); setError((e as Error).message); }
-      }
-    }, 200);
-    return () => { clearTimeout(timeout); controller.abort(); };
-  }, [query]);
-
-  async function show(code: string) {
-    const consulta = ++consultaAtual.current;
-    setLoading(true); setError("");
-    setDetail(null); setCobertura(null);
-    try {
-      const data = await getJson<Detalhe>("/api/municipios/" + code);
-      if (consulta !== consultaAtual.current) return;
-      setDetail(data); setChoices([]); setQuery("");
-      window.history.replaceState(null, "", "?municipio=" + code);
-    } catch (e) { if (consulta === consultaAtual.current) setError((e as Error).message); }
-    finally { if (consulta === consultaAtual.current) setLoading(false); }
-  }
-
-  useEffect(() => {
-    const codigo=detail?.municipio.codigo_ibge;
-    if(!codigo){setCobertura(null);return;}
-    let ativo=true;
-    const controller = new AbortController();
-    setCobertura(null);
-    setErroCobertura("");
-    getJson<Cobertura>("/api/cobertura?municipio="+codigo, controller.signal)
-      .then(x=>{if(ativo)setCobertura(x);})
-      .catch(()=>{if(ativo)setErroCobertura("Não foi possível carregar a cobertura. Tente novamente.");});
-    return ()=>{ativo=false;controller.abort()};
-  },[detail?.municipio.codigo_ibge,tentativaCobertura]);
-
-  const serie = detail?.bolsa_familia ?? [];
-  const ultimo = serie.at(-1);
-  const maior = Math.max(1, ...serie.map(x => x.valor_centavos));
-  const votos = detail?.votos_presidenciais ?? [];
-  const totalVotos = votos.reduce((s, v) => s + v.votos, 0);
-
-  return <>
-    <header className="masthead"><div className="shell">
-      <div className="topbar"><span className="brand">Como Eu Fico</span><Link href="/explorar" className="tag">Explorar o Brasil →</Link></div>
-      <div className="hero"><div className="eyebrow">O Brasil, município por município</div>
-        <h1>O que acontece na sua cidade?</h1>
-        <p>Consulte dados públicos sobre saúde, Bolsa Família, a eleição presidencial de 2026 e o território onde você vive. Sem presumir relações de causa e efeito.</p>
+import { redirect } from "next/navigation";
+import { ArrowUpRight, MoveRight } from "lucide-react";
+import CitySearch from "./components/city-search";
+import { descobertasHome } from "@/lib/home";
+export const dynamic = "force-dynamic";
+const periodo = (mes: string) => `${mes.slice(4)}/${mes.slice(0, 4)}`;
+export default async function Home({ searchParams }: {
+    searchParams: Promise<{
+        municipio?: string;
+    }>;
+}) {
+    const { municipio } = await searchParams;
+    if (municipio && /^\d{7}$/.test(municipio))
+        redirect("/cidade/" + municipio);
+    const { ranking, mudanca } = await descobertasHome();
+    const escala = Math.max(1, ...mudanca?.regioes.map(r => Math.abs(r.percentual ?? 0)) ?? []);
+    return <main id="conteudo" tabIndex={-1} className="home-page">
+    <section className="home-hero"><div className="shell home-hero-grid">
+      <div className="home-intro"><p className="eyebrow">Política pública. Vida real.</p>
+        <h1>Como sua cidade vota.<br /><em>O que muda por aí.</em></h1>
+        <p className="hero-description">Entenda a relação entre escolhas políticas e a vida na sua cidade. Acompanhe recursos, serviços e benefícios com dados para formar sua própria opinião.</p>
+        <div className="home-search"><CitySearch /></div>
+        <p className="hero-caption">Sua cidade é o ponto de partida. O Brasil é o contexto.</p>
       </div>
-    </div></header>
-    <main className="shell main">
-      <div className="searchpanel">
-        <label htmlFor="busca" className="inputlabel">Encontre seu município</label>
-        <div className="searchfield"><Search size={19} aria-hidden="true" />
-          <input id="busca" autoComplete="off" placeholder="Nome do município ou código IBGE" value={query} onChange={e => setQuery(e.target.value)} />
-        </div>
-        {choices.length > 0 && <div className="choices" role="listbox" aria-label="Resultados da busca">
-          {choices.map(m => <button className="choice" role="option" aria-selected="false" key={m.codigo_ibge} onClick={() => void show(m.codigo_ibge)}>
-            <span>{m.nome ?? "Município sem nome"} — {m.uf ?? "UF não informada"}</span><small>IBGE {m.codigo_ibge}</small>
-          </button>)}
-        </div>}
-        <p className="hint">Busca por nome ou código IBGE. A consulta usa as fontes municipais integradas, sem inventar dados ausentes.</p>
+      <Card className="discovery-card" tone="muted"><div className="discovery-top"><span className="eyebrow">Uma pergunta para começar</span><span className="topic-pill">Bolsa Família</span></div>
+        <h2>O alcance mudou.<br />Da mesma forma em todo o Brasil?</h2>
+        <p>Variação do número de famílias beneficiárias por região.</p>
+        {mudanca ? <><p className="discovery-period">{periodo(mudanca.inicio)} → {periodo(mudanca.fim)} · MDS</p>
+          <ul className="region-changes">{mudanca.regioes.map(r => <li key={r.regiao}>
+            <div><span>{r.regiao}</span><strong>{r.percentual == null ? "Indisponível" : `${r.percentual > 0 ? "+" : ""}${r.percentual.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}</strong></div>
+            <DataBar className="region-track" value={Math.abs(r.percentual ?? 0)} max={escala} />
+            {r.municipios !== r.total && <small>{r.municipios} de {r.total} municípios com dados nos dois períodos</small>}
+          </li>)}</ul>
+          <p className="discovery-note">Comparação das somas nos municípios com dados nos dois períodos. Barras mostram a magnitude; o sinal indica aumento ou redução.</p></> : <p role="status">Os dados desta comparação estão indisponíveis no momento.</p>}
+        <ActionLink href="/analises">Investigar os dados e o contexto eleitoral <ArrowUpRight size={18} aria-hidden="true"/></ActionLink>
+      </Card>
+    </div></section>
+    <section className="shell home-explore" aria-labelledby="explore-title"><div className="section-heading"><div><p className="kicker">Olhe além do número</p><h2 id="explore-title">Cada cidade conta uma história.</h2></div><ActionLink href="/explorar">Explorar o Brasil →</ActionLink></div>
+      <div className="home-content-grid"><Card className="home-ranking"><p className="kicker">Ranking · alcance na população</p><h3>Onde o Bolsa Família alcança mais moradores?</h3>
+        <p className="sub">Percentual da população da cidade que vive em famílias que recebem o Bolsa Família. {ranking && `${periodo(ranking.periodo)} · MDS / IBGE 2026.`}</p>
+        {ranking?.cidades.length ? <ol className="home-ranking-list">{ranking.cidades.map((city, index) => <li key={city.codigo_ibge}>
+          <span className="rank-position">{String(index + 1).padStart(2, "0")}</span><Link href={`/cidade/${city.codigo_ibge}`}>{city.nome}<small>{city.uf}</small></Link><strong>{city.percentual.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</strong>
+        </li>)}</ol> : <p>O ranking está indisponível no momento.</p>}
+        <p className="hint">Cinco maiores percentuais entre cidades com dado disponível. Conta todos os integrantes dessas famílias, inclusive crianças. O pagamento é feito ao titular da família.</p>
+        <ActionLink href="/explorar">Explorar os rankings <MoveRight size={18} aria-hidden="true"/></ActionLink>
+      </Card>
+      <div className="journey-cards"><CardLink href="/comparar" tone="accent" className="journey-card"><span className="kicker">Duas cidades, lado a lado</span><h3>O que muda de uma cidade para outra?</h3><p>Compare voto, recursos de saúde e Bolsa Família, com períodos e unidades explícitos.</p><span className="action-link button--quiet">Comparar cidades <ArrowUpRight size={18} aria-hidden="true"/></span></CardLink>
+        <CardLink href="/fontes" tone="warm" className="journey-card"><span className="kicker">Informação que você pode conferir</span><h3>De onde vêm os dados?</h3><p>Conheça as fontes, os períodos e o que cada indicador permite afirmar.</p><span className="action-link button--quiet">Entender os dados <ArrowUpRight size={18} aria-hidden="true"/></span></CardLink></div>
       </div>
-      {error && <div className="notice" role="alert">{error}</div>}
-      {loading && <div className="hint" role="status">Consultando dados do município…</div>}
-      {detail ? <div className="results">
-        <div className="resulttop"><div><span className="kicker">Consulta municipal · IBGE {detail.municipio.codigo_ibge}</span>
-          <h2>{detail.municipio.nome ?? "Município"} — {detail.municipio.uf ?? "UF"}</h2>
-          <div className="population">{detail.municipio.populacao != null ? "População estimada: " + br.format(detail.municipio.populacao) + " habitantes · IBGE " + detail.municipio.ano_populacao : "População IBGE ainda não disponível nesta base"}</div>
-        </div><ArrowUpRight size={24} aria-hidden="true" /></div>
-        <nav className="city-sections" aria-label="Indicadores da cidade"><a href="#titulo-saude">Saúde</a><a href="#dados-bolsa">Bolsa Família</a><a href="#dados-eleicao">Eleição 2026</a></nav>
-        <div className="cards">
-          <article className="card"><h3>Alcance do Bolsa Família</h3>
-            {erroCobertura ? <div role="alert"><p>{erroCobertura}</p><button onClick={()=>setTentativaCobertura(x=>x+1)}>Tentar novamente</button></div> : !cobertura ? <p role="status">Carregando cobertura…</p> : cobertura.disponivel && cobertura.municipio.cobertura_pct!=null ?
-              <><span className="kicker">Pessoas integrantes de famílias beneficiárias · {competencia(cobertura.periodo)}</span>
-                <div className="big" style={{marginTop:10}}>{cobertura.municipio.cobertura_pct.toLocaleString("pt-BR",{maximumFractionDigits:1})}%</div>
-                <p className="sub">{br.format(cobertura.municipio.pessoas!)} pessoas em famílias beneficiárias em uma população estimada de {br.format(cobertura.municipio.populacao)} habitantes.</p>
-              </> :
-              <p className="sub">Cobertura populacional ainda não disponível para este município. Ausência não é zero.</p>}
-            <div className="footnote">Fonte: MDS / VIS DATA 3. População: IBGE 2026. É a proporção de moradores que integram famílias beneficiárias, não de titulares que recebem pagamentos. {cobertura?.fonte && <a href={cobertura.fonte} target="_blank" rel="noreferrer">Ver fonte.</a>}</div>
-          </article>
-          <article className="card" id="dados-bolsa"><h3>Bolsa Família</h3>
-            {ultimo ? <><span className="kicker">Última competência: {competencia(ultimo.mes_competencia)}</span>
-              <div className="big" style={{marginTop:10}}>{reais(ultimo.valor_centavos)}</div>
-              <p className="sub">{br.format(ultimo.parcelas)} registros de parcelas do benefício nessa competência</p>
-              <div className="chart" role="img" aria-label={"Evolução mensal dos valores registrados do Bolsa Família, de " + competencia(serie[0].mes_competencia) + " até " + competencia(ultimo.mes_competencia)}>
-                {serie.map(p => <div key={p.mes_competencia} className="bar" title={competencia(p.mes_competencia) + ": " + reais(p.valor_centavos)} style={{height:(100 * p.valor_centavos / maior) + "%"}} />)}
-              </div><div className="chartlabels"><span>{competencia(serie[0].mes_competencia)}</span><span>{competencia(ultimo.mes_competencia)}</span></div>
-              <p className="sub">Acumulado das {serie.length} competências: {reais(serie.reduce((s,p) => s+p.valor_centavos,0))}</p>
-            </> : <p className="sub">Sem registros mensais disponíveis. Ausência não significa zero.</p>}
-            <div className="footnote">Fonte: CGU / Portal da Transparência. Valores agregados por competência. Parcelas são registros de parcelas do benefício na base CGU, não famílias únicas. Os registros não comprovam saque.</div>
-          </article>
-          <article className="card" id="dados-eleicao"><h3>Votação presidencial · 2026</h3>
-            {votos.length && totalVotos > 0 ? <>{votos.map(v => {
-              const p = 100 * v.votos / totalVotos;
-              return <div className="vote" key={v.candidato}><div className="voterow"><span>{candidato(v.candidato)} ({v.candidato})</span><strong>{p.toFixed(1).replace(".", ",")}%</strong></div>
-                <div className="track"><div className="fill" style={{width:p+"%"}} /></div><p className="sub">{br.format(v.votos)} votos</p></div>;
-            })}<p className="sub">Total de votos dos candidatos listados: {br.format(totalVotos)}</p></> :
-              <p className="sub">Dados eleitorais indisponíveis. Ausência não significa zero.</p>}
-            <div className="footnote">Fonte: TSE. Primeiro turno da eleição presidencial de 2026. Dados agregados por município não demonstram comportamento individual ou causalidade com políticas públicas.</div>
-          </article>
-        </div>
-        <SaudeMunicipal key={detail.municipio.codigo_ibge} codigo={detail.municipio.codigo_ibge} />
-        <div className="sources">Fontes: TSE (votação), CGU (Bolsa Família), IBGE (território e população) e Ministério da Saúde (indicadores do SUS). Os períodos e conceitos das fontes são independentes.</div>
-      </div> : <div className="empty"><strong>Comece pelo seu município.</strong><span>Escolha uma cidade para conhecer os indicadores disponíveis.</span></div>}
-    </main>
-    <footer className="footer"><div className="shell">Como Eu Fico · Consulta descritiva de dados públicos. Nenhuma associação apresentada implica causalidade.</div></footer>
-  </>;
+      <p className="home-editorial-note">Voto, financiamento e condições de vida são dimensões distintas. Relações entre dados municipais ajudam a investigar perguntas; não demonstram, sozinhas, impacto da presidência ou a motivação de cada eleitor.</p>
+    </section>
+  </main>;
 }

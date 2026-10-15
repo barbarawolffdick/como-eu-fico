@@ -67,11 +67,11 @@ jobs:
           python -c "import json; r=json.load(open('/tmp/analises.json')); assert r['universo']>0; assert len(r['distribuicao'])==3; assert len(r['evolucao'])==8; assert 'outros' in r"
           python tests/test_cobertura_http.py
           curl -fsS http://127.0.0.1:3000/explorar > /tmp/explorar.html
-          grep -q "Alcance do Bolsa Família" /tmp/explorar.html
+          grep -q "Explore os municípios brasileiros" /tmp/explorar.html
           curl -fsS http://127.0.0.1:3000/analises > /tmp/analises.html
           grep -q "Relações territoriais" /tmp/analises.html
           curl -fsS http://127.0.0.1:3000/ > /tmp/home.html
-          grep -q "Encontre seu município" /tmp/home.html
+          grep -q "Como sua cidade vota." /tmp/home.html
       - name: Instalar navegador de teste
         run: npx playwright install --with-deps chromium
       - name: Testar navegação em desktop e celular

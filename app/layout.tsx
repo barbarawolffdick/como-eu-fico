@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Link from "next/link";
+import SiteNavigation from "./components/site-navigation";
 
 export const metadata: Metadata = {
   title: "Como Eu Fico — seu município em dados",
-  description: "Dados públicos municipais: saúde, Bolsa Família, votação presidencial e população IBGE.",
+  description: "Entenda como sua cidade vota e o que muda na vida de quem mora nela. Políticas públicas, recursos e serviços em dados.",
 };
 
 export default function RootLayout({ children }: Readonly<{children: React.ReactNode}>) {
-  return <html lang="pt-BR"><body>{children}<nav className="shell site-nav" aria-label="Navegação principal"><Link href="/">Consultar município</Link><Link href="/explorar">Explorar o Brasil</Link><Link href="/analises">Análises</Link><Link href="/fontes">Fontes e metodologia</Link></nav></body></html>;
+  return <html lang="pt-BR"><body><SiteNavigation />{children}<footer className="footer"><div className="shell footer-inner"><strong>Como Eu Fico</strong><span>Dados públicos para entender sua cidade e formar sua própria opinião.</span><a href="/fontes">Fontes e metodologia →</a></div></footer></body></html>;
 }

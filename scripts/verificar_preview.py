@@ -47,7 +47,7 @@ def main():
         with build_opener(MesmaOrigem()).open(req, timeout=30) as resposta:
             return path, resposta.read().decode("utf-8")
 
-    paths = ["/", "/explorar", "/analises", "/fontes", "/api/fontes",
+    paths = ["/cidade/3550308", "/comparar?a=3138203&b=3304557", "/api/beneficiarios/3138203", "/", "/explorar", "/analises", "/fontes", "/api/fontes",
              "/api/municipios?q=3550308", "/api/municipios/3550308",
              "/api/rankings?metrica=valor_habitante&uf=SP&vencedor=13",
              "/api/cobertura?municipio=3550308", "/api/cobertura?municipio=1504752",
@@ -55,11 +55,15 @@ def main():
              "/api/saude/3550308", "/api/saude/5101837", "/api/saude/1504752"]
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
         respostas = dict(pool.map(consultar, paths))
-    for path, titulo in [("/", "Encontre seu município"), ("/explorar", "Alcance do Bolsa Família"),
+    for path, titulo in [("/", "Como sua cidade vota."), ("/explorar", "Explore os municípios brasileiros"),
                          ("/analises", "Relações territoriais"), ("/fontes", "Fontes e metodologia")]:
         assert titulo in respostas[path], path
     dados = {p: json.loads(body) for p, body in respostas.items() if p.startswith("/api/")}
     fontes = dados["/api/fontes"]
+    beneficiarios = dados["/api/beneficiarios/3138203"]
+    mensal = json.loads((root / "data/public/pessoas_mds_mensal.json").read_text())
+    assert beneficiarios["periodos"]["202608"]["pessoas"] == mensal["registros"]["3138203"]["periodos"]["202608"]
+    assert beneficiarios["fontes"]["pessoas"] == mensal["registros"]["3138203"]["proveniencia"]
     for arquivo in fontes["arquivos"]:
         sha256 = hashlib.sha256((root / "data/public" / arquivo["arquivo"]).read_bytes()).hexdigest()
         assert arquivo["sha256"] == sha256, arquivo["arquivo"]

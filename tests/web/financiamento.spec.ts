@@ -9,7 +9,7 @@ test("cidade relaciona total, finalidades, emendas e população sem dupla conta
   expect(body.financiamento).toEqual(snapshot.registros["1504752"]);
   await page.goto("/?municipio=1504752");
   const painel = page.getByTestId("financiamento-saude");
-  await expect(painel.getByRole("heading", { name: "Total federal recebido pelo fundo municipal" })).toBeVisible();
+  await expect(painel.getByRole("heading", { name: "Dinheiro enviado à saúde da cidade" })).toBeVisible();
   await expect(painel).toContainText("R$ 8.605.457,36");
   await expect(painel).toContainText("R$ 327,14");
   await expect(painel).toContainText("40,67% do total municipal");
@@ -19,23 +19,28 @@ test("cidade relaciona total, finalidades, emendas e população sem dupla conta
   await painel.locator(".health-summary").screenshot({ path: `test-results/financiamento-${testInfo.project.name}.png` });
 });
 
-test("evolução compara somente anos completos e deixa 2026 parcial separado", async ({ page }) => {
+test("evolução compara somente anos completos e deixa 2026 parcial separado", async ({ page }, testInfo) => {
   await page.goto("/?municipio=1504752");
-  const card = page.getByTestId("financiamento-saude").getByRole("article").filter({ has: page.getByRole("heading", { name: "O repasse aumentou ou diminuiu?" }) });
+  const card = page.getByTestId("financiamento-saude").getByRole("article").filter({ has: page.getByRole("heading", { name: "A cidade recebeu mais ou menos dinheiro para saúde?" }) });
   await expect(card).toContainText("2024 · jan–dez");
   await expect(card).toContainText("2025 · jan–dez");
   await expect(card).toContainText("0,51%");
   await expect(card).toContainText("não calculamos variação contra um ano completo");
   await expect(card.getByRole("table")).not.toContainText("2026");
+  await expect(card.locator(".change-up")).toContainText("Aumentou 0,51%");
+  await card.screenshot({ style: ".city-sections, .skip-link { visibility: hidden !important; }", path: `test-results/variacao-explicada-${testInfo.project.name}.png` });
 });
 
-test("SIOPS apresenta despesas por fonte com seu próprio exercício", async ({ page }) => {
+test("SIOPS apresenta despesas por fonte com seu próprio exercício", async ({ page }, testInfo) => {
   await page.goto("/?municipio=1504752");
-  const card = page.getByTestId("financiamento-saude").getByRole("article").filter({ has: page.getByRole("heading", { name: "Como a cidade financiou suas despesas de saúde?" }) });
+  const card = page.getByTestId("financiamento-saude").getByRole("article").filter({ has: page.getByRole("heading", { name: "Quanto a cidade gastou com saúde?" }) });
   await expect(card).toContainText("exercício 2025");
   await expect(card).toContainText("49,44%");
   await expect(card).toContainText("Estes totais são despesas, não receitas recebidas");
-  await card.getByText("Ver despesas liquidadas por fonte de financiamento", { exact: true }).click();
+  await expect(card).toContainText("Em cada R$ 100 de despesas reconhecidas");
+  await expect(card).toContainText("R$ 49,44");
+  await card.screenshot({ style: ".city-sections, .skip-link { visibility: hidden !important; }", path: `test-results/despesas-explicadas-${testInfo.project.name}.png` });
+  await card.getByText("Ver de onde vieram os recursos das despesas", { exact: true }).click();
   await expect(card).toContainText("Transferências federais fundo a fundo");
   await expect(card).toContainText("Impostos e transferências de impostos");
 });

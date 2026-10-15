@@ -6,8 +6,9 @@
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit",
-    "test:web": "playwright test"
+    "lint": "tsc --noEmit && npm run check:design",
+    "test:web": "playwright test",
+    "check:design": "node scripts/validar_design_system.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

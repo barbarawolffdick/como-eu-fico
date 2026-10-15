@@ -43,10 +43,10 @@ Os totais municipais cobertos podem divergir do total nacional devido à indispo
 | 5006275 | Paraíso das Águas | MS |
 | 5101837 | Boa Esperança do Norte | MT |
 
-A tabela nacional do MDS informa 5.571 unidades, mas os polígonos municipais retornados pelo serviço geográfico cobrem 5.565. O endpoint tabular de Top 10 não expôs as unidades faltantes na verificação de paginação. Portanto, **não deduzir cobertura zero ou completar seis municípios por médias estaduais ou familiares**. O preenchimento futuro exige uma fonte tabular oficial por código municipal, com as três faixas, mesma competência e rastreabilidade.
+A tabela nacional do MDS informa 5.571 unidades, mas os polígonos municipais retornados pelo serviço geográfico cobrem 5.565. A consulta de indicadores no VIS DATA 3 devolveu apenas Top 10, sem paginação ampliável. Uma consulta adicional ao serviço tabular do MDS reconheceu os códigos municipais de todos os seis municípios, mas, com a variável testada, **não devolveu contagens numéricas**. Assim, a existência territorial foi corroborada; o numerador de pessoas para os seis continua indisponível na extração validada. Portanto, **não deduzir cobertura zero ou completar seis municípios por médias estaduais ou familiares**. O preenchimento futuro exige uma fonte tabular oficial por código municipal, com as três faixas, mesma competência e rastreabilidade.
 
 ### Garantia automatizada
 
-O workflow `Testes do MVP` executa `tests/test_cobertura_http.py` contra o Next.js compilado, usando o snapshot publicado: valida município com cobertura, município ausente, fórmula, ordenação do ranking, filtros eleitorais, UF, períodos e erros. Também valida as correspondências explícitas com `tests/test_correspondencia_pessoas_mds.py`.
+O workflow `Testes do MVP` executa `tests/test_cobertura_http.py` contra o Next.js compilado, usando o snapshot publicado: valida município com cobertura, município ausente, fórmula, ordenação do ranking, filtros eleitorais, UF, períodos e erros. Também valida as correspondências explícitas com `tests/test_correspondencia_pessoas_mds.py`. A compilação e as páginas `/`, `/explorar` e `/analises` são verificadas pelo mesmo workflow.
 
 A integração com a prévia do v0 ainda precisa ser verificada no projeto conectado. O CI valida a aplicação do repositório, não autentica ou atualiza automaticamente uma sessão do v0.

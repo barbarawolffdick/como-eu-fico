@@ -15,6 +15,8 @@ test("saúde aparece na cidade com períodos independentes e fundo estadual sepa
   await expect(saude).toContainText("R$ 701.883.633,40");
   await expect(saude).toContainText("Parcela 10/2026 · Cadastro CNES 08/2026");
   await expect(saude).toContainText("Referência: 05/10/2026");
+  await page.getByRole("navigation", { name: "Indicadores da cidade" }).getByRole("link", { name: "Saúde", exact: true }).click();
+  await expect(saude.getByRole("heading", { name: "Saúde na sua cidade" })).toBeInViewport();
   expect(await saude.locator(".health-table").evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
   await saude.screenshot({ path: `test-results/saude-${testInfo.project.name}.png` });
   await saude.getByText("Repasses ao fundo estadual registrado nesta cidade", { exact: true }).click();

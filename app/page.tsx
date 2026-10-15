@@ -132,6 +132,7 @@ export default function Home() {
           <h2>{detail.municipio.nome ?? "Município"} — {detail.municipio.uf ?? "UF"}</h2>
           <div className="population">{detail.municipio.populacao != null ? "População estimada: " + br.format(detail.municipio.populacao) + " habitantes · IBGE " + detail.municipio.ano_populacao : "População IBGE ainda não disponível nesta base"}</div>
         </div><ArrowUpRight size={24} aria-hidden="true" /></div>
+        <nav className="city-sections" aria-label="Indicadores da cidade"><a href="#titulo-saude">Saúde</a><a href="#dados-bolsa">Bolsa Família</a><a href="#dados-eleicao">Eleição 2026</a></nav>
         <div className="cards">
           <article className="card"><h3>Alcance do Bolsa Família</h3>
             {erroCobertura ? <div role="alert"><p>{erroCobertura}</p><button onClick={()=>setTentativaCobertura(x=>x+1)}>Tentar novamente</button></div> : !cobertura ? <p role="status">Carregando cobertura…</p> : cobertura.disponivel && cobertura.municipio.cobertura_pct!=null ?
@@ -142,7 +143,7 @@ export default function Home() {
               <p className="sub">Cobertura populacional ainda não disponível para este município. Ausência não é zero.</p>}
             <div className="footnote">Fonte: MDS / VIS DATA 3. População: IBGE 2026. É a proporção de moradores que integram famílias beneficiárias, não de titulares que recebem pagamentos. {cobertura?.fonte && <a href={cobertura.fonte} target="_blank" rel="noreferrer">Ver fonte.</a>}</div>
           </article>
-          <article className="card"><h3>Bolsa Família</h3>
+          <article className="card" id="dados-bolsa"><h3>Bolsa Família</h3>
             {ultimo ? <><span className="kicker">Última competência: {competencia(ultimo.mes_competencia)}</span>
               <div className="big" style={{marginTop:10}}>{reais(ultimo.valor_centavos)}</div>
               <p className="sub">{br.format(ultimo.parcelas)} registros de parcelas do benefício nessa competência</p>
@@ -153,7 +154,7 @@ export default function Home() {
             </> : <p className="sub">Sem registros mensais disponíveis. Ausência não significa zero.</p>}
             <div className="footnote">Fonte: CGU / Portal da Transparência. Valores agregados por competência. Parcelas são registros de parcelas do benefício na base CGU, não famílias únicas. Os registros não comprovam saque.</div>
           </article>
-          <article className="card"><h3>Votação presidencial · 2026</h3>
+          <article className="card" id="dados-eleicao"><h3>Votação presidencial · 2026</h3>
             {votos.length && totalVotos > 0 ? <>{votos.map(v => {
               const p = 100 * v.votos / totalVotos;
               return <div className="vote" key={v.candidato}><div className="voterow"><span>{candidato(v.candidato)} ({v.candidato})</span><strong>{p.toFixed(1).replace(".", ",")}%</strong></div>

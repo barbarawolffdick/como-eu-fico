@@ -8,3 +8,5 @@
 .site-nav{display:flex;flex-wrap:wrap;gap:18px;padding-top:24px;padding-bottom:32px;font-size:14px}.site-nav a{ text-underline-offset:3px }.snapshot-list li{margin:16px 0;overflow-wrap:anywhere}.snapshot-list code{font-size:12px}.searchpanel p{line-height:1.6}
 
 .health-details{margin-top:20px;font-size:13px;line-height:1.6}.health-details summary{cursor:pointer;font-weight:700}.health-details li{margin:14px 0;overflow-wrap:anywhere}.health-details small{display:block;color:#607166}.health-table{margin-top:18px}.health-table .ranking-table{min-width:0;table-layout:fixed}.health-table .ranking-table th:first-child{width:44%}.health-table .ranking-table td,.health-table .ranking-table th{padding:12px 8px;font-size:11px;overflow-wrap:anywhere}
+
+.city-sections{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 24px}.city-sections a{padding:10px 14px;border:1px solid #cdd7ce;background:#fff;border-radius:8px;font-size:13px;text-decoration:none}.city-sections a:hover,.city-sections a:focus-visible{background:#e6efe8;outline:2px solid #236a4c}

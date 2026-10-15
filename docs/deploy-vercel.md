@@ -35,7 +35,7 @@ Não criar outro projeto, duplicar as bases ou habilitar uma ingestão para reso
 1. Conferir equipe, projeto, branch e commit antes de publicar.
 2. Executar `npm ci`, `npm run lint`, `npm run build` e `npm run test:web`.
 3. Publicar uma prévia do commit revisado, incluindo `data/public/`.
-4. Validar `/`, `/explorar`, `/analises`, `/fontes`, `/api/fontes`, busca, detalhe, rankings, cobertura, famílias e análises. Conferir no ambiente remoto um caso com cobertura e um dos seis ausentes.
+4. Validar `/`, `/explorar`, `/analises`, `/fontes`, `/api/fontes`, busca, detalhe, rankings, cobertura, famílias e análises. Conferir no ambiente remoto as seis cidades completadas por consulta tabular, seus numeradores e a competência setembro/2026.
 5. Comparar hashes de `/api/fontes` com os snapshots do commit. Registrar URL, commit e resultado.
 6. Para uma prévia protegida, usar a sessão autorizada da Vercel ou `vercel curl`; manter a proteção habilitada.
 
@@ -45,7 +45,7 @@ O v0 tem uma branch própria (`v0/project-overview-3a142983`). Sua referência r
 
 O frontend Next.js lê JSONs versionados. Não requer FastAPI hospedado, banco persistente ou segredos de fontes oficiais. O proxy Python é opcional para rotas legadas. Não configurar o localhost do Mac como backend remoto.
 
-As seis ausências MDS permanecem `null`. A análise de evolução mensal retorna `null` para o grupo/mês quando faltar observação de um de seus municípios, junto das contagens de cobertura. Grupo vazio também não produz zero. Testes usam os snapshots reais e removem uma observação apenas em memória para verificar essa regra.
+As seis ausências cartográficas MDS foram completadas pela consulta tabular oficial e a cobertura populacional está validada nos 5.571 municípios para setembro/2026. Ausências futuras continuam `null`. A análise de evolução mensal retorna `null` para o grupo/mês quando faltar observação de um de seus municípios, junto das contagens de cobertura. Grupo vazio também não produz zero. Testes usam os snapshots reais e removem uma observação apenas em memória para verificar essa regra.
 
 TSE, CGU, IBGE e MDS mantêm períodos e unidades distintos. A aplicação não revela voto individual nem estima efeito causal do Bolsa Família sobre resultados eleitorais.
 

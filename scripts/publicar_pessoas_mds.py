@@ -7,7 +7,7 @@ DEST=ROOT/"data/public/pessoas_mds.json"
 BASE="https://aplicacoes.cidadania.gov.br/vis/data3/"
 SEARCH="https://aplicacoes.cidadania.gov.br/vis/tabelas/busca_metadados_mis2.php"
 MAP="https://aplicacoes.cidadania.gov.br/vis/dash/sv-mapa-faixas.php?qe="
-PERIODO="202608"
+PERIODO="202609"
 LABELS=("em situação de pobreza, segundo a faixa do Programa","de baixa renda","acima de meio salário-mínimo")
 def request(url,post=None):
     req=urllib.request.Request(url,
@@ -42,7 +42,7 @@ def parse_features(obj,title):
         if key in result:raise ValueError("Município duplicado "+repr(key))
         result[key]=n
         ref.add(str(p.get("referencia","")))
-    if ref!={"2026-08-01"}:raise ValueError("Competência do mapa diferente de agosto 2026: "+repr(ref))
+    if ref!={f"{PERIODO[:4]}-{PERIODO[4:]}-01"}:raise ValueError("Referência declarada pelo mapa diverge do recorte: "+repr(ref))
     if len(result)<5500:raise ValueError("Cobertura geográfica baixa: "+str(len(result)))
     return result
 def run():
@@ -67,7 +67,7 @@ def run():
     options=extract_options(page)
     extracts=[];provenance=[]
     for title,token in options:
-        body=request(MAP+token,{"ref":"2026-08-01","ag":"p","area":"","area_user":"",
+        body=request(MAP+token,{"ref":f"{PERIODO[:4]}-{PERIODO[4:]}-01","ag":"p","area":"","area_user":"",
           "temp":"1","mes_ou_ano":"mes","p_ibge":"0","nr":"","ma":"",
           "op":"1","wt":"json","f0":"0","f1":"2000000","cor":"#195b49","v":title,"vf":"numero"})
         byname=parse_features(json.loads(body),title)
@@ -123,7 +123,11 @@ def run():
        "pagina_fonte":pageurl,"metodo":"Soma de três faixas de renda disjuntas apresentadas pelo MDS; ausência municipal não é zero.",
        "proveniencia":provenance,"registros":data}
     DEST.parent.mkdir(parents=True,exist_ok=True)
-    DEST.write_text(json.dumps(result,ensure_ascii=False,separators=(",",":"))+"\n",encoding="utf-8")
-    print(json.dumps({"municipios_com_dado":len(available),"municipios_sem_dado":result["municipios_sem_dado"],
-      "total_pessoas_municipios_disponiveis":sum(x["pessoas"] for x in data.values() if x["pessoas"] is not None)},ensure_ascii=False),flush=True)
+    # A referência declarada pelo mapa não basta: reconciliar cada faixa com a
+    # série tabular datada, completar ausências e conferir cidades de controle.
+    from scripts.complementar_pessoas_mds import consultar, salvar
+    result=consultar(result,bycode)
+    salvar(result,DEST)
+    print(json.dumps({"municipios_com_dado":result["municipios_com_dado"],"municipios_sem_dado":result["municipios_sem_dado"],
+      "total_pessoas_municipios_disponiveis":sum(x["pessoas"] for x in result["registros"].values())},ensure_ascii=False),flush=True)
 if __name__=="__main__":run()

@@ -88,7 +88,7 @@ Abra `http://localhost:3000`. Para desenvolvimento: `npm run dev`.
 - `/analises`: comparações territoriais descritivas.
 - `/fontes` e `/api/fontes`: períodos, unidades, ausências, URLs e hashes SHA-256 dos snapshots em uso.
 
-**Cobertura publicada:** população IBGE 2026 nos 5.571 municípios; pessoas em famílias beneficiárias MDS em 5.565 municípios, competência agosto de 2026. Seis ausências ficam indisponíveis, nunca zero. Famílias MDS têm observações em janeiro/2025 e agosto/2026. A série CGU vai de janeiro/2025 a agosto/2026, com cobertura histórica variável por município; os rankings financeiros usam janeiro–agosto/2026.
+**Cobertura publicada:** população IBGE 2026 nos 5.571 municípios; pessoas em famílias beneficiárias MDS nos 5.571 municípios, competência setembro de 2026. As seis ausências cartográficas foram completadas por consulta tabular oficial e o total reconciliado com o Brasil. Ausências futuras continuam indisponíveis, nunca zero. Famílias MDS têm observações em janeiro/2025 e agosto/2026. A série CGU vai de janeiro/2025 a agosto/2026, com cobertura histórica variável por município; os rankings financeiros usam janeiro–agosto/2026.
 
 Os JSONs de detalhe e rankings derivam do SQLite pelo workflow `Atualizar dados web`. Consultar a web não executa ingestões nem modifica fontes. `FASTAPI_BASE_URL` é opcional e serve apenas às rotas legadas do proxy; não apontar a Vercel para o localhost do Mac.
 

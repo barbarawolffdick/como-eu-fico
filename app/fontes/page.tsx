@@ -18,10 +18,13 @@ export default async function Fontes() {
         <p>CGU: série de {periodo(dados.periodo_serie_cgu[0])} a {periodo(dados.periodo_serie_cgu.at(-1)!)}. Nem todos os municípios têm todas as competências históricas. Rankings financeiros: acumulado de {periodo(dados.periodo_ranking.inicio)} a {periodo(dados.periodo_ranking.fim)}.</p>
         <p>Famílias MDS: comparação entre {dados.familias.periodos.map(periodo).join(" e ")}. Coleta: {dados.familias.coleta_utc}.</p>
         <p>Pessoas em famílias beneficiárias: fotografia de {periodo(dados.pessoas.periodo)}, dividida pela estimativa anual de população IBGE 2026. Não representa média anual. Extração: {dados.pessoas.data_extracao}.</p>
-        <h2>Municípios sem cobertura populacional validada</h2>
-        <p>{dados.pessoas.municipios_com_dado.toLocaleString("pt-BR")} municípios com dado. Os demais não entram nos rankings de cobertura:</p>
-        <ul>{dados.pessoas.municipios_sem_dado.map(m => <li key={m.codigo_ibge}><Link href={`/?municipio=${m.codigo_ibge}`}>{m.nome} — {m.uf}</Link> (IBGE {m.codigo_ibge})</li>)}</ul>
-        <p>Os totais municipais disponíveis não devem ser apresentados como cobertura nacional completa. Os seis casos exigem uma fonte oficial validada antes de qualquer preenchimento.</p>
+        <h2>Cobertura territorial do Bolsa Família</h2>
+        <p>{dados.pessoas.municipios_com_dado.toLocaleString("pt-BR")} municípios com dado de pessoas em famílias beneficiárias.</p>
+        {dados.pessoas.municipios_sem_dado.length > 0 ? <>
+          <p>Os seguintes municípios continuam indisponíveis e não entram nos rankings de cobertura:</p>
+          <ul>{dados.pessoas.municipios_sem_dado.map(m => <li key={m.codigo_ibge}><Link href={`/?municipio=${m.codigo_ibge}`}>{m.nome} — {m.uf}</Link> (IBGE {m.codigo_ibge})</li>)}</ul>
+        </> : <p>Todos os municípios do cadastro possuem cobertura validada para esta competência. As seis cidades ausentes no mapa do MDS foram completadas pela consulta tabular oficial por código IBGE, sem estimativas.</p>}
+        {dados.pessoas.complemento_tabular && <p>Conferência tabular: {dados.pessoas.complemento_tabular.validacao.total_pessoas.toLocaleString("pt-BR")} pessoas; a soma municipal e cada uma das três faixas de renda fecham com o total Brasil de {periodo(dados.pessoas.complemento_tabular.periodo)}. O período antes exibido como agosto foi corrigido para setembro/2026 após essa conferência. Validação: {dados.pessoas.data_validacao_tabular}.</p>}
         <h2>Arquivos e versões</h2>
         <p>Saúde: consulta em {dados.saude.municipios_referencia.toLocaleString("pt-BR")} municípios. Os valores são observados, sem projeção. Repasses FNS acumulados de janeiro a julho de 2026; equipes e Mais Médicos têm suas próprias datas indicadas na página de cada cidade. O consolidado do Mais Médicos mede vagas ocupadas no provimento federal, incluindo instituições vinculadas; não é uma contagem deduplicada de todos os médicos do SUS. Repasses a fundos estaduais registrados na cidade ficam separados dos repasses municipais. Financiamento, estrutura e atendimento são medidas distintas.</p>
         <p>Cobertura por indicador: FNS com repasse municipal validado em {dados.saude.cobertura.fns.com_dado.toLocaleString("pt-BR")} municípios; equipes APS em {dados.saude.cobertura.aps.com_dado.toLocaleString("pt-BR")}; vagas ocupadas no Mais Médicos em {dados.saude.cobertura.mais_medicos.com_dado.toLocaleString("pt-BR")}. Zeros explícitos da fonte são preservados; ausência de registro permanece indisponível.</p>

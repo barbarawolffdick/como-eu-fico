@@ -38,7 +38,8 @@ class CorrespondenciaMDSTests(unittest.TestCase):
         # Funciona antes e depois da regeneração do snapshot.
         self.assertTrue(codes.issubset(set(old["registros"])))
         self.assertTrue(missing.isdisjoint(codes) or codes.issubset(missing))
-        self.assertIn(len(missing),(6,17))
+        self.assertEqual(missing,set())
+        self.assertEqual(old["municipios_com_dado"],5571)
 
 if __name__=="__main__":
     unittest.main()

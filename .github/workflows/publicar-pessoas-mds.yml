@@ -1,10 +1,6 @@
 name: Publicar cobertura pessoas MDS
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/publicar_pessoas_mds.py
-      - .github/workflows/publicar-pessoas-mds.yml
+  # Atualização da fonte é explícita; mudanças de código não refazem a coleta.
   workflow_dispatch:
 permissions:
   contents: write
@@ -32,6 +28,8 @@ jobs:
           assert len(d['registros'])==5571
           assert all(0<=v['cobertura_pct']<=100 for v in d['registros'].values() if v['cobertura_pct'] is not None)
           assert len(d['proveniencia'])==3
+          assert d['complemento_tabular']['validacao']['status']=='PASS'
+          assert d['municipios_com_dado']==5571 and d['municipios_sem_dado']==[]
           PY
       - name: Publicar arquivo de cobertura
         run: |

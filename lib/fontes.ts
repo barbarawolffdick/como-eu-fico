@@ -24,7 +24,10 @@ export async function fontesPublicadas() {
       municipios_com_dado: pessoas.dados.municipios_com_dado as number,
       municipios_sem_dado: (pessoas.dados.municipios_sem_dado as string[]).map(codigo => ({ codigo_ibge: codigo,
         nome: detalhes.dados.registros[codigo].municipio.nome as string, uf: detalhes.dados.registros[codigo].municipio.uf as string })),
-      proveniencia: pessoas.dados.proveniencia },
+      proveniencia: pessoas.dados.proveniencia,
+      complemento_tabular: pessoas.dados.complemento_tabular as { periodo: string; codigos_complementados: string[];
+        validacao: { status: string; total_pessoas: number; municipios: number } } | undefined,
+      data_validacao_tabular: pessoas.dados.data_validacao_tabular as string | undefined },
     saude: { status: saude.dados.status as string, municipios_referencia: saude.dados.municipios_referencia as number,
       data_geracao: saude.dados.data_geracao as string, natureza: saude.dados.natureza as string,
       cobertura: saude.dados.cobertura as Record<"fns" | "aps" | "mais_medicos", { com_dado: number; sem_dado: string[] }>,

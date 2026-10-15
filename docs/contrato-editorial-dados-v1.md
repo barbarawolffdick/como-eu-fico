@@ -135,3 +135,8 @@ Expansão autorizada após validação do piloto. As páginas do cadastro munici
 ### Financiamento e estrutura de saúde — expansão autorizada
 
 Total municipal e valor por habitante abrangem transferências FNS fundo a fundo de todas as áreas; emendas e atenção primária já integram o total. A evolução usa anos completos comparáveis (2024/2025), mantendo 2026 parcial separado. Composição de despesas SIOPS é identificada como despesa por fonte, sem ser apresentada como composição de receitas. A rede CNES descreve localização e cadastro, sem inferir compra federal, residência dos atendidos ou acesso efetivo. Destinatários não municipais sediados na cidade ficam separados, incluindo a AgSUS identificada em Brasília. Traços de equipamentos e ausência de linha permanecem indisponíveis.
+
+
+### Complementação das cidades e competência MDS — 15/10/2026
+
+As seis ausências cartográficas de pessoas em famílias beneficiárias são completadas exclusivamente pela consulta tabular oficial VIS DATA 3 por código IBGE. A publicação é condicionada à soma das três faixas, total Brasil e cinco cidades de controle da mesma competência. A auditoria revelou que os valores do mapa inicialmente rotulados como agosto eram de setembro/2026; o período publicado foi corrigido para 202609, com preservação dos 5.565 valores anteriores e rastreabilidade da correção. Famílias MDS e parcelas CGU mantêm seus períodos independentes. As 5.571 cidades passam a ter cobertura populacional validada, sem médias ou valores estimados.

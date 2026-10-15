@@ -1,0 +1,377 @@
+{
+  "descricao": "Linhas reais de agosto e setembro extraídas do JSON público do VIS DATA 3; hashes identificam as respostas HTML completas em cache.",
+  "consultas": {
+    "": {
+      "sha256_html_completo": "51137af067ba2ce35cf5d7476d2f1f35a9541d0a7cc83533082e2128a62e5e17",
+      "linhas": [
+        {
+          "codigo": 0,
+          "nome": "Brasil",
+          "sigla": "",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 49680091,
+          "n_pess_070_cad_pbf": 32479544,
+          "n_pess_070_140_cad_pbf": 10558771,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 43038315,
+          "n_pess_140_272_cad_pbf": 6641694,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 82
+        },
+        {
+          "codigo": 0,
+          "nome": "Brasil",
+          "sigla": "",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 49645630,
+          "n_pess_070_cad_pbf": 32346989,
+          "n_pess_070_140_cad_pbf": 10588245,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 42935234,
+          "n_pess_140_272_cad_pbf": 6710313,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 83
+        }
+      ]
+    },
+    "3550308": {
+      "sha256_html_completo": "978fe4e51b75ab3e4abd498639f78c6ce4c74b8daea4976aa6376878d89f14d9",
+      "linhas": [
+        {
+          "codigo": 355030,
+          "nome": "SÃO PAULO",
+          "sigla": "SP",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 1650898,
+          "n_pess_070_cad_pbf": 891241,
+          "n_pess_070_140_cad_pbf": 458439,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 1349680,
+          "n_pess_140_272_cad_pbf": 301215,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 3
+        },
+        {
+          "codigo": 355030,
+          "nome": "SÃO PAULO",
+          "sigla": "SP",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 1652769,
+          "n_pess_070_cad_pbf": 893083,
+          "n_pess_070_140_cad_pbf": 457050,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 1350133,
+          "n_pess_140_272_cad_pbf": 302633,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 3
+        }
+      ]
+    },
+    "1302603": {
+      "sha256_html_completo": "a1c19838bcf79b6161cc6e604fd4277511e13825f5072577cfb8ae29619b431b",
+      "linhas": [
+        {
+          "codigo": 130260,
+          "nome": "MANAUS",
+          "sigla": "AM",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 679312,
+          "n_pess_070_cad_pbf": 375862,
+          "n_pess_070_140_cad_pbf": 211983,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 587845,
+          "n_pess_140_272_cad_pbf": 91466,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 1
+        },
+        {
+          "codigo": 130260,
+          "nome": "MANAUS",
+          "sigla": "AM",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 675990,
+          "n_pess_070_cad_pbf": 371656,
+          "n_pess_070_140_cad_pbf": 211351,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 583007,
+          "n_pess_140_272_cad_pbf": 92982,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 1
+        }
+      ]
+    },
+    "2611606": {
+      "sha256_html_completo": "92d28c04c23c8456e57eba001bb3191ab22b98ed6565cf53ea5a4b7fc7758325",
+      "linhas": [
+        {
+          "codigo": 261160,
+          "nome": "RECIFE",
+          "sigla": "PE",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 333795,
+          "n_pess_070_cad_pbf": 142428,
+          "n_pess_070_140_cad_pbf": 145649,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 288077,
+          "n_pess_140_272_cad_pbf": 45718,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        },
+        {
+          "codigo": 261160,
+          "nome": "RECIFE",
+          "sigla": "PE",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 333672,
+          "n_pess_070_cad_pbf": 142704,
+          "n_pess_070_140_cad_pbf": 144915,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 287619,
+          "n_pess_140_272_cad_pbf": 46053,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        }
+      ]
+    },
+    "3304557": {
+      "sha256_html_completo": "3c2875b4740f7282304fd21e099d71c00b9de5e510112db77ca0eb9d656b9fce",
+      "linhas": [
+        {
+          "codigo": 330455,
+          "nome": "RIO DE JANEIRO",
+          "sigla": "RJ",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 968975,
+          "n_pess_070_cad_pbf": 705711,
+          "n_pess_070_140_cad_pbf": 144345,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 850056,
+          "n_pess_140_272_cad_pbf": 118908,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 11
+        },
+        {
+          "codigo": 330455,
+          "nome": "RIO DE JANEIRO",
+          "sigla": "RJ",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 964869,
+          "n_pess_070_cad_pbf": 701983,
+          "n_pess_070_140_cad_pbf": 143527,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 845510,
+          "n_pess_140_272_cad_pbf": 119348,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 11
+        }
+      ]
+    },
+    "4314902": {
+      "sha256_html_completo": "19009f862424a59a07209e7cc61238c1791ebf0f987df0decfc926a7ed008fc5",
+      "linhas": [
+        {
+          "codigo": 431490,
+          "nome": "PORTO ALEGRE",
+          "sigla": "RS",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 194390,
+          "n_pess_070_cad_pbf": 141516,
+          "n_pess_070_140_cad_pbf": 21401,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 162917,
+          "n_pess_140_272_cad_pbf": 31469,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 4
+        },
+        {
+          "codigo": 431490,
+          "nome": "PORTO ALEGRE",
+          "sigla": "RS",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 194472,
+          "n_pess_070_cad_pbf": 140994,
+          "n_pess_070_140_cad_pbf": 21698,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 162692,
+          "n_pess_140_272_cad_pbf": 31776,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 4
+        }
+      ]
+    },
+    "1504752": {
+      "sha256_html_completo": "97bd7a3afa7c3f2948e443ceefbb04c4a79dd7237e21e7fee2a035484cd72e2f",
+      "linhas": [
+        {
+          "codigo": 150475,
+          "nome": "MOJUÍ DOS CAMPOS",
+          "sigla": "PA",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 11977,
+          "n_pess_070_cad_pbf": 8690,
+          "n_pess_070_140_cad_pbf": 1838,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 10528,
+          "n_pess_140_272_cad_pbf": 1449,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        },
+        {
+          "codigo": 150475,
+          "nome": "MOJUÍ DOS CAMPOS",
+          "sigla": "PA",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 11878,
+          "n_pess_070_cad_pbf": 8636,
+          "n_pess_070_140_cad_pbf": 1776,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 10412,
+          "n_pess_140_272_cad_pbf": 1466,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        }
+      ]
+    },
+    "4212650": {
+      "sha256_html_completo": "999adbb56126579f53ee14bfb3ad2f729009ab82358c04810dc0ef48a99d3429",
+      "linhas": [
+        {
+          "codigo": 421265,
+          "nome": "PESCARIA BRAVA",
+          "sigla": "SC",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 1582,
+          "n_pess_070_cad_pbf": 946,
+          "n_pess_070_140_cad_pbf": 347,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 1293,
+          "n_pess_140_272_cad_pbf": 289,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        },
+        {
+          "codigo": 421265,
+          "nome": "PESCARIA BRAVA",
+          "sigla": "SC",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 1603,
+          "n_pess_070_cad_pbf": 939,
+          "n_pess_070_140_cad_pbf": 356,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 1295,
+          "n_pess_140_272_cad_pbf": 308,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        }
+      ]
+    },
+    "4220000": {
+      "sha256_html_completo": "15cf4206b8698c18f40ff673ed1ae67f31799d3283fe6cdabdd11ad30b0dde71",
+      "linhas": [
+        {
+          "codigo": 422000,
+          "nome": "BALNEÁRIO RINCÃO",
+          "sigla": "SC",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 2958,
+          "n_pess_070_cad_pbf": 1783,
+          "n_pess_070_140_cad_pbf": 585,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 2368,
+          "n_pess_140_272_cad_pbf": 590,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        },
+        {
+          "codigo": 422000,
+          "nome": "BALNEÁRIO RINCÃO",
+          "sigla": "SC",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 2971,
+          "n_pess_070_cad_pbf": 1762,
+          "n_pess_070_140_cad_pbf": 597,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 2359,
+          "n_pess_140_272_cad_pbf": 612,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        }
+      ]
+    },
+    "4314548": {
+      "sha256_html_completo": "62a22b3d6c903e310618decff90fa0cdc6c6da6a88daa8914787c3dea5a6dff2",
+      "linhas": [
+        {
+          "codigo": 431454,
+          "nome": "PINTO BANDEIRA",
+          "sigla": "RS",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 86,
+          "n_pess_070_cad_pbf": 46,
+          "n_pess_070_140_cad_pbf": 0,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 46,
+          "n_pess_140_272_cad_pbf": 40,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        },
+        {
+          "codigo": 431454,
+          "nome": "PINTO BANDEIRA",
+          "sigla": "RS",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 81,
+          "n_pess_070_cad_pbf": 51,
+          "n_pess_070_140_cad_pbf": 0,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 51,
+          "n_pess_140_272_cad_pbf": 30,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        }
+      ]
+    },
+    "5006275": {
+      "sha256_html_completo": "d77f00d14349c7cfc9ed2560e602f7c7085ea4f7842b424a62c411607329a51d",
+      "linhas": [
+        {
+          "codigo": 500627,
+          "nome": "PARAÍSO DAS ÁGUAS",
+          "sigla": "MS",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 547,
+          "n_pess_070_cad_pbf": 99,
+          "n_pess_070_140_cad_pbf": 189,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 288,
+          "n_pess_140_272_cad_pbf": 259,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        },
+        {
+          "codigo": 500627,
+          "nome": "PARAÍSO DAS ÁGUAS",
+          "sigla": "MS",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 533,
+          "n_pess_070_cad_pbf": 99,
+          "n_pess_070_140_cad_pbf": 183,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 282,
+          "n_pess_140_272_cad_pbf": 251,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        }
+      ]
+    },
+    "5101837": {
+      "sha256_html_completo": "af76ab40a585982e0c437992ea474102f93b04725ccee4ff4409dedf6651674d",
+      "linhas": [
+        {
+          "codigo": 510183,
+          "nome": "BOA ESPERANÇA DO NORTE",
+          "sigla": "MT",
+          "mes_ano": "2026-08-01",
+          "mes_ano_formatado": "08/2026",
+          "n_pess_cad_pbf": 400,
+          "n_pess_070_cad_pbf": 96,
+          "n_pess_070_140_cad_pbf": 181,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 277,
+          "n_pess_140_272_cad_pbf": 123,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        },
+        {
+          "codigo": 510183,
+          "nome": "BOA ESPERANÇA DO NORTE",
+          "sigla": "MT",
+          "mes_ano": "2026-09-01",
+          "mes_ano_formatado": "09/2026",
+          "n_pess_cad_pbf": 412,
+          "n_pess_070_cad_pbf": 97,
+          "n_pess_070_140_cad_pbf": 189,
+          "(case when coalesce(t.n_pess_070_140_cad_pbf,0) + coalesce(t.n_": 286,
+          "n_pess_140_272_cad_pbf": 126,
+          "(t.n_pess_cad_pbf - (t.n_pess_070_cad_pbf + t.n_pess_070_140_ca": 0
+        }
+      ]
+    }
+  }
+}

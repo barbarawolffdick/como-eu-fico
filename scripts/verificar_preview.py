@@ -67,8 +67,10 @@ def main():
     detalhe = dados["/api/municipios/3550308"]
     assert detalhe["votos_presidenciais"] and detalhe["bolsa_familia"]
     assert dados["/api/cobertura?municipio=3550308"]["disponivel"] is True
-    ausente = dados["/api/cobertura?municipio=1504752"]
-    assert ausente["disponivel"] is False and ausente["municipio"]["pessoas"] is None
+    pessoas = json.loads((root / "data/public/pessoas_mds.json").read_text())
+    moju = dados["/api/cobertura?municipio=1504752"]
+    assert moju["disponivel"] is True and moju["periodo"] == pessoas["periodo"]
+    assert moju["municipio"]["pessoas"] == pessoas["registros"]["1504752"]["pessoas"]
     ranking = dados["/api/rankings?metrica=valor_habitante&uf=SP&vencedor=13"]["resultados"]
     assert len(ranking) == 10 and all(x["uf"] == "SP" and x["vencedor"] == "13" for x in ranking)
     assert all(a["centavos_por_habitante"] >= b["centavos_por_habitante"] for a, b in zip(ranking, ranking[1:]))

@@ -26,10 +26,28 @@ test("busca, detalhe e links funcionam com dados publicados", async ({ page }, t
   expect(erros).toEqual([]);
 });
 
-test("município sem cobertura continua indisponível", async ({ page }) => {
-  const codigo = pessoas.municipios_sem_dado[0];
-  await page.goto(`/?municipio=${codigo}`);
-  await expect(page.getByRole("heading", { name: `${detalhes.registros[codigo].municipio.nome} — ${detalhes.registros[codigo].municipio.uf}` })).toBeVisible();
+for (const codigo of ["1504752", "4212650", "4220000", "4314548", "5006275", "5101837"]) {
+  test(`cobertura tabular validada chega à cidade ${codigo}`, async ({ page, request }) => {
+    const response = await request.get(`/api/cobertura?municipio=${codigo}`);
+    const body = await response.json();
+    expect(body.disponivel).toBe(true);
+    expect(body.periodo).toBe("202609");
+    expect(body.municipio.pessoas).toBe(pessoas.registros[codigo].pessoas);
+    await page.goto(`/?municipio=${codigo}`);
+    const card = page.locator("article").filter({ has: page.getByRole("heading", { name: "Alcance do Bolsa Família" }) });
+    await expect(card).toContainText("09/2026");
+    await expect(card).toContainText(`${pessoas.registros[codigo].pessoas.toLocaleString("pt-BR")} pessoas`);
+    await expect(card.getByRole("link", { name: "Ver fonte." })).toHaveAttribute("href", body.fonte);
+  });
+}
+
+test("ausência na fonte continua indisponível, sem virar zero", async ({ page }) => {
+  await page.route("**/api/cobertura?*", async route => {
+    const original = await route.fetch();
+    const body = await original.json();
+    await route.fulfill({ json: { ...body, disponivel: false, municipio: { ...body.municipio, pessoas: null, cobertura_pct: null } } });
+  });
+  await page.goto("/?municipio=1504752");
   await expect(page.getByText("Cobertura populacional ainda não disponível para este município. Ausência não é zero.")).toBeVisible();
 });
 
@@ -78,7 +96,7 @@ test("análises carregam e mudam o recorte", async ({ page }) => {
   await expect(page.locator("main").getByRole("alert")).toHaveCount(0);
 });
 
-test("metadados identificam arquivos reais e seis ausências", async ({ request, page }) => {
+test("metadados identificam arquivos reais e cobertura completa validada", async ({ request, page }) => {
   const resposta = await request.get("/api/fontes", { headers: process.env.VERCEL_OIDC_TOKEN ? {
     "x-vercel-trusted-oidc-idp-token": process.env.VERCEL_OIDC_TOKEN,
   } : {} });
@@ -91,7 +109,8 @@ test("metadados identificam arquivos reais e seis ausências", async ({ request,
   await page.goto("/fontes");
   await expect(page.getByRole("heading", { name: "Fontes e metodologia" })).toBeVisible();
   await expect(page.getByText("SHA-256:", { exact: false })).toHaveCount(fontes.arquivos.length);
-  await expect(page.getByRole("link", { name: "Mojuí dos Campos — PA" })).toBeVisible();
+  await expect(page.getByText("Todos os municípios do cadastro possuem cobertura validada", { exact: false })).toBeVisible();
+  await expect(page.getByText("49.645.630 pessoas", { exact: false })).toBeVisible();
 });
 
 test("série incompleta e grupo vazio preservam null", () => {

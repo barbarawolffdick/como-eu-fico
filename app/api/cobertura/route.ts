@@ -4,7 +4,8 @@ import {join} from "node:path";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 type Cobertura={pessoas:number|null;populacao:number;cobertura_pct:number|null};
-type Source={esquema:number;unidade:string;periodo:string;municipios_ibge:number;municipios_com_dado:number;registros:Record<string,Cobertura>;pagina_fonte:string};
+type Source={esquema:number;unidade:string;periodo:string;municipios_ibge:number;municipios_com_dado:number;registros:Record<string,Cobertura>;pagina_fonte:string;
+ complemento_tabular?:{consultas:Record<string,{url:string}>}};
 type Cidade={codigo_ibge:string;nome:string;uf:string;vencedor:string|null;empatados:number};
 export async function GET(req:NextRequest){
  try {
@@ -27,7 +28,7 @@ export async function GET(req:NextRequest){
   if(municipio){
    const item=mapa.find(x=>x.codigo_ibge===municipio);
    if(!item)return NextResponse.json({detail:"Município não encontrado"},{status:404});
-   return NextResponse.json({fonte:c.pagina_fonte,periodo:c.periodo,
+   return NextResponse.json({fonte:c.complemento_tabular?.consultas[municipio]?.url||c.pagina_fonte,periodo:c.periodo,
     descricao:"Percentual de moradores integrantes de famílias beneficiárias, não percentual de titulares que recebem pagamentos.",
     disponivel:item.cobertura_pct!==null,municipio:item});
   }

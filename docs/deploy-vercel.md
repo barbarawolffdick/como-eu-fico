@@ -48,3 +48,11 @@ O frontend Next.js lê JSONs versionados. Não requer FastAPI hospedado, banco p
 As seis ausências MDS permanecem `null`. A análise de evolução mensal retorna `null` para o grupo/mês quando faltar observação de um de seus municípios, junto das contagens de cobertura. Grupo vazio também não produz zero. Testes usam os snapshots reais e removem uma observação apenas em memória para verificar essa regra.
 
 TSE, CGU, IBGE e MDS mantêm períodos e unidades distintos. A aplicação não revela voto individual nem estima efeito causal do Bolsa Família sobre resultados eleitorais.
+
+## Prévia verificada
+
+Prévia do commit `49116c32c25395831ace8ef9f48956c89f6d8fca`: https://como-eu-fico-i3tw2bn4f-barbaras-projects-f33a375a.vercel.app (deploy `dpl_7cpvhX4tjbeDG3PGBVCN5aZVqQK2`, estado Ready). O build remoto usou Next.js 15.5.28 e instalação com `npm ci`. Os 16 testes Playwright passaram no ambiente remoto, em desktop e celular, com hashes dos quatro snapshots conferidos.
+
+O acesso por `vercel curl` nesta sessão redirecionou para login. O caminho validado foi um token temporário de desenvolvimento emitido por `vercel project token como-eu-fico --scope barbaras-projects-f33a375a --json`, enviado somente ao domínio da prévia no cabeçalho `x-vercel-trusted-oidc-idp-token`. Não é necessário desabilitar proteção. O token é usado em memória e traces remotos são desativados para não registrar cabeçalhos.
+
+`python3 scripts/verificar_preview.py URL` verifica páginas, APIs e hashes com esse token. Para confirmar acesso público: `python3 scripts/verificar_preview.py URL --publico`. A execução não grava respostas nem credenciais no repositório.

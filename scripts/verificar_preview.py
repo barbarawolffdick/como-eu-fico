@@ -6,24 +6,46 @@ import json
 import subprocess
 from pathlib import Path
 from urllib.parse import urlparse
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("url")
+    parser.add_argument("--publico", action="store_true", help="Verificar acesso público, sem autenticação.")
     args = parser.parse_args()
     url = urlparse(args.url)
     if url.scheme != "https" or not url.hostname or not url.hostname.endswith(".vercel.app") or url.path not in ("", "/"):
         parser.error("Informe somente a origem HTTPS do deploy vercel.app.")
     root = Path(__file__).resolve().parent.parent
+    headers = {}
+    if not args.publico:
+        resultado = subprocess.run([
+            "npx", "--yes", "vercel@64.2.0", "project", "token", "como-eu-fico",
+            "--scope", "barbaras-projects-f33a375a", "--json",
+        ], cwd=root, text=True, capture_output=True, timeout=60, check=True)
+
+        def tokens(value):
+            if isinstance(value, str) and value.startswith("eyJ") and value.count(".") == 2:
+                return [value]
+            if isinstance(value, dict):
+                return [token for item in value.values() for token in tokens(item)]
+            return []
+
+        encontrados = tokens(json.loads(resultado.stdout))
+        assert len(encontrados) == 1, "Token temporário não identificado; nenhuma credencial foi exibida."
+        headers["x-vercel-trusted-oidc-idp-token"] = encontrados[0]
+
+    class MesmaOrigem(HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+            if urlparse(newurl).netloc != url.netloc:
+                raise RuntimeError("Redirecionamento para fora do deploy; autenticação não aceita.")
+            return super().redirect_request(req, fp, code, msg, hdrs, newurl)
 
     def consultar(path):
-        resultado = subprocess.run([
-            "npx", "--yes", "vercel@64.2.0", "curl", path,
-            "--deployment", args.url, "--scope", "barbaras-projects-f33a375a",
-            "--", "--fail", "--silent", "--show-error", "--max-time", "30",
-        ], cwd=root, text=True, capture_output=True, timeout=60, check=True)
-        return path, resultado.stdout
+        req = Request(args.url.rstrip("/") + path, headers=headers)
+        with build_opener(MesmaOrigem()).open(req, timeout=30) as resposta:
+            return path, resposta.read().decode("utf-8")
 
     paths = ["/", "/explorar", "/analises", "/fontes", "/api/fontes",
              "/api/municipios?q=3550308", "/api/municipios/3550308",

@@ -8,7 +8,18 @@ const pessoas = carregar("pessoas_mds.json");
 const detalhes = carregar("detalhes_2026.json");
 const rankings = carregar("rankings_2026.json");
 
-test("busca, detalhe e links funcionam com dados publicados", async ({ page }) => {
+test.beforeEach(async ({ page }) => {
+  const token = process.env.VERCEL_OIDC_TOKEN;
+  const base = process.env.PLAYWRIGHT_BASE_URL;
+  if (token && base) {
+    const origin = new URL(base).origin;
+    await page.route(`${origin}/**`, route => route.continue({ headers: {
+      ...route.request().headers(), "x-vercel-trusted-oidc-idp-token": token,
+    } }));
+  }
+});
+
+test("busca, detalhe e links funcionam com dados publicados", async ({ page }, testInfo) => {
   const erros: string[] = [];
   page.on("pageerror", erro => erros.push(erro.message));
   await page.goto("/");
@@ -18,6 +29,7 @@ test("busca, detalhe e links funcionam com dados publicados", async ({ page }) =
   const cobertura = page.locator("article").filter({ has: page.getByRole("heading", { name: "Alcance do Bolsa Família" }) });
   await expect(cobertura).toContainText(pessoas.registros["3550308"].pessoas.toLocaleString("pt-BR"));
   await expect(page.getByRole("heading", { name: "Votação presidencial · 2026" })).toBeVisible();
+  await page.screenshot({ path: `test-results/consulta-${testInfo.project.name}.png`, fullPage: true });
   await expect(page.getByRole("link", { name: "Explorar o Brasil →" })).toBeVisible();
   await page.getByRole("link", { name: "Explorar o Brasil →" }).click();
   await expect(page.getByRole("heading", { name: "Explore os municípios brasileiros" })).toBeVisible();
@@ -77,7 +89,9 @@ test("análises carregam e mudam o recorte", async ({ page }) => {
 });
 
 test("metadados identificam arquivos reais e seis ausências", async ({ request, page }) => {
-  const resposta = await request.get("/api/fontes");
+  const resposta = await request.get("/api/fontes", { headers: process.env.VERCEL_OIDC_TOKEN ? {
+    "x-vercel-trusted-oidc-idp-token": process.env.VERCEL_OIDC_TOKEN,
+  } : {} });
   expect(resposta.ok()).toBeTruthy();
   const fontes = await resposta.json();
   expect(fontes.pessoas.municipios_sem_dado.map((m: { codigo_ibge: string }) => m.codigo_ibge)).toEqual(pessoas.municipios_sem_dado);

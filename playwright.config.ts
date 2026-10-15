@@ -8,7 +8,8 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 2 : undefined,
   reporter: "list",
-  use: { baseURL, trace: "retain-on-failure" },
+  // Traces remotos poderiam guardar cabeçalhos de autenticação temporários.
+  use: { baseURL, trace: process.env.PLAYWRIGHT_BASE_URL ? "off" : "retain-on-failure" },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile", use: { ...devices["Pixel 7"] } },

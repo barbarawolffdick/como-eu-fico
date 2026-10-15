@@ -127,3 +127,7 @@ Questões pendentes para etapa 2: janela histórica para fontes que não têm 20
 - Todo indicador publicado deve mostrar na interface, inclusive em nota de rodapé, a data ou o intervalo efetivamente coberto, a fonte e sua unidade. Parcela de financiamento, competência CNES, pagamento e extração são datas distintas.
 - Médias, projeções e cruzamentos estão autorizados como evolução futura, quando houver base suficiente e método validado. Devem permanecer separados dos valores observados, com janela, fórmula/modelo, hipóteses, versão e limites visíveis. Ausência não vira zero nem observação fictícia.
 - Primeiro piloto autorizado: repasses federais de atenção primária, equipes financiadas e profissionais do Mais Médicos, em cinco cidades, com expansão condicionada à validação da integração.
+
+### Expansão nacional da saúde — 15/10/2026
+
+Expansão autorizada após validação do piloto. As páginas do cadastro municipal completo apresentam repasses, equipes e vagas do provimento federal, com cobertura e datas independentes. A versão nacional utiliza o consolidado de vagas ocupadas (`total_ocupadas`) do Mais Médicos, incluindo instituições vinculadas, em vez de apresentar registros antigos da série histórica como situação atual. Zeros explicitamente publicados são distintos de ausência. DSEI e registros estaduais do provimento não são municipalizados. Não há novo programa, projeção ou atribuição causal nesta expansão.

@@ -74,9 +74,10 @@ def main():
     assert all(a["centavos_por_habitante"] >= b["centavos_por_habitante"] for a, b in zip(ranking, ranking[1:]))
     assert dados["/api/analises"]["universo"] > 0
     assert dados["/api/saude/3550308"]["disponivel"] is True
-    assert dados["/api/saude/3550308"]["dados"] == json.loads((root / "data/public/saude_piloto.json").read_text())["registros"]["3550308"]
-    assert dados["/api/saude/5101837"]["dados"]["mais_medicos"]["ultimo"] is None
-    assert dados["/api/saude/1504752"]["disponivel"] is False
+    assert dados["/api/saude/3550308"]["dados"] == json.loads((root / "data/public/saude_municipal.json").read_text())["registros"]["3550308"]
+    assert dados["/api/saude/5101837"]["dados"]["mais_medicos"]["ultimo"]["vagas_ocupadas"] == 0
+    assert dados["/api/saude/1504752"]["disponivel"] is True
+    assert fontes["saude"]["municipios_referencia"] == fontes["municipios"]
     for path in ("/api/mudanca-familias", "/api/mudanca-parcelas"):
         mudanca = dados[path]
         assert sum(x["total"] for x in mudanca["porVencedor"]) == mudanca["municipios"] > 0

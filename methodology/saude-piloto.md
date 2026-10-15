@@ -1,5 +1,7 @@
 # SUS na página da cidade — piloto v1
 
+**Histórico do piloto:** substituído na aplicação pela [cobertura nacional](saude-nacional.md). O snapshot original permanece preservado para auditoria.
+
 Data: 15/10/2026. Escopo publicado: São Paulo/SP (`3550308`), Recife/PE (`2611606`), Sobral/CE (`2312908`), Dourados/MS (`5003702`) e Boa Esperança do Norte/MT (`5101837`). Amostra de engenharia, não amostra estatística nem representação do Brasil.
 
 A cidade é a unidade de entrada, integração e apresentação. A sede de um fundo, a localização de um serviço e a residência dos usuários permanecem conceitos separados. Relações regionais futuras deverão aparecer na página municipal com evidência explícita, sem ratear orçamento estadual por população.

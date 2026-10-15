@@ -154,14 +154,24 @@ Se a extração SIDRA falhar por cobertura ou indisponibilidade, **não force a 
 
 A página web exibe a população quando disponível e informa quando ainda não foi carregada. O frontend publicado consulta os snapshots derivados, sem depender deste processo Python.
 
-## Saúde na página da cidade — piloto
+## Saúde na página da cidade — cobertura nacional
 
-A consulta municipal inclui saúde para São Paulo, Recife, Sobral, Dourados e Boa Esperança do Norte. `/api/saude/{codigo_ibge}` consulta `data/public/saude_piloto.json`. Cidades fora da amostra são identificadas como fora do piloto, sem inferir inexistência de serviço.
+A seção Saúde está disponível para os 5.571 municípios do cadastro. `/api/saude/{codigo_ibge}` consulta `data/public/saude_municipal.json` e entrega somente os indicadores da cidade selecionada. Cobertura por indicador é distinta de cobertura da consulta:
 
-- FNS: repasses líquidos do grupo Atenção Primária, janeiro–julho/2026. Fundos municipais e estaduais ficam separados; saldo em conta não é somado.
-- APS: equipes homologadas e financiadas na parcela outubro/2026, com referência CNES agosto/2026.
-- Mais Médicos: última observação agregada disponível em cada cidade. Ausências ficam indisponíveis, não zero.
+- FNS: repasses líquidos de Atenção Primária, janeiro–julho/2026, validados para 5.569 fundos municipais. Brasília e Fernando de Noronha permanecem sem repasse municipal validado no recorte. Fundos estaduais/distrital ficam separados; não somamos saldos bancários nem rateamos recursos estaduais.
+- APS: equipes homologadas e financiadas nos 5.571 municípios, parcela outubro/2026, cadastro CNES agosto/2026.
+- Mais Médicos: consolidado de 09/10/2026 para os 5.571 municípios. Mede **vagas ocupadas no provimento federal**, incluindo instituições vinculadas. Registros estaduais e DSEI não são atribuídos às cidades. Zeros expressos pela fonte são preservados; ausência permanece nula.
 
-Fonte, data e limites aparecem em cada cartão. A rastreabilidade e os critérios estão em [metodologia da saúde](methodology/saude-piloto.md). A aplicação não consulta APIs oficiais ao abrir uma cidade: serve o snapshot validado, como os demais domínios. Não há projeção nesta versão.
+Fonte, data e limites aparecem em cada cartão. Veja a [metodologia nacional](methodology/saude-nacional.md). A aplicação serve o snapshot validado; não consulta fontes oficiais ao abrir uma cidade. Não há projeção nem inferência causal.
 
-Para reproduzir: `pip install -r requirements-dados.txt` e `python scripts/publicar_saude_piloto.py`. O cache em `data/raw/saude/piloto/` preserva respostas brutas; `--atualizar` consulta novamente as fontes. `--fns-arquivo CAMINHO` reutiliza a planilha oficial já baixada. Nenhuma ingestão TSE/CGU é reexecutada.
+Para reproduzir:
+
+```bash
+pip install -r requirements-dados.txt
+python -m scripts.publicar_saude_nacional
+python -m unittest discover -s tests -p 'test_saude*.py' -v
+```
+
+O cache `data/raw/saude/nacional/` preserva os arquivos brutos e metadados com SHA-256. A coleta usa uma planilha FNS, a lista de parcelas, um relatório nacional APS e um ZIP agregado do Mais Médicos; não realiza milhares de consultas municipais. `--atualizar` renova respostas; sem a opção, a execução retoma os arquivos já verificados. A publicação é atômica após os controles das três fontes. Nenhuma ingestão TSE/CGU é reexecutada.
+
+O snapshot e a [metodologia do piloto](methodology/saude-piloto.md) foram preservados como histórico, sem uso nas rotas públicas atuais.

@@ -8,9 +8,9 @@ export type SaudeMunicipal = {
     municipal: ResumoFNS | null; estadual_sediado_na_cidade: ResumoFNS | null };
   aps: { parcela: string; competencia_cnes: string; data_relatorio: string;
     equipes: { tipo: string; homologadas: number | null; financiadas: number | null }[] } | null;
-  mais_medicos: { ultimo: { data_referencia: string; profissionais_ativos: number | null } | null;
-    serie: { data_referencia: string; profissionais_ativos: number | null }[]; motivo: string | null };
+  mais_medicos: { ultimo: { data_referencia: string; vagas_ocupadas: number | null; linha_origem: number } | null;
+    indicador: "total_ocupadas"; motivo: string | null };
   proveniencia: { fns: OrigemSaude; aps: OrigemSaude; mais_medicos: OrigemSaude };
 };
-export type RespostaSaude = { disponivel: boolean; status: "PILOTO"; municipios_piloto: string[];
+export type RespostaSaude = { disponivel: boolean; status: "NACIONAL"; municipios_referencia: number;
   motivo?: string; dados: SaudeMunicipal | null };

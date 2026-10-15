@@ -29,7 +29,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_integrar_ibge_populacao.py' -v
           python -m unittest discover -s tests -p 'test_server.py' -v
           python -m unittest discover -s tests -p 'test_correspondencia_pessoas_mds.py' -v
-          python -m unittest discover -s tests -p 'test_saude_piloto.py' -v
+          python -m unittest discover -s tests -p 'test_saude*.py' -v
 
   next-build:
     runs-on: ubuntu-latest

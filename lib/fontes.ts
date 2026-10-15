@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const arquivos = ["rankings_2026.json", "detalhes_2026.json", "familias_mds.json", "pessoas_mds.json", "saude_piloto.json"] as const;
+const arquivos = ["rankings_2026.json", "detalhes_2026.json", "familias_mds.json", "pessoas_mds.json", "saude_municipal.json"] as const;
 
 export async function fontesPublicadas() {
   const snapshots = await Promise.all(arquivos.map(async arquivo => {
@@ -25,9 +25,11 @@ export async function fontesPublicadas() {
       municipios_sem_dado: (pessoas.dados.municipios_sem_dado as string[]).map(codigo => ({ codigo_ibge: codigo,
         nome: detalhes.dados.registros[codigo].municipio.nome as string, uf: detalhes.dados.registros[codigo].municipio.uf as string })),
       proveniencia: pessoas.dados.proveniencia },
-    saude: { status: saude.dados.status as string, municipios_piloto: saude.dados.municipios_piloto as string[],
+    saude: { status: saude.dados.status as string, municipios_referencia: saude.dados.municipios_referencia as number,
       data_geracao: saude.dados.data_geracao as string, natureza: saude.dados.natureza as string,
-      proveniencia: Object.fromEntries(Object.entries(saude.dados.registros as Record<string, { proveniencia: unknown }>).map(([codigo, r]) => [codigo, r.proveniencia])) },
+      cobertura: saude.dados.cobertura as Record<"fns" | "aps" | "mais_medicos", { com_dado: number; sem_dado: string[] }>,
+      proveniencia: saude.dados.fontes,
+      validacao: saude.dados.validacao },
     fontes: [
       { nome: "TSE — resultados presidenciais de 2026, primeiro turno", url: "https://dadosabertos.tse.jus.br/dataset/resultados-2026" },
       { nome: "CGU — parcelas e valores do Novo Bolsa Família", url: "https://portaldatransparencia.gov.br/download-de-dados/novo-bolsa-familia" },

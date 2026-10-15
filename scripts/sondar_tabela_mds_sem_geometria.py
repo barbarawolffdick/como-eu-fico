@@ -29,3 +29,20 @@ for params in (
  data=json.loads(read(url+"&tpconsulta=1",params))
  objects=[(k,len(v.get("dados",[]))) for k,v in data.items() if isinstance(v,dict)]
  print(json.dumps({"request_params":params,"items":objects},ensure_ascii=False))
+
+# Consulta direta ao módulo de tabelas com nomes de variáveis publicados no VIS DATA 3.
+TABLE="https://aplicacoes.cidadania.gov.br/vis/tabelas/tabela.php"
+for variable in ("n_pess_cad_pbf","bf_qtd_fam","n_pess_070_140_cad_pbf"):
+ query={"cfc":f"prog=1$banco=Producao$referencia=2026-08-01|$vars={variable}",
+        "exibe_num":"1","exibir_codigo_divisao":"1","iuid":"78273","pagina":"1",
+        "paginacao":"1","registros":"6000","tipo_divisao":"m"}
+ uri=TABLE+"?"+urllib.parse.urlencode(query)
+ try:
+  with urllib.request.urlopen(urllib.request.Request(uri,headers={"User-Agent":"Mozilla/5.0"}),timeout=35) as response:
+   body=response.read()
+  decoded=body.decode("utf-8","replace")
+  marker=decoded.find("Moju")
+  print(json.dumps({"variavel":variable,"bytes":len(body),"tem_mojui":marker>=0,
+        "amostra":decoded[marker-120:marker+170] if marker>=0 else decoded[:180]},ensure_ascii=False))
+ except Exception as error:
+  print(json.dumps({"variavel":variable,"erro":str(error)},ensure_ascii=False))

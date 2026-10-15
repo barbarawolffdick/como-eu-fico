@@ -79,13 +79,35 @@ def run():
     sets=[set(x) for x in extracts]
     if sets[0]!=sets[1] or sets[0]!=sets[2]:raise ValueError("Faixas com cobertura municipal diferente")
     extra=sets[0]-set(keys)
-    if len(extra)>50:raise ValueError("Mais de 50 nomes territoriais sem correspondência IBGE: "+repr(sorted(extra)[:20]))
-    print(json.dumps({"nomes_mds_sem_correspondencia":sorted(extra)},ensure_ascii=False),flush=True)
-    available=sets[0]&set(keys)
+    refs=json.loads((ROOT/"data/referencia/correspondencia_mds_ibge_2026.json").read_text(encoding="utf-8"))
+    if refs.get("versao")!=1:raise ValueError("Versão desconhecida do catálogo de aliases")
+    bycode={m["codigo_ibge"]:m for m in rows}
+    aliases={}
+    assigned=set()
+    for entry in refs["aliases"]:
+        sourcekey=(entry["uf"],entry["nome_mds_normalizado"])
+        code=entry["codigo_ibge"]
+        target=bycode.get(code)
+        if sourcekey in aliases or sourcekey not in extra:
+            raise ValueError("Alias MDS duplicado ou não pendente: "+repr(sourcekey))
+        if target is None or target["uf"]!=entry["uf"] or target["nome"]!=entry["nome_ibge"]:
+            raise ValueError("Identidade IBGE não confirmada: "+repr(entry))
+        canonical=(target["uf"],norm(target["nome"]))
+        if canonical in sets[0] or code in assigned:
+            raise ValueError("Alias colide com outra correspondência: "+repr(sourcekey))
+        if not entry.get("evidencia_oficial") or not entry.get("fonte_codigo_ibge"):
+            raise ValueError("Alias sem fonte documentada: "+repr(sourcekey))
+        aliases[canonical]=sourcekey
+        assigned.add(code)
+    unmapped=extra-set(aliases.values())
+    if unmapped:raise ValueError("Nomes MDS ainda sem decisão: "+repr(sorted(unmapped)))
+    print(json.dumps({"correspondencias_explicitas":len(aliases),"nomes_mds_pendentes":len(unmapped)},ensure_ascii=False),flush=True)
+    available=(sets[0]&set(keys))|set(aliases)
     data={}
     excess=[]
     for key,m in keys.items():
-        n=sum(x[key] for x in extracts) if key in available else None
+        sourcekey=aliases.get(key,key)
+        n=sum(x[sourcekey] for x in extracts) if key in available else None
         pop=m["populacao"]
         ratio=round(n/pop*100,4) if n is not None else None
         if ratio is not None and ratio>100:excess.append((m["codigo_ibge"],ratio))
@@ -95,7 +117,8 @@ def run():
        "periodo":PERIODO,"referencia_populacao":2026,
        "municipios_ibge":5571,"municipios_com_dado":len(available),
        "municipios_sem_dado":sorted(m["codigo_ibge"] for key,m in keys.items() if key not in available),
-       "nomes_mds_sem_correspondencia":[list(x) for x in sorted(extra)],
+       "nomes_mds_sem_correspondencia":[list(x) for x in sorted(unmapped)],
+       "correspondencias_explicitas":refs["aliases"],
        "data_extracao":datetime.now(timezone.utc).isoformat(),
        "pagina_fonte":pageurl,"metodo":"Soma de três faixas de renda disjuntas apresentadas pelo MDS; ausência municipal não é zero.",
        "proveniencia":provenance,"registros":data}

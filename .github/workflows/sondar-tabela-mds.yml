@@ -17,4 +17,4 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python scripts/sondar_tabela_mds_sem_geometria.py
+      - run: python -m scripts.sondar_tabela_mds_sem_geometria

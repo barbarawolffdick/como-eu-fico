@@ -47,7 +47,9 @@ for variable in ("n_pess_cad_pbf","bf_qtd_fam","n_pess_070_140_cad_pbf"):
   for fragment in ("Moju","MOJU","150475","510183","421265","Pescaria","Boa Esper","São Paulo","355030"):
    k=decoded.lower().find(fragment.lower())
    probes[fragment]=decoded[max(0,k-130):k+260] if k>=0 else None
-  print(json.dumps({"variavel":variable,"bytes":len(body),"tr":decoded.lower().count("<tr"),
-    "headers":parsed.rows[:3],"rows":len(parsed.rows),"tail":parsed.rows[-2:],"probes":probes},ensure_ascii=False))
+  wanted={"150475","421265","422000","431454","500627","510183","355030"}
+  target=[row for row in parsed.rows if len(row)>2 and row[2].strip() in wanted]
+  print(json.dumps({"variavel":variable,"rows":len(parsed.rows),"headers":parsed.rows[:2],
+        "target_rows":target},ensure_ascii=False))
  except Exception as error:
   print(json.dumps({"variavel":variable,"erro":str(error)},ensure_ascii=False))

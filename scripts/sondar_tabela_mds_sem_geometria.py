@@ -49,7 +49,11 @@ for variable in ("n_pess_cad_pbf",):
    probes[fragment]=decoded[max(0,k-130):k+260] if k>=0 else None
   wanted={"150475","421265","422000","431454","500627","510183","355030"}
   target=[row for row in parsed.rows if len(row)>2 and row[2].strip() in wanted]
+  raw_snippets={}
+  for city in ("MOJUÍ DOS CAMPOS","SÃO PAULO"):
+   pos=decoded.find(city)
+   raw_snippets[city]=decoded[max(0,pos-500):pos+1600] if pos>=0 else "ausente"
   print(json.dumps({"variavel":variable,"rows":len(parsed.rows),"headers":parsed.rows[:2],
-        "target_rows":target},ensure_ascii=False))
+        "target_rows":target,"html_registros":raw_snippets},ensure_ascii=False))
  except Exception as error:
   print(json.dumps({"variavel":variable,"erro":str(error)},ensure_ascii=False))

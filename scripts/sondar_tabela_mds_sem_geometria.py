@@ -33,7 +33,7 @@ for params in (
 
 # Consulta direta ao módulo de tabelas com nomes de variáveis publicados no VIS DATA 3.
 TABLE="https://aplicacoes.cidadania.gov.br/vis/tabelas/tabela.php"
-for variable in ("n_pess_cad_pbf","bf_qtd_fam","n_pess_070_140_cad_pbf"):
+for variable in ("n_pess_cad_pbf",):
  query={"cfc":f"prog=1$banco=Producao$referencia=2026-08-01|$vars={variable}",
         "exibe_num":"1","exibir_codigo_divisao":"1","iuid":"78273","pagina":"1",
         "paginacao":"1","registros":"6000","tipo_divisao":"m"}

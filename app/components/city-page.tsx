@@ -48,6 +48,12 @@ type Cobertura = {
 };
 const br = new Intl.NumberFormat("pt-BR");
 const reais = (centavos: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(centavos / 100);
+const reaisResumo = (centavos: number) => {
+    const valor = centavos / 100;
+    if (Math.abs(valor) < 1_000_000) return reais(centavos);
+    const bilhao = Math.abs(valor) >= 1_000_000_000;
+    return "R$ " + (valor / (bilhao ? 1_000_000_000 : 1_000_000)).toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + (bilhao ? " bi" : " mi");
+};
 const competencia = (m: string) => m.slice(4, 6) + "/" + m.slice(0, 4);
 const percentual = (n: number) => n.toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%";
 export default function CityPage({ codigo }: {
@@ -82,25 +88,33 @@ export default function CityPage({ codigo }: {
         <CitySections />
         <section id="panorama" aria-labelledby="panorama-title"><div className="section-heading"><div><p className="kicker">O ponto de partida</p><h2 id="panorama-title">Voto e vida cotidiana, lado a lado.</h2></div></div>
           <div className="city-overview">
-            <Card className="overview-card electoral-overview" tone="accent"><div className="overview-label"><Vote size={19} aria-hidden="true"/><h3>Placar eleitoral da cidade</h3></div><p className="kicker">Presidência · 1º turno de 2026</p>
-              {lider && totalVotos > 0 ? <><p className="overview-lead">{empate ? "Empate na primeira colocação" : candidato(lider.candidato)}</p><p className="overview-number">{percentual(100 * lider.votos / totalVotos)}</p><p className="sub">{empate ? "Para cada candidato empatado na liderança." : "Dos votos dos candidatos listados para a presidência."}</p>
+            <Card className="overview-card electoral-overview" tone="accent">
+              <header className="overview-heading"><div className="overview-label"><Vote size={19} aria-hidden="true"/><h3>Placar eleitoral da cidade</h3></div><p className="kicker">Presidência · 1º turno de 2026</p></header>
+              <div className="overview-metric">{lider && totalVotos > 0 ? <><p className="overview-number">{percentual(100 * lider.votos / totalVotos)}</p><p className="overview-lead">{empate ? "Empate na primeira colocação" : candidato(lider.candidato)}</p></> : <p>Dados eleitorais indisponíveis.</p>}</div>
+              <div className="overview-body">{lider && totalVotos > 0 && <>
+                {empate && <p className="sub">Para cada candidato empatado na liderança.</p>}
                 {!empate && votos[1] && <p className="sub">Margem sobre o segundo: {((lider.votos - votos[1].votos) / totalVotos * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} pontos percentuais.</p>}
-                <VotosMunicipais key={codigo} votos={votos} compact /><p className="overview-meta">Fonte: TSE · Percentuais sobre {br.format(totalVotos)} votos dos candidatos listados.</p></> : <p>Dados eleitorais indisponíveis.</p>}
-              <ActionLink href="#dados-eleicao">Ver a distribuição de votos <ArrowUpRight size={17} aria-hidden="true"/></ActionLink>
+                <VotosMunicipais key={codigo} votos={votos} compact />
+              </>}</div>
+              <footer className="overview-footer"><p className="overview-meta">Fonte: TSE · {br.format(totalVotos)} votos dos candidatos listados.</p><ActionLink href="#dados-eleicao">Ver a distribuição de votos <ArrowUpRight size={17} aria-hidden="true"/></ActionLink></footer>
             </Card>
-            <Card className="overview-card"><div className="overview-label"><HeartPulse size={19} aria-hidden="true"/><h3>Recursos federais para saúde</h3></div><p className="kicker">Fundo municipal · {repasse ? `${competencia(repasse.inicio)} a ${competencia(repasse.fim)}` : "FNS"}</p>
-              <p className="overview-number money-number">{health.error ? "Falha na consulta" : !health.data ? "Carregando…" : valorSaude == null ? "Indisponível" : reais(valorSaude)}</p><p className="sub">Dinheiro enviado pelo governo federal ao fundo de saúde da cidade. Receber o dinheiro não comprova que um atendimento foi realizado.</p><p className="overview-meta">Fonte: FNS · {repasse?.completo ? "Ano completo" : "Acumulado parcial"} · Valores sem ajuste pela inflação.</p>
-              <ActionLink href="#titulo-saude">Conhecer a saúde da cidade <ArrowUpRight size={17} aria-hidden="true"/></ActionLink>
+            <Card className="overview-card">
+              <header className="overview-heading"><div className="overview-label"><HeartPulse size={19} aria-hidden="true"/><h3>Recursos federais para saúde</h3></div><p className="kicker">Fundo municipal · {repasse ? `${competencia(repasse.inicio)} a ${competencia(repasse.fim)}` : "FNS"}</p></header>
+              <div className="overview-metric"><p className="overview-number money-number" aria-label={valorSaude == null ? undefined : reais(valorSaude)}>{health.error ? "Falha na consulta" : !health.data ? "Carregando…" : valorSaude == null ? "Indisponível" : reaisResumo(valorSaude)}</p><p className="coverage-unit">enviados ao fundo municipal</p></div>
+              <div className="overview-body"><p className="sub">Dinheiro enviado pelo governo federal ao fundo de saúde da cidade. Receber o dinheiro não comprova que um atendimento foi realizado.</p>{valorSaude != null && <p className="sub">Valor no período: <strong>{reais(valorSaude)}</strong>.</p>}</div>
+              <footer className="overview-footer"><p className="overview-meta">Fonte: FNS · {repasse?.completo ? "Ano completo" : "Acumulado parcial"} · Sem ajuste pela inflação.</p><ActionLink href="#titulo-saude">Conhecer a saúde da cidade <ArrowUpRight size={17} aria-hidden="true"/></ActionLink></footer>
             </Card>
-            <Card className="overview-card"><div className="overview-label"><Users size={19} aria-hidden="true"/><h3>Quantos moradores vivem em famílias beneficiárias?</h3></div><p className="kicker">Bolsa Família · {cobertura ? competencia(cobertura.periodo) : "MDS / IBGE"}</p>
-              <p className="overview-number">{coverage.error ? "Falha na consulta" : !cobertura ? "Carregando…" : cobertura.disponivel && cobertura.municipio.cobertura_pct != null ? percentual(cobertura.municipio.cobertura_pct) : "Indisponível"}</p><p className="coverage-unit">da população da cidade</p>{cobertura?.disponivel && cobertura.municipio.pessoas != null && cobertura.municipio.cobertura_pct != null && <AlcanceBolsa pessoas={cobertura.municipio.pessoas} populacao={cobertura.municipio.populacao} percentual={cobertura.municipio.cobertura_pct} />}<p className="overview-meta">Fonte: MDS · População estimada pelo IBGE em 2026.</p>
-              <ActionLink href="#dados-bolsa">Entender o Bolsa Família <ArrowUpRight size={17} aria-hidden="true"/></ActionLink>
+            <Card className="overview-card">
+              <header className="overview-heading"><div className="overview-label"><Users size={19} aria-hidden="true"/><h3>Quantos moradores vivem em famílias beneficiárias?</h3></div><p className="kicker">Bolsa Família · {cobertura ? competencia(cobertura.periodo) : "MDS / IBGE"}</p></header>
+              <div className="overview-metric"><p className="overview-number">{coverage.error ? "Falha na consulta" : !cobertura ? "Carregando…" : cobertura.disponivel && cobertura.municipio.cobertura_pct != null ? percentual(cobertura.municipio.cobertura_pct) : "Indisponível"}</p><p className="coverage-unit">da população da cidade</p></div>
+              <div className="overview-body">{cobertura?.disponivel && cobertura.municipio.pessoas != null && cobertura.municipio.cobertura_pct != null && <AlcanceBolsa compact pessoas={cobertura.municipio.pessoas} populacao={cobertura.municipio.populacao} percentual={cobertura.municipio.cobertura_pct} />}</div>
+              <footer className="overview-footer"><p className="overview-meta">Fonte: MDS · População estimada pelo IBGE em 2026.</p><ActionLink href="#dados-bolsa">Entender o Bolsa Família <ArrowUpRight size={17} aria-hidden="true"/></ActionLink></footer>
             </Card>
           </div>
           <p className="panorama-note">Como a cidade votou é uma referência para investigar sua trajetória. Os dados abaixo descrevem políticas e serviços; não medem a motivação dos eleitores ou comprovam impacto da presidência.</p>
         </section>
         <SaudeMunicipal resposta={health.data} erro={health.error} retry={health.retry}/>
-        <section id="dados-bolsa" className="ranking-section" aria-labelledby="bolsa-title"><div className="section-heading"><div><p className="kicker">Renda e proteção social</p><h2 id="bolsa-title">Bolsa Família na sua cidade</h2><p className="hint">Alcance na população e valores registrados são medidas diferentes, com períodos próprios.</p></div></div><div className="cards">
+        <section id="dados-bolsa" className="ranking-section" aria-labelledby="bolsa-title"><div className="section-heading"><div><p className="kicker">Renda e proteção social</p><h2 id="bolsa-title">Bolsa Família na sua cidade</h2><p className="hint">Alcance na população e valores registrados são medidas diferentes, com períodos próprios.</p></div></div><div className="cards benefit-cards">
           <Card><h3>Moradores em famílias que recebem Bolsa Família</h3>
             {erroCobertura ? <Feedback kind="error"><p>{erroCobertura}</p><Button onClick={() => coverage.retry()}>Tentar novamente</Button></Feedback> : !cobertura ? <Feedback kind="loading">Carregando cobertura…</Feedback> : cobertura.disponivel && cobertura.municipio.cobertura_pct != null ?
                 <><span className="kicker">Moradores em famílias beneficiárias · {competencia(cobertura.periodo)}</span>
@@ -121,9 +135,9 @@ export default function CityPage({ codigo }: {
             {beneficiaries.error && <Feedback kind="error"><p>{beneficiaries.error}</p><Button onClick={beneficiaries.retry}>Tentar novamente</Button></Feedback>}
             <div className="footnote">Fontes: valores CGU e pessoas/famílias MDS, na competência indicada. É uma divisão dos totais municipais; não é um pagamento separado para cada integrante nem o valor exato recebido por cada família. Os registros não comprovam saque.</div>
           </Card>
-          <Card><h3>Bolsa Família</h3>
+          <Card className="benefit-history"><h3>Valores registrados ao longo do tempo</h3>
             {ultimo ? <><span className="kicker">Última competência: {competencia(ultimo.mes_competencia)}</span>
-              <div className="big">{reais(ultimo.valor_centavos)}</div>
+              <div className="big money-value">{reais(ultimo.valor_centavos)}</div>
               <p className="sub">{br.format(ultimo.parcelas)} registros de parcelas do benefício nessa competência</p>
               <div className="chart" role="img" aria-label={"Evolução mensal dos valores registrados do Bolsa Família, de " + competencia(serie[0].mes_competencia) + " até " + competencia(ultimo.mes_competencia)}>
                 {serie.map(p => <div key={p.mes_competencia} className="bar" title={competencia(p.mes_competencia) + ": " + reais(p.valor_centavos)} style={{ height: (100 * p.valor_centavos / maior) + "%" }}/>)}

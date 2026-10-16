@@ -45,24 +45,24 @@ export default function FinanciamentoSaude({ dados, fontes }: {
     const variacao = dados.variacao_anual_2024_2025_percentual;
 
     return <div data-testid="financiamento-saude">
-    <h3 className="health-subtitle">Quanto dinheiro o governo federal enviou para a saúde da cidade?</h3>
+    <h3 className="health-subtitle">Repasses do governo federal</h3>
     <div className="cards health-summary">
       <Card><h4>Dinheiro enviado à saúde da cidade</h4>
         <p className="kicker">De {mes(atual.inicio)} a {mes(atual.fim)}</p>
-        <div className="big">{moeda(municipal?.valor_centavos)}</div>
+        <div className="big money-value">{moeda(municipal?.valor_centavos)}</div>
         <p className="sub">Dinheiro que saiu do fundo de saúde do governo federal e foi para o fundo de saúde administrado pela cidade. Esse envio é chamado de <strong>repasse fundo a fundo</strong>.<TermHelp term="repasse fundo a fundo">Fundo de saúde é onde ficam os recursos destinados à saúde de cada governo. Repasse fundo a fundo é a transferência entre esses fundos. Receber o dinheiro não significa que ele já foi gasto ou que um atendimento foi realizado.</TermHelp></p>
         {!municipal && <p>Não há repasse municipal validado neste recorte. Ausência não é zero.</p>}
         <div className="footnote">Fonte: <a href={fontes.fns_2026.url}>FNS — acumulado até {mes(atual.fim)}</a>. Valores líquidos nominais. O total já inclui atenção primária e emendas identificadas. Não inclui todo gasto federal na cidade, pagamentos diretos ou recursos recebidos pelo estado.</div>
       </Card>
       <Card><h4>Quanto isso representa por habitante</h4>
         <p className="kicker">Mesmo acumulado de {mes(atual.inicio)} a {mes(atual.fim)}</p>
-        <div className="big">{moeda(dados.centavos_por_habitante)}</div>
+        <div className="big money-value">{moeda(dados.centavos_por_habitante)}</div>
         <p className="sub">Total municipal dividido por {numero(dados.municipio.populacao)} habitantes, população IBGE {dados.municipio.ano_populacao}.</p>
         <div className="footnote">Fontes: FNS e população IBGE já publicada no projeto. É uma referência de escala, não um valor pago a cada pessoa nem uma média mensal ou anual.</div>
       </Card>
     </div>
     <div className="cards health-related">
-      <Card><h4>Para quais áreas veio o dinheiro?</h4>
+      <Card className="health-areas"><h4>Para quais áreas veio o dinheiro?</h4>
         <p className="kicker">Fundo municipal · até {mes(atual.fim)}</p>
         {municipal ? <><Valores itens={municipal.grupos} total={municipal.valor_centavos}/>
           <details className="health-details"><summary>Manutenção e estruturação da rede</summary><Valores itens={municipal.finalidades} total={municipal.valor_centavos}/></details></> : <p>Finalidades municipais indisponíveis neste recorte.</p>}
@@ -71,7 +71,7 @@ export default function FinanciamentoSaude({ dados, fontes }: {
       <Card><h4>Quanto foi identificado como emenda?</h4>
         <p className="sub">Emendas parlamentares direcionam parte do orçamento público para finalidades definidas por parlamentares.<TermHelp term="emenda parlamentar">Aqui mostramos apenas os valores identificados como emenda na planilha do FNS. Eles já fazem parte do total recebido, não são dinheiro extra a somar. A base usada não identifica o parlamentar autor.</TermHelp></p>
         <p className="kicker">Dentro do total municipal · até {mes(atual.fim)}</p>
-        <div className="big">{moeda(municipal?.emendas.valor_centavos)}</div>
+        <div className="big money-value">{moeda(municipal?.emendas.valor_centavos)}</div>
         <p className="sub">{municipal?.emendas.percentual_do_total != null ? `${pct(municipal.emendas.percentual_do_total)} do total municipal na planilha.` : "Não há valor de emendas identificado e validado neste recorte. Isso não comprova ausência de emendas."}</p>
         <div className="footnote">Fonte: <a href={fontes.fns_2026.url}>FNS</a>. Soma das linhas cuja estratégia começa com “EMENDA -”. Esses valores já estão incluídos no total e nas áreas; não devem ser somados novamente. A planilha não permite atribuir autoria parlamentar ou cobrir todas as modalidades de emenda.</div>
       </Card>
@@ -85,7 +85,7 @@ export default function FinanciamentoSaude({ dados, fontes }: {
         <p className="sub">De 2024 para 2025, sem descontar a inflação.<TermHelp term="variação nominal">Variação nominal é a mudança nos valores em reais de cada ano, sem ajuste pela inflação. Um aumento no dinheiro recebido não significa necessariamente maior poder de compra.</TermHelp></p>
         <div className="footnote">Fontes: <a href={fontes.fns_2024.url}>FNS 2024</a> e <a href={fontes.fns_2025.url}>FNS 2025</a>. Valores sem correção pela inflação. O acumulado parcial de 2026 fica separado: não calculamos variação contra um ano completo nem projetamos seu fechamento.</div>
       </Card>
-      <Card data-testid="despesas-saude"><h4>Quanto a cidade gastou com saúde?</h4>
+      <Card className="health-spending" data-testid="despesas-saude"><h4>Quanto a cidade gastou com saúde?</h4>
         <p className="kicker">SIOPS · exercício 2025 · 6º bimestre</p>
         <p className="sub">Aqui vemos despesas declaradas pela prefeitura em 2025. É uma informação diferente do dinheiro recebido em 2026 mostrado acima.</p>
         {dados.siops && liquidado ? <><dl className="spending-stats"><div><dt>Compras e serviços conferidos e reconhecidos como despesa<TermHelp term="despesas liquidadas">O termo oficial é despesas liquidadas: a prefeitura verificou os documentos que comprovam a entrega de um bem ou serviço e reconheceu a obrigação de pagar. Isso não significa que o pagamento já ocorreu.</TermHelp></dt><dd>{moeda(liquidado.total_centavos)}</dd><span>Termo oficial: despesas liquidadas.</span></div>
@@ -108,7 +108,7 @@ export default function FinanciamentoSaude({ dados, fontes }: {
       <p>A planilha contém classificações municipais e estaduais para esses pagamentos, mas o destinatário identificado não é o fundo municipal ou distrital. A sede da instituição não determina quais moradores foram atendidos. Mantemos esses valores fora dos totais dos fundos e do indicador municipal por habitante.</p>
       <p className="hint">Fonte: <a href={fontes.fns_2026.url}>FNS, até {mes(atual.fim)}</a>.</p>
     </details></Feedback>}
-    <h3 className="health-subtitle">Estrutura de saúde localizada na cidade</h3>
+    <h3 className="health-subtitle">Unidades, leitos e equipamentos</h3>
     <p className="hint">Cadastros de estrutura ajudam a conhecer a rede. Não vinculamos automaticamente uma unidade, um leito ou um equipamento a um repasse federal.</p>
     <div className="cards health-related">
       <Card><h4>Unidades e atenção básica</h4>
@@ -126,6 +126,6 @@ export default function FinanciamentoSaude({ dados, fontes }: {
       </Card>
       <Card className="health-wide"><EquipamentosSaude dados={dados.equipamentos} /></Card>
     </div>
-    <h3 className="health-subtitle">Equipes de saúde e apoio do governo federal</h3>
+    <h3 className="health-subtitle">Equipes e profissionais</h3>
   </div>;
 }

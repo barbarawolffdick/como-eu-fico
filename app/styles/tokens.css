@@ -44,6 +44,7 @@
   --font-size-heading: 1.5rem;
   --font-size-section: 1.75rem;
   --font-size-number: 2.25rem;
+  --font-size-money: clamp(1.25rem, 2.5vw, 2.25rem);
   --font-size-title: 3rem;
   --font-size-hero: 4rem;
   --font-size-page-title: clamp(2rem, 4.2vw, 3rem);

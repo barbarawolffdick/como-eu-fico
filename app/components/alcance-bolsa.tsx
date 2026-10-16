@@ -12,9 +12,9 @@ export function AjudaBolsa() {
   </TermHelp>;
 }
 
-export default function AlcanceBolsa({ pessoas, populacao, percentual }: { pessoas: number; populacao: number; percentual: number }) {
+export default function AlcanceBolsa({ pessoas, populacao, percentual, compact = false }: { pessoas: number; populacao: number; percentual: number; compact?: boolean }) {
   return <><p className="sub coverage-reading">{leituraCobertura(percentual)}</p>
-    <p className="sub"><strong>{pessoas.toLocaleString("pt-BR")} moradores</strong> em famílias beneficiárias, de uma população estimada de <strong>{populacao.toLocaleString("pt-BR")} pessoas</strong>.</p>
+    <p className="sub"><strong>{pessoas.toLocaleString("pt-BR")} moradores</strong> em famílias beneficiárias{!compact && <>, de uma população estimada de <strong>{populacao.toLocaleString("pt-BR")} pessoas</strong></>}.</p>
     <p className="hint">O benefício é da família. O pagamento é feito ao titular. <AjudaBolsa /></p>
   </>;
 }

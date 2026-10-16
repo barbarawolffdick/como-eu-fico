@@ -63,3 +63,11 @@ Antes de concluir uma mudança:
 3. Execute `npm run lint`, `npm run build` e `npm run test:web`. O teste web usa a aplicação compilada, em desktop e Pixel 7, e salva capturas em `test-results/`.
 
 `npm run check:design` (também incluído no lint) bloqueia cores literais e tamanhos tipográficos locais no CSS, além de botões e selects nativos fora das implementações compartilhadas. É uma proteção focada, não substitui revisão de semântica, contraste e composição no navegador. Não crie páginas de catálogo nem novas dependências para necessidades futuras.
+
+## Ritmo visual da página municipal
+
+A revisão de 15/10/2026 usa três colunas iguais no panorama. Cada cartão compartilha quatro linhas de grid: cabeçalho, medida principal, leitura e rodapé. O subgrid mantém números e ações alinhados mesmo quando um título quebra ou os votos são expandidos. Abaixo de 64em, os cartões seguem o fluxo vertical, sem reservar espaços vazios para cartões vizinhos. O resumo eleitoral mantém três nomes e percentuais; as contagens de votos continuam no detalhe eleitoral.
+
+Os cartões municipais usam o mesmo espaçamento interno e o mesmo intervalo entre colunas. Listas financeiras extensas, despesas e histórico do Bolsa Família ocupam a largura da grade; em telas estreitas, suas subdivisões voltam a uma coluna. Valores monetários completos usam a escala fluida `--font-size-money`. O panorama abrevia milhões/bilhões e mantém o valor completo na leitura e no nome acessível.
+
+`ritmo-visual.spec.ts` verifica ausência de rolagem horizontal, valores monetários completos em uma linha e alinhamento de números/ações, inclusive após expansão dos votos. Cobre 320, 390, 768 e 1440px. Capturas e revisão visual complementam essas medidas; não substituem pesquisa de compreensão com cidadãos.

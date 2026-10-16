@@ -15,7 +15,7 @@ export default function VotosMunicipais({ votos, compact = false }: { votos: { c
     <div className="vote-list" id={id}>{ordenados.slice(0, expanded ? undefined : 3).map(v => {
       const p = 100 * v.votos / total;
       return <div className="vote" key={v.candidato}><div className="voterow"><span>{nomeCandidato(v.candidato)} ({v.candidato})</span><strong>{p.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</strong></div>
-        {!compact && <DataBar value={p} />}<p className="sub">{v.votos.toLocaleString("pt-BR")} votos</p>
+        {!compact && <><DataBar value={p} /><p className="sub">{v.votos.toLocaleString("pt-BR")} votos</p></>}
       </div>;
     })}</div>
     {ordenados.length > 3 && <Button variant="quiet" className="votes-expand" aria-expanded={expanded} aria-controls={id} onClick={() => setExpanded(value => !value)}>{expanded ? "Ver menos candidatos" : `Ver mais candidatos (${ordenados.length - 3})`}</Button>}

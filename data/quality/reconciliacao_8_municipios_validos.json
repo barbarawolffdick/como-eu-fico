@@ -1,0 +1,66 @@
+{
+  "('BA', 'CRISTOPOLIS')": {
+    "status": "PASS",
+    "votos_validos": 9487,
+    "secoes": 45,
+    "alertas": [],
+    "exemplos_divergencias": [],
+    "quantidade_secoes_divergentes": 0
+  },
+  "('MG', 'PIEDADE DOS GERAIS')": {
+    "status": "PASS",
+    "votos_validos": 3651,
+    "secoes": 14,
+    "alertas": [],
+    "exemplos_divergencias": [],
+    "quantidade_secoes_divergentes": 0
+  },
+  "('MG', 'SANTA CRUZ DE MINAS')": {
+    "status": "PASS",
+    "votos_validos": 4971,
+    "secoes": 19,
+    "alertas": [],
+    "exemplos_divergencias": [],
+    "quantidade_secoes_divergentes": 0
+  },
+  "('PA', 'CACHOEIRA DO PIRIA')": {
+    "status": "PASS",
+    "votos_validos": 11187,
+    "secoes": 58,
+    "alertas": [],
+    "exemplos_divergencias": [],
+    "quantidade_secoes_divergentes": 0
+  },
+  "('PR', 'ALVORADA DO SUL')": {
+    "status": "PASS",
+    "votos_validos": 5653,
+    "secoes": 25,
+    "alertas": [],
+    "exemplos_divergencias": [],
+    "quantidade_secoes_divergentes": 0
+  },
+  "('RJ', 'CAMBUCI')": {
+    "status": "PASS",
+    "votos_validos": 9620,
+    "secoes": 44,
+    "alertas": [],
+    "exemplos_divergencias": [],
+    "quantidade_secoes_divergentes": 0
+  },
+  "('RJ', 'PIRAI')": {
+    "status": "PASS",
+    "votos_validos": 17511,
+    "secoes": 78,
+    "alertas": [],
+    "exemplos_divergencias": [],
+    "quantidade_secoes_divergentes": 0
+  },
+  "('RJ', 'TRAJANO DE MORAES')": {
+    "status": "PASS",
+    "votos_validos": 7110,
+    "secoes": 34,
+    "alertas": [],
+    "exemplos_divergencias": [],
+    "quantidade_secoes_divergentes": 0
+  }
+}

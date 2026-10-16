@@ -1,0 +1,12 @@
+{
+  "ano": 2026,
+  "turno": 1,
+  "arquivos_processados": 27,
+  "registros_consolidados": 5571,
+  "municipios_sem_saida": 0,
+  "inconsistencias": 8,
+  "por_regra": {
+    "votos_candidatos": 8
+  },
+  "aviso": "Verificações internas aos CSVs; NÃO é conferência com resultados oficiais do TSE."
+}

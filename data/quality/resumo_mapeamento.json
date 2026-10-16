@@ -1,0 +1,11 @@
+{
+  "fonte_ibge": "https://servicodados.ibge.gov.br/api/v1/localidades/municipios",
+  "arquivos_csv_lidos": 27,
+  "registros_ibge": 5571,
+  "municipios_mapeados": 5571,
+  "registros_pendentes": 0,
+  "municipios_ibge_ausentes": 0,
+  "equivalencias_revisadas": 13,
+  "motivos_pendencia": {},
+  "observacao": "Nome normalizado ou equivalência explícita por código IBGE, sem matching aproximado."
+}

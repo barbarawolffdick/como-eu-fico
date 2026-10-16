@@ -1,0 +1,170 @@
+{
+  "gerado_em_utc": "2026-10-12T15:23:28.763037+00:00",
+  "resultado": "FAIL",
+  "contagem": {
+    "PASS": 14,
+    "INCONCLUSIVO": 3,
+    "FAIL": 1
+  },
+  "testes": [
+    {
+      "teste": "manifesto",
+      "status": "PASS",
+      "evidencia": {
+        "arquivo": "data/raw/tse/2026/manifest.json"
+      }
+    },
+    {
+      "teste": "hash_votos",
+      "status": "PASS",
+      "evidencia": {
+        "esperado": "2d42006d0f6c6e00bad83f5c23cd3d78cd3e3182dbc1ad6718222b6b132c23e1",
+        "calculado": "2d42006d0f6c6e00bad83f5c23cd3d78cd3e3182dbc1ad6718222b6b132c23e1",
+        "bytes": 161616519
+      }
+    },
+    {
+      "teste": "zip_votos",
+      "status": "PASS",
+      "evidencia": {
+        "csvs": 1,
+        "amostras_nomes": [
+          "votacao_secao_2026_BR.csv"
+        ]
+      }
+    },
+    {
+      "teste": "hash_detalhe",
+      "status": "PASS",
+      "evidencia": {
+        "esperado": "11a62c3a604e8b73fc328617b7688d2c635de1c76df02ba63b8f77879512f573",
+        "calculado": "11a62c3a604e8b73fc328617b7688d2c635de1c76df02ba63b8f77879512f573",
+        "bytes": 176923175
+      }
+    },
+    {
+      "teste": "zip_detalhe",
+      "status": "PASS",
+      "evidencia": {
+        "csvs": 30,
+        "amostras_nomes": [
+          "detalhe_votacao_secao_2026_DF.csv",
+          "detalhe_votacao_secao_2026_MG.csv",
+          "detalhe_votacao_secao_2026_MA.csv",
+          "detalhe_votacao_secao_2026_PE.csv"
+        ]
+      }
+    },
+    {
+      "teste": "hash_munzona",
+      "status": "PASS",
+      "evidencia": {
+        "esperado": "2600a7ef46c09c1408f0f19e15b3997cc92dafc618fd9d3f7549fd7a83baee9a",
+        "calculado": "2600a7ef46c09c1408f0f19e15b3997cc92dafc618fd9d3f7549fd7a83baee9a",
+        "bytes": 2502238
+      }
+    },
+    {
+      "teste": "zip_munzona",
+      "status": "PASS",
+      "evidencia": {
+        "csvs": 29,
+        "amostras_nomes": [
+          "detalhe_votacao_munzona_2026_AP.csv",
+          "detalhe_votacao_munzona_2026_AC.csv",
+          "detalhe_votacao_munzona_2026_BA.csv",
+          "detalhe_votacao_munzona_2026_AL.csv"
+        ]
+      }
+    },
+    {
+      "teste": "esquema_votacao",
+      "status": "PASS",
+      "evidencia": {
+        "colunas": 26,
+        "arquivo": "votacao_secao_2026_BR.csv"
+      }
+    },
+    {
+      "teste": "escopo_votacao",
+      "status": "PASS",
+      "evidencia": {
+        "linhas": 3800511,
+        "selecionadas": 3800511,
+        "fora_escopo": 0
+      }
+    },
+    {
+      "teste": "valores_votacao",
+      "status": "PASS",
+      "evidencia": {
+        "invalidos": 0
+      }
+    },
+    {
+      "teste": "locais_votacao",
+      "status": "PASS",
+      "evidencia": {
+        "secoes_distintas": 499206,
+        "conflitos": 0
+      }
+    },
+    {
+      "teste": "unicidade_linhas_votacao",
+      "status": "INCONCLUSIVO",
+      "evidencia": {
+        "motivo": "O esquema inclui várias linhas por seção; falta validar a chave por votável e origem."
+      }
+    },
+    {
+      "teste": "classificacao_votaveis",
+      "status": "INCONCLUSIVO",
+      "evidencia": {
+        "motivo": "Não classificar votos brancos/nulos nem inferir candidato somente pelo número.",
+        "codigos_distintos": 15
+      }
+    },
+    {
+      "teste": "esquema_detalhe",
+      "status": "PASS",
+      "evidencia": {
+        "arquivo": "detalhe_votacao_secao_2026_BRASIL.csv",
+        "colunas": 37
+      }
+    },
+    {
+      "teste": "escopo_detalhe",
+      "status": "PASS",
+      "evidencia": {
+        "linhas": 2490846,
+        "selecionadas": 499248,
+        "outras_linhas": 1991598
+      }
+    },
+    {
+      "teste": "unicidade_detalhe",
+      "status": "PASS",
+      "evidencia": {
+        "repeticoes": 0,
+        "secoes_distintas": 499248,
+        "exemplos": []
+      }
+    },
+    {
+      "teste": "aritmetica_detalhe",
+      "status": "FAIL",
+      "evidencia": {
+        "ocorrencias": {
+          "aptos_diferentes_comparecimento_abstencoes": 41
+        }
+      }
+    },
+    {
+      "teste": "reconciliacao",
+      "status": "INCONCLUSIVO",
+      "evidencia": {
+        "motivo": "Ainda não implementada; requer classificação validada dos votos e cobertura."
+      }
+    }
+  ]
+}

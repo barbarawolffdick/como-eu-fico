@@ -1,0 +1,9 @@
+arquivo_origem,linha_origem,codigo_ibge,uf,municipio_origem,regra,detalhe
+dados-municipios/Bahia/resumo_municipios_BA.csv,116,2909703,BA,CRISTÓPOLIS,votos_candidatos,soma dos candidatos > votos válidos
+dados-municipios/Minas_Gerais/resumo_municipios_MG.csv,591,3150406,MG,PIEDADE DOS GERAIS,votos_candidatos,soma dos candidatos > votos válidos
+dados-municipios/Minas_Gerais/resumo_municipios_MG.csv,669,3157336,MG,SANTA CRUZ DE MINAS,votos_candidatos,soma dos candidatos > votos válidos
+dados-municipios/Para/resumo_municipios_PA.csv,32,1501956,PA,CACHOEIRA DO PIRIÁ,votos_candidatos,soma dos candidatos > votos válidos
+dados-municipios/Parana/resumo_municipios_PR.csv,11,4100806,PR,ALVORADA DO SUL,votos_candidatos,soma dos candidatos > votos válidos
+dados-municipios/Rio_de_Janeiro/resumo_municipios_RJ.csv,15,3300902,RJ,CAMBUCI,votos_candidatos,soma dos candidatos > votos válidos
+dados-municipios/Rio_de_Janeiro/resumo_municipios_RJ.csv,58,3304003,RJ,PIRAÍ,votos_candidatos,soma dos candidatos > votos válidos
+dados-municipios/Rio_de_Janeiro/resumo_municipios_RJ.csv,88,3305901,RJ,TRAJANO DE MORAES,votos_candidatos,soma dos candidatos > votos válidos

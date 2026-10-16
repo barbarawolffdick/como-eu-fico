@@ -1,0 +1,438 @@
+{
+  "('BA', 'CRISTOPOLIS')": [
+    {
+      "codigo": "14",
+      "nome": "RENAN ANTONIO FERREIRA DOS SANTOS",
+      "votos": 79
+    },
+    {
+      "codigo": "16",
+      "nome": "HERTZ DA CONCEICAO DIAS",
+      "votos": 1
+    },
+    {
+      "codigo": "29",
+      "nome": "RUI COSTA PIMENTA",
+      "votos": 1
+    },
+    {
+      "codigo": "30",
+      "nome": "ROMEU ZEMA NETO",
+      "votos": 7
+    },
+    {
+      "codigo": "55",
+      "nome": "RONALDO RAMOS CAIADO",
+      "votos": 133
+    },
+    {
+      "codigo": "70",
+      "nome": "AUGUSTO JORGE CURY",
+      "votos": 126
+    },
+    {
+      "codigo": "80",
+      "nome": "SAMARA MARTINS DA SILVA FEITOSA",
+      "votos": 5
+    },
+    {
+      "codigo": "95",
+      "nome": "VOTO BRANCO",
+      "votos": 145
+    },
+    {
+      "codigo": "96",
+      "nome": "VOTO NULO",
+      "votos": 328
+    }
+  ],
+  "('MG', 'PIEDADE DOS GERAIS')": [
+    {
+      "codigo": "14",
+      "nome": "RENAN ANTONIO FERREIRA DOS SANTOS",
+      "votos": 56
+    },
+    {
+      "codigo": "16",
+      "nome": "HERTZ DA CONCEICAO DIAS",
+      "votos": 1
+    },
+    {
+      "codigo": "21",
+      "nome": "EDMILSON SILVA COSTA",
+      "votos": 3
+    },
+    {
+      "codigo": "30",
+      "nome": "ROMEU ZEMA NETO",
+      "votos": 26
+    },
+    {
+      "codigo": "35",
+      "nome": "WILSON GRASSI JUNIOR",
+      "votos": 1
+    },
+    {
+      "codigo": "55",
+      "nome": "RONALDO RAMOS CAIADO",
+      "votos": 73
+    },
+    {
+      "codigo": "70",
+      "nome": "AUGUSTO JORGE CURY",
+      "votos": 189
+    },
+    {
+      "codigo": "80",
+      "nome": "SAMARA MARTINS DA SILVA FEITOSA",
+      "votos": 1
+    },
+    {
+      "codigo": "95",
+      "nome": "VOTO BRANCO",
+      "votos": 144
+    },
+    {
+      "codigo": "96",
+      "nome": "VOTO NULO",
+      "votos": 122
+    }
+  ],
+  "('MG', 'SANTA CRUZ DE MINAS')": [
+    {
+      "codigo": "14",
+      "nome": "RENAN ANTONIO FERREIRA DOS SANTOS",
+      "votos": 102
+    },
+    {
+      "codigo": "16",
+      "nome": "HERTZ DA CONCEICAO DIAS",
+      "votos": 3
+    },
+    {
+      "codigo": "21",
+      "nome": "EDMILSON SILVA COSTA",
+      "votos": 1
+    },
+    {
+      "codigo": "27",
+      "nome": "CLARIANA ZACARKIM BARAO",
+      "votos": 3
+    },
+    {
+      "codigo": "28",
+      "nome": "LEONARDO ALVES DE ARAUJO",
+      "votos": 4
+    },
+    {
+      "codigo": "29",
+      "nome": "RUI COSTA PIMENTA",
+      "votos": 1
+    },
+    {
+      "codigo": "30",
+      "nome": "ROMEU ZEMA NETO",
+      "votos": 37
+    },
+    {
+      "codigo": "55",
+      "nome": "RONALDO RAMOS CAIADO",
+      "votos": 115
+    },
+    {
+      "codigo": "70",
+      "nome": "AUGUSTO JORGE CURY",
+      "votos": 202
+    },
+    {
+      "codigo": "80",
+      "nome": "SAMARA MARTINS DA SILVA FEITOSA",
+      "votos": 14
+    },
+    {
+      "codigo": "95",
+      "nome": "VOTO BRANCO",
+      "votos": 146
+    },
+    {
+      "codigo": "96",
+      "nome": "VOTO NULO",
+      "votos": 161
+    }
+  ],
+  "('PA', 'CACHOEIRA DO PIRIA')": [
+    {
+      "codigo": "14",
+      "nome": "RENAN ANTONIO FERREIRA DOS SANTOS",
+      "votos": 99
+    },
+    {
+      "codigo": "21",
+      "nome": "EDMILSON SILVA COSTA",
+      "votos": 1
+    },
+    {
+      "codigo": "29",
+      "nome": "RUI COSTA PIMENTA",
+      "votos": 1
+    },
+    {
+      "codigo": "30",
+      "nome": "ROMEU ZEMA NETO",
+      "votos": 1
+    },
+    {
+      "codigo": "55",
+      "nome": "RONALDO RAMOS CAIADO",
+      "votos": 65
+    },
+    {
+      "codigo": "70",
+      "nome": "AUGUSTO JORGE CURY",
+      "votos": 237
+    },
+    {
+      "codigo": "80",
+      "nome": "SAMARA MARTINS DA SILVA FEITOSA",
+      "votos": 2
+    },
+    {
+      "codigo": "95",
+      "nome": "VOTO BRANCO",
+      "votos": 89
+    },
+    {
+      "codigo": "96",
+      "nome": "VOTO NULO",
+      "votos": 415
+    }
+  ],
+  "('PR', 'ALVORADA DO SUL')": [
+    {
+      "codigo": "14",
+      "nome": "RENAN ANTONIO FERREIRA DOS SANTOS",
+      "votos": 59
+    },
+    {
+      "codigo": "16",
+      "nome": "HERTZ DA CONCEICAO DIAS",
+      "votos": 2
+    },
+    {
+      "codigo": "21",
+      "nome": "EDMILSON SILVA COSTA",
+      "votos": 1
+    },
+    {
+      "codigo": "28",
+      "nome": "LEONARDO ALVES DE ARAUJO",
+      "votos": 1
+    },
+    {
+      "codigo": "30",
+      "nome": "ROMEU ZEMA NETO",
+      "votos": 4
+    },
+    {
+      "codigo": "55",
+      "nome": "RONALDO RAMOS CAIADO",
+      "votos": 93
+    },
+    {
+      "codigo": "70",
+      "nome": "AUGUSTO JORGE CURY",
+      "votos": 87
+    },
+    {
+      "codigo": "80",
+      "nome": "SAMARA MARTINS DA SILVA FEITOSA",
+      "votos": 3
+    },
+    {
+      "codigo": "95",
+      "nome": "VOTO BRANCO",
+      "votos": 70
+    },
+    {
+      "codigo": "96",
+      "nome": "VOTO NULO",
+      "votos": 107
+    }
+  ],
+  "('RJ', 'CAMBUCI')": [
+    {
+      "codigo": "14",
+      "nome": "RENAN ANTONIO FERREIRA DOS SANTOS",
+      "votos": 112
+    },
+    {
+      "codigo": "16",
+      "nome": "HERTZ DA CONCEICAO DIAS",
+      "votos": 1
+    },
+    {
+      "codigo": "21",
+      "nome": "EDMILSON SILVA COSTA",
+      "votos": 5
+    },
+    {
+      "codigo": "27",
+      "nome": "CLARIANA ZACARKIM BARAO",
+      "votos": 4
+    },
+    {
+      "codigo": "30",
+      "nome": "ROMEU ZEMA NETO",
+      "votos": 8
+    },
+    {
+      "codigo": "35",
+      "nome": "WILSON GRASSI JUNIOR",
+      "votos": 1
+    },
+    {
+      "codigo": "55",
+      "nome": "RONALDO RAMOS CAIADO",
+      "votos": 168
+    },
+    {
+      "codigo": "70",
+      "nome": "AUGUSTO JORGE CURY",
+      "votos": 138
+    },
+    {
+      "codigo": "80",
+      "nome": "SAMARA MARTINS DA SILVA FEITOSA",
+      "votos": 2
+    },
+    {
+      "codigo": "95",
+      "nome": "VOTO BRANCO",
+      "votos": 120
+    },
+    {
+      "codigo": "96",
+      "nome": "VOTO NULO",
+      "votos": 196
+    }
+  ],
+  "('RJ', 'PIRAI')": [
+    {
+      "codigo": "14",
+      "nome": "RENAN ANTONIO FERREIRA DOS SANTOS",
+      "votos": 353
+    },
+    {
+      "codigo": "16",
+      "nome": "HERTZ DA CONCEICAO DIAS",
+      "votos": 3
+    },
+    {
+      "codigo": "21",
+      "nome": "EDMILSON SILVA COSTA",
+      "votos": 3
+    },
+    {
+      "codigo": "27",
+      "nome": "CLARIANA ZACARKIM BARAO",
+      "votos": 11
+    },
+    {
+      "codigo": "28",
+      "nome": "LEONARDO ALVES DE ARAUJO",
+      "votos": 1
+    },
+    {
+      "codigo": "29",
+      "nome": "RUI COSTA PIMENTA",
+      "votos": 2
+    },
+    {
+      "codigo": "30",
+      "nome": "ROMEU ZEMA NETO",
+      "votos": 35
+    },
+    {
+      "codigo": "35",
+      "nome": "WILSON GRASSI JUNIOR",
+      "votos": 2
+    },
+    {
+      "codigo": "55",
+      "nome": "RONALDO RAMOS CAIADO",
+      "votos": 416
+    },
+    {
+      "codigo": "70",
+      "nome": "AUGUSTO JORGE CURY",
+      "votos": 453
+    },
+    {
+      "codigo": "80",
+      "nome": "SAMARA MARTINS DA SILVA FEITOSA",
+      "votos": 23
+    },
+    {
+      "codigo": "95",
+      "nome": "VOTO BRANCO",
+      "votos": 348
+    },
+    {
+      "codigo": "96",
+      "nome": "VOTO NULO",
+      "votos": 483
+    }
+  ],
+  "('RJ', 'TRAJANO DE MORAES')": [
+    {
+      "codigo": "14",
+      "nome": "RENAN ANTONIO FERREIRA DOS SANTOS",
+      "votos": 76
+    },
+    {
+      "codigo": "21",
+      "nome": "EDMILSON SILVA COSTA",
+      "votos": 1
+    },
+    {
+      "codigo": "27",
+      "nome": "CLARIANA ZACARKIM BARAO",
+      "votos": 1
+    },
+    {
+      "codigo": "29",
+      "nome": "RUI COSTA PIMENTA",
+      "votos": 2
+    },
+    {
+      "codigo": "30",
+      "nome": "ROMEU ZEMA NETO",
+      "votos": 3
+    },
+    {
+      "codigo": "55",
+      "nome": "RONALDO RAMOS CAIADO",
+      "votos": 165
+    },
+    {
+      "codigo": "70",
+      "nome": "AUGUSTO JORGE CURY",
+      "votos": 175
+    },
+    {
+      "codigo": "80",
+      "nome": "SAMARA MARTINS DA SILVA FEITOSA",
+      "votos": 4
+    },
+    {
+      "codigo": "95",
+      "nome": "VOTO BRANCO",
+      "votos": 104
+    },
+    {
+      "codigo": "96",
+      "nome": "VOTO NULO",
+      "votos": 251
+    }
+  ]
+}

@@ -2,6 +2,9 @@
 data/raw/
 data/tse_oficial/
 data/curated/
+# Derivados de data/public gerados por npm run build/dev (scripts/fragmentar_snapshots.mjs)
+data/derivados/
+data/derivados.tmp/
 data/reference/tse_ibge/
 data/reference/ibge_municipios_raw.json
 *.sqlite

@@ -1,14 +1,11 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { lerSnapshot, type SnapshotPublico } from "./snapshots";
 
 type Municipio = { codigo_ibge: string; nome: string; uf: string };
 type Pessoas = { periodo: string; unidade: string; registros: Record<string, { pessoas: number | null; cobertura_pct: number | null }> };
 type Familias = { unidade: string; periodos: string[]; registros: Record<string, Record<string, number | null>> };
 const regioes: Record<string, string> = { AC: "Norte", AP: "Norte", AM: "Norte", PA: "Norte", RO: "Norte", RR: "Norte", TO: "Norte", AL: "Nordeste", BA: "Nordeste", CE: "Nordeste", MA: "Nordeste", PB: "Nordeste", PE: "Nordeste", PI: "Nordeste", RN: "Nordeste", SE: "Nordeste", DF: "Centro-Oeste", GO: "Centro-Oeste", MT: "Centro-Oeste", MS: "Centro-Oeste", ES: "Sudeste", MG: "Sudeste", RJ: "Sudeste", SP: "Sudeste", PR: "Sul", RS: "Sul", SC: "Sul" };
 
-async function snapshot<T>(file: string): Promise<T> {
-  return JSON.parse(await readFile(join(process.cwd(), "data/public", file), "utf8")) as T;
-}
+const snapshot = <T>(file: SnapshotPublico) => lerSnapshot<T>(file);
 
 export async function descobertasHome() {
   const [territorio, pessoas, familias] = await Promise.allSettled([

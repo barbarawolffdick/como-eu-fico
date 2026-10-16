@@ -36,6 +36,18 @@ A planilha 2026 classifica oito linhas da **Agência para o Desenvolvimento da A
 
 **Equipamentos:** parâmetros exatos do POST estatístico, resposta bruta e hash preservados. O POST somente consulta tabelas públicas. Exigir competência, colunas, códigos únicos e reconciliação de cada coluna com o total nacional. Categorias ignoradas não são atribuídas a cidades. Traços publicados ficam nulos, nunca preenchidos com zero. A primeira coluna conta equipamentos em uso da rede total, pública e privada; a segunda conta estabelecimentos com equipamento SUS. Não somar as colunas nem tratar estabelecimentos como quantidade de aparelhos. Não atribuir compras à União sem vínculo documental.
 
+### Explicações na interface — 15/10/2026
+
+Os cartões apresentam primeiro a explicação em linguagem cotidiana e preservam o termo oficial para conferência. Repasse fundo a fundo é explicado como o envio de dinheiro entre o fundo federal e o fundo de saúde da cidade. Destinação, recebimento, reconhecimento da despesa e pagamento continuam distintos.
+
+- Grupos financeiros e origens dos recursos recebem resumos e exemplos de finalidade; exemplos não comprovam entregas realizadas.
+- A variação nominal anual usa texto, seta e cor para distinguir aumento, redução, estabilidade e indisponibilidade. Mantém anos completos e a ressalva de que não houve ajuste pela inflação.
+- SIOPS separa despesas conferidas e reconhecidas (liquidadas) de pagamentos efetuados. A tradução “de cada R$ 100” usa o mesmo percentual da fonte federal fundo a fundo no total liquidado; não é participação em receitas nem em todas as modalidades de financiamento federal. As fases não são somadas nem subtraídas para inferir dívidas.
+- Equipamentos e estabelecimentos continuam em colunas distintas, com instrução visível para não somar e exemplo ilustrativo de um local com vários aparelhos. Não é possível deduzir a quantidade de aparelhos SUS, a quantidade fora do SUS ou a origem da compra a partir dessas duas medidas. A exibição relaciona as duas listas pelo tipo de equipamento, sem depender da ordem das linhas.
+- Equipes homologadas são apresentadas como reconhecidas pelo Ministério e equipes financiadas como equipes com apoio financeiro federal na parcela. Financiamento pode ser parcial; contagem de equipes não equivale a profissionais ou consultas. A explicação das eMulti segue a [composição descrita pelo Ministério da Saúde](https://www.gov.br/saude/pt-br/composicao/saps/acoes-interprofissionais/emulti/composicao); o reconhecimento segue os [requisitos de cofinanciamento](https://www.gov.br/saude/pt-br/composicao/saps/esf/faq-novo-modelo-de-cofinanciamento-federal-da-aps/nova-metodologia-cofinanciamento-federal/quais-sao-os-requisitos-para-o-cofinanciamento-federal-da-equipes).
+
+As ajudas de contexto abrem ao passar o mouse, focar pelo teclado ou tocar no botão; Escape ou interação fora da ajuda permitem fechá-la. O conteúdo permanece dentro da largura da tela. Explicações essenciais, como a diferença de unidade entre as colunas de equipamentos, permanecem visíveis sem depender da ajuda.
+
 ## Reprodução e publicação
 
 ```bash

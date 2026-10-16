@@ -96,3 +96,12 @@ test("falha municipal permite nova tentativa e cidade inexistente não fica carr
   await expect(page.locator("main").getByRole("alert")).toBeVisible();
   await expect(page.getByText("Consultando dados do município…")).toHaveCount(0);
 });
+
+test("busca ignora acentos e prioriza o nome exato", async ({ request }) => {
+  const nomes = async (q: string) => (await (await request.get("/api/municipios?limit=3&q=" + encodeURIComponent(q))).json() as { nome: string; uf: string }[]).map(x => `${x.nome}/${x.uf}`);
+  expect((await nomes("sao paulo"))[0]).toBe("São Paulo/SP");
+  expect(await nomes("SÃO PAULO")).toEqual(await nomes("sao paulo"));
+  expect((await nomes("brasilia"))[0]).toBe("Brasília/DF");
+  expect((await nomes("natal"))[0]).toBe("Natal/RN");
+  expect(await nomes("3550308")).toEqual(["São Paulo/SP"]);
+});

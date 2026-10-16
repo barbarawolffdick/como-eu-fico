@@ -1,21 +1,27 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { filtrarOrdenarExploracao, type FiltrosExplorar, type RegistroExplorar, type ResultadoExplorar } from "./explorar";
 import type { FinanciamentoSaude } from "./saude";
+import { lerExplorarSaude, lerManifesto, lerSnapshot } from "./snapshots";
 
 type Cidade = Omit<RegistroExplorar, "valor" | "percentual_vencedor"> & { valor_centavos: number | null; competencias: number | null; votos_vencedor: number | null; votos_total: number | null };
 type Territorio = { esquema: number; inicio: string; fim: string; municipios: number; registros: Cidade[] };
 type Pessoas = { esquema: number; unidade: string; periodo: string; pagina_fonte: string; registros: Record<string, { cobertura_pct: number | null }> };
-type Saude = { esquema: number; municipios: number; registros: Record<string, FinanciamentoSaude> };
-async function ler<T>(file: string): Promise<T> { return JSON.parse(await readFile(join(process.cwd(), "data/public", file), "utf8")) as T; }
+type SaudeExplorar = { municipio: Pick<FinanciamentoSaude["municipio"], "ano_populacao">;
+  fns: (Pick<FinanciamentoSaude["fns"][number], "ano" | "inicio" | "fim" | "completo"> & { municipal: { valor_centavos: number | null } | null })[] } &
+  Pick<FinanciamentoSaude, "variacao_anual_2024_2025_percentual" | "centavos_por_habitante">;
+type Saude = { esquema: number; municipios: number; registros: Record<string, SaudeExplorar> };
+async function lerSaude(): Promise<Saude> {
+  const [{ snapshots }, { registros }] = await Promise.all([lerManifesto(), lerExplorarSaude<SaudeExplorar>()]);
+  const { esquema, municipios } = snapshots["financiamento_saude.json"].metadados as { esquema: number; municipios: number };
+  return { esquema, municipios, registros };
+}
 const mes = (value: string) => `${value.slice(4)}/${value.slice(0, 4)}`;
 
 export async function consultarExploracao(filtros: FiltrosExplorar): Promise<ResultadoExplorar> {
   const healthMetric = filtros.metrica.startsWith("saude_");
   const [territorio, pessoas, saude] = await Promise.all([
-    ler<Territorio>("rankings_2026.json"),
-    filtros.metrica === "alcance" ? ler<Pessoas>("pessoas_mds.json") : null,
-    healthMetric ? ler<Saude>("financiamento_saude.json") : null,
+    lerSnapshot<Territorio>("rankings_2026.json"),
+    filtros.metrica === "alcance" ? lerSnapshot<Pessoas>("pessoas_mds.json") : null,
+    healthMetric ? lerSaude() : null,
   ]);
   if (territorio.esquema !== 1 || territorio.registros.length !== territorio.municipios || territorio.municipios !== 5571 ||
     (pessoas && (pessoas.esquema !== 1 || pessoas.unidade !== "pessoas_em_familias_beneficiarias")) ||

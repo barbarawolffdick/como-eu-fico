@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { CACHE_PUBLICO, lerSnapshot } from "@/lib/snapshots";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -11,7 +10,7 @@ type Snapshot = {esquema:number;inicio:string;fim:string;municipios:number;popul
 export async function GET(req: NextRequest) {
   let data: Snapshot;
   try {
-    data = JSON.parse(await readFile(join(process.cwd(), "data/public/rankings_2026.json"), "utf8")) as Snapshot;
+    data = await lerSnapshot<Snapshot>("rankings_2026.json");
     if (data.esquema !== 1 || data.municipios !== 5571 || data.registros.length !== 5571) throw new Error("snapshot inválido");
   } catch {
     return NextResponse.json({detail:"Snapshot de rankings ainda não publicado. Execute python scripts/exportar_rankings_web.py e versione data/public/rankings_2026.json."}, {status:503});
@@ -41,5 +40,5 @@ export async function GET(req: NextRequest) {
       return (bv??0)-(av??0) || a.codigo_ibge.localeCompare(b.codigo_ibge);
    }).slice(0,limite);
   return NextResponse.json({metrica,vencedor,uf,inicio,fim,disponivel:true,resultados:rows,
-     nota:"Valores registrados por competência. Valor por habitante não mede cobertura de famílias. Votos são agregados municipais."});
+     nota:"Valores registrados por competência. Valor por habitante não mede cobertura de famílias. Votos são agregados municipais."},{headers:CACHE_PUBLICO});
 }

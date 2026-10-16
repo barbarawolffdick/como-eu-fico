@@ -1,0 +1,15 @@
+{
+  "paineis_lidos": 5570,
+  "locais_lidos": 93402,
+  "ocorrencias": 106,
+  "locais_unicos_com_alertas": 53,
+  "municipios_com_alertas": 30,
+  "por_regra": {
+    "flavio_maior_validos": 31,
+    "lula_maior_validos": 22,
+    "soma_maior_validos": 53
+  },
+  "paineis_sem_locais": 0,
+  "paineis_com_erro": 0,
+  "nota": "Consistência interna dos HTMLs. Não verifica fonte TSE ou todos os candidatos."
+}

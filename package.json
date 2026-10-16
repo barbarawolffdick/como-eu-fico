@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dados:derivar": "node scripts/fragmentar_snapshots.mjs",
+    "predev": "npm run dados:derivar",
     "dev": "next dev -H 0.0.0.0",
+    "prebuild": "npm run dados:derivar",
     "build": "next build",
     "start": "next start",
     "lint": "tsc --noEmit && npm run check:design",

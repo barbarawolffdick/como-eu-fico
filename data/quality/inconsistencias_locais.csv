@@ -1,0 +1,107 @@
+uf,municipio,arquivo_html,local_votacao,zona,aptos,votos_validos,votos_lula,votos_flavio,soma_lula_flavio,excesso_votos,regra,detalhe
+AM,maues,dados-municipios/Amazonas/municipios_AM/maues/painel_maues.html,Universidade Estadual do Amazonas - Uea,5,1242,952,867,265,1132,180,soma_maior_validos,1132 > 952
+BA,cristopolis,dados-municipios/Bahia/municipios_BA/cristopolis/painel_cristopolis.html,Escola Municipal General Costa e Silva,126,113,61,368,142,510,449,lula_maior_validos,368 > 61
+BA,cristopolis,dados-municipios/Bahia/municipios_BA/cristopolis/painel_cristopolis.html,Escola Municipal General Costa e Silva,126,113,61,368,142,510,449,flavio_maior_validos,142 > 61
+BA,cristopolis,dados-municipios/Bahia/municipios_BA/cristopolis/painel_cristopolis.html,Escola Municipal General Costa e Silva,126,113,61,368,142,510,449,soma_maior_validos,510 > 61
+MA,brejo_de_areia,dados-municipios/Maranhao/municipios_MA/brejo_de_areia/painel_brejo_de_areia.html,Unidade Escolar Dom Pedro II,49,533,368,315,129,444,76,soma_maior_validos,444 > 368
+MG,divinopolis,dados-municipios/Minas_Gerais/municipios_MG/divinopolis/painel_divinopolis.html,Colégio São José,102,2428,1801,663,1289,1952,151,soma_maior_validos,1952 > 1801
+MG,divinopolis,dados-municipios/Minas_Gerais/municipios_MG/divinopolis/painel_divinopolis.html,Escola Municipal Cetepe,102,1975,1505,1311,1852,3163,1658,flavio_maior_validos,1852 > 1505
+MG,divinopolis,dados-municipios/Minas_Gerais/municipios_MG/divinopolis/painel_divinopolis.html,Escola Municipal Cetepe,102,1975,1505,1311,1852,3163,1658,soma_maior_validos,3163 > 1505
+MG,ninheira,dados-municipios/Minas_Gerais/municipios_MG/ninheira/painel_ninheira.html,Escola Municipal de Mundo Novo,237,346,225,151,99,250,25,soma_maior_validos,250 > 225
+MG,piedade_dos_gerais,dados-municipios/Minas_Gerais/municipios_MG/piedade_dos_gerais/painel_piedade_dos_gerais.html,Escola Estadual Padre Pedro Thysen,47,387,58,1240,1632,2872,2814,lula_maior_validos,1240 > 58
+MG,piedade_dos_gerais,dados-municipios/Minas_Gerais/municipios_MG/piedade_dos_gerais/painel_piedade_dos_gerais.html,Escola Estadual Padre Pedro Thysen,47,387,58,1240,1632,2872,2814,flavio_maior_validos,1632 > 58
+MG,piedade_dos_gerais,dados-municipios/Minas_Gerais/municipios_MG/piedade_dos_gerais/painel_piedade_dos_gerais.html,Escola Estadual Padre Pedro Thysen,47,387,58,1240,1632,2872,2814,soma_maior_validos,2872 > 58
+MG,santa_cruz_de_minas,dados-municipios/Minas_Gerais/municipios_MG/santa_cruz_de_minas/painel_santa_cruz_de_minas.html,Escola Municipal Professora Luzia Ferreira,328,1610,1225,698,982,1680,455,soma_maior_validos,1680 > 1225
+MG,uba,dados-municipios/Minas_Gerais/municipios_MG/uba/painel_uba.html,"E, e, Dep, Carlos Peixoto Filho (Polivalente)",275,2120,1524,1104,1357,2461,937,soma_maior_validos,2461 > 1524
+PA,cachoeira_do_piria,dados-municipios/Para/municipios_PA/cachoeira_do_piria/painel_cachoeira_do_piria.html,EMEF Faustino de Brito,14,256,121,872,606,1478,1357,lula_maior_validos,872 > 121
+PA,cachoeira_do_piria,dados-municipios/Para/municipios_PA/cachoeira_do_piria/painel_cachoeira_do_piria.html,EMEF Faustino de Brito,14,256,121,872,606,1478,1357,flavio_maior_validos,606 > 121
+PA,cachoeira_do_piria,dados-municipios/Para/municipios_PA/cachoeira_do_piria/painel_cachoeira_do_piria.html,EMEF Faustino de Brito,14,256,121,872,606,1478,1357,soma_maior_validos,1478 > 121
+PR,alvorada_do_sul,dados-municipios/Parana/municipios_PR/alvorada_do_sul/painel_alvorada_do_sul.html,Colégio Estadual 14 de Dezembro - Ensino Médio e Profissional,77,1820,1319,1042,1971,3013,1694,flavio_maior_validos,1971 > 1319
+PR,alvorada_do_sul,dados-municipios/Parana/municipios_PR/alvorada_do_sul/painel_alvorada_do_sul.html,Colégio Estadual 14 de Dezembro - Ensino Médio e Profissional,77,1820,1319,1042,1971,3013,1694,soma_maior_validos,3013 > 1319
+PE,petrolina,dados-municipios/Pernambuco/municipios_PE/petrolina/painel_petrolina.html,Escola de Referência Ensino Médio Clementino Coelho - Eremcc,83,2919,2338,1486,1003,2489,151,soma_maior_validos,2489 > 2338
+PI,teresina,dados-municipios/Piaui/municipios_PI/teresina/painel_teresina.html,Uespi - Campus Região Sudeste de Teresina (Antigo Csu),63,295,181,1173,733,1906,1725,lula_maior_validos,1173 > 181
+PI,teresina,dados-municipios/Piaui/municipios_PI/teresina/painel_teresina.html,Uespi - Campus Região Sudeste de Teresina (Antigo Csu),63,295,181,1173,733,1906,1725,flavio_maior_validos,733 > 181
+PI,teresina,dados-municipios/Piaui/municipios_PI/teresina/painel_teresina.html,Uespi - Campus Região Sudeste de Teresina (Antigo Csu),63,295,181,1173,733,1906,1725,soma_maior_validos,1906 > 181
+PI,teresina,dados-municipios/Piaui/municipios_PI/teresina/painel_teresina.html,Colégio Sagrado Coração de Jesus - Colégio das Irmãs,97,605,462,610,512,1122,660,lula_maior_validos,610 > 462
+PI,teresina,dados-municipios/Piaui/municipios_PI/teresina/painel_teresina.html,Colégio Sagrado Coração de Jesus - Colégio das Irmãs,97,605,462,610,512,1122,660,flavio_maior_validos,512 > 462
+PI,teresina,dados-municipios/Piaui/municipios_PI/teresina/painel_teresina.html,Colégio Sagrado Coração de Jesus - Colégio das Irmãs,97,605,462,610,512,1122,660,soma_maior_validos,1122 > 462
+RJ,belford_roxo,dados-municipios/Rio_de_Janeiro/municipios_RJ/belford_roxo/painel_belford_roxo.html,Escola Municipal de Educação Especial Albert Sabin,154,3697,2361,1512,2499,4011,1650,flavio_maior_validos,2499 > 2361
+RJ,belford_roxo,dados-municipios/Rio_de_Janeiro/municipios_RJ/belford_roxo/painel_belford_roxo.html,Escola Municipal de Educação Especial Albert Sabin,154,3697,2361,1512,2499,4011,1650,soma_maior_validos,4011 > 2361
+RJ,belford_roxo,dados-municipios/Rio_de_Janeiro/municipios_RJ/belford_roxo/painel_belford_roxo.html,Escola Municipal Belford Roxo,154,2426,1715,1439,2301,3740,2025,flavio_maior_validos,2301 > 1715
+RJ,belford_roxo,dados-municipios/Rio_de_Janeiro/municipios_RJ/belford_roxo/painel_belford_roxo.html,Escola Municipal Belford Roxo,154,2426,1715,1439,2301,3740,2025,soma_maior_validos,3740 > 1715
+RJ,belford_roxo,dados-municipios/Rio_de_Janeiro/municipios_RJ/belford_roxo/painel_belford_roxo.html,CIEP Casemiro Meirelles,154,1319,861,1347,2301,3648,2787,lula_maior_validos,1347 > 861
+RJ,belford_roxo,dados-municipios/Rio_de_Janeiro/municipios_RJ/belford_roxo/painel_belford_roxo.html,CIEP Casemiro Meirelles,154,1319,861,1347,2301,3648,2787,flavio_maior_validos,2301 > 861
+RJ,belford_roxo,dados-municipios/Rio_de_Janeiro/municipios_RJ/belford_roxo/painel_belford_roxo.html,CIEP Casemiro Meirelles,154,1319,861,1347,2301,3648,2787,soma_maior_validos,3648 > 861
+RJ,cambuci,dados-municipios/Rio_de_Janeiro/municipios_RJ/cambuci/painel_cambuci.html,Colégio Municipal São João do Paraíso,97,319,236,368,315,683,447,lula_maior_validos,368 > 236
+RJ,cambuci,dados-municipios/Rio_de_Janeiro/municipios_RJ/cambuci/painel_cambuci.html,Colégio Municipal São João do Paraíso,97,319,236,368,315,683,447,flavio_maior_validos,315 > 236
+RJ,cambuci,dados-municipios/Rio_de_Janeiro/municipios_RJ/cambuci/painel_cambuci.html,Colégio Municipal São João do Paraíso,97,319,236,368,315,683,447,soma_maior_validos,683 > 236
+RJ,campos_dos_goytacazes,dados-municipios/Rio_de_Janeiro/municipios_RJ/campos_dos_goytacazes/painel_campos_dos_goytacazes.html,Creche Escola Profa Regiane Ribeiro Gonçalves,75,4314,3053,1179,1932,3111,58,soma_maior_validos,3111 > 3053
+RJ,duque_de_caxias,dados-municipios/Rio_de_Janeiro/municipios_RJ/duque_de_caxias/painel_duque_de_caxias.html,CIEP 015 - Henrique de Souza Filho - Henfil/municipalizado,127,2692,2020,1252,2305,3557,1537,flavio_maior_validos,2305 > 2020
+RJ,duque_de_caxias,dados-municipios/Rio_de_Janeiro/municipios_RJ/duque_de_caxias/painel_duque_de_caxias.html,CIEP 015 - Henrique de Souza Filho - Henfil/municipalizado,127,2692,2020,1252,2305,3557,1537,soma_maior_validos,3557 > 2020
+RJ,itaborai,dados-municipios/Rio_de_Janeiro/municipios_RJ/itaborai/painel_itaborai.html,Escola Municipal Luzia Gomes de Oliveira,151,2313,1614,1060,1055,2115,501,soma_maior_validos,2115 > 1614
+RJ,itaborai,dados-municipios/Rio_de_Janeiro/municipios_RJ/itaborai/painel_itaborai.html,Escola Municipal José Ferreira,151,477,224,974,1205,2179,1955,lula_maior_validos,974 > 224
+RJ,itaborai,dados-municipios/Rio_de_Janeiro/municipios_RJ/itaborai/painel_itaborai.html,Escola Municipal José Ferreira,151,477,224,974,1205,2179,1955,flavio_maior_validos,1205 > 224
+RJ,itaborai,dados-municipios/Rio_de_Janeiro/municipios_RJ/itaborai/painel_itaborai.html,Escola Municipal José Ferreira,151,477,224,974,1205,2179,1955,soma_maior_validos,2179 > 224
+RJ,mendes,dados-municipios/Rio_de_Janeiro/municipios_RJ/mendes/painel_mendes.html,Centro de Convivência do Idoso Vó Maria,56,466,349,362,416,778,429,lula_maior_validos,362 > 349
+RJ,mendes,dados-municipios/Rio_de_Janeiro/municipios_RJ/mendes/painel_mendes.html,Centro de Convivência do Idoso Vó Maria,56,466,349,362,416,778,429,flavio_maior_validos,416 > 349
+RJ,mendes,dados-municipios/Rio_de_Janeiro/municipios_RJ/mendes/painel_mendes.html,Centro de Convivência do Idoso Vó Maria,56,466,349,362,416,778,429,soma_maior_validos,778 > 349
+RJ,nilopolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/nilopolis/painel_nilopolis.html,Afa - Colégio Estadual Antonio Figueira de Almeida,201,1092,752,507,823,1330,578,flavio_maior_validos,823 > 752
+RJ,nilopolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/nilopolis/painel_nilopolis.html,Afa - Colégio Estadual Antonio Figueira de Almeida,201,1092,752,507,823,1330,578,soma_maior_validos,1330 > 752
+RJ,nova_iguacu,dados-municipios/Rio_de_Janeiro/municipios_RJ/nova_iguacu/painel_nova_iguacu.html,Escola Municipal Darcilio Ayres Raunheitti (Antigo Médice),84,7175,4890,2376,3920,6296,1406,soma_maior_validos,6296 > 4890
+RJ,nova_iguacu,dados-municipios/Rio_de_Janeiro/municipios_RJ/nova_iguacu/painel_nova_iguacu.html,CIEP 166 - Abilio Augusto Tavora,84,6838,4945,2091,3974,6065,1120,soma_maior_validos,6065 > 4945
+RJ,nova_iguacu,dados-municipios/Rio_de_Janeiro/municipios_RJ/nova_iguacu/painel_nova_iguacu.html,CIEP 354 - Martins Pena,84,2627,1448,1678,2288,3966,2518,lula_maior_validos,1678 > 1448
+RJ,nova_iguacu,dados-municipios/Rio_de_Janeiro/municipios_RJ/nova_iguacu/painel_nova_iguacu.html,CIEP 354 - Martins Pena,84,2627,1448,1678,2288,3966,2518,flavio_maior_validos,2288 > 1448
+RJ,nova_iguacu,dados-municipios/Rio_de_Janeiro/municipios_RJ/nova_iguacu/painel_nova_iguacu.html,CIEP 354 - Martins Pena,84,2627,1448,1678,2288,3966,2518,soma_maior_validos,3966 > 1448
+RJ,nova_iguacu,dados-municipios/Rio_de_Janeiro/municipios_RJ/nova_iguacu/painel_nova_iguacu.html,Universidade Unigranrio,27,1330,950,543,1081,1624,674,flavio_maior_validos,1081 > 950
+RJ,nova_iguacu,dados-municipios/Rio_de_Janeiro/municipios_RJ/nova_iguacu/painel_nova_iguacu.html,Universidade Unigranrio,27,1330,950,543,1081,1624,674,soma_maior_validos,1624 > 950
+RJ,nova_iguacu,dados-municipios/Rio_de_Janeiro/municipios_RJ/nova_iguacu/painel_nova_iguacu.html,Centro Educacional Pinheiros,84,3206,2053,1498,2678,4176,2123,flavio_maior_validos,2678 > 2053
+RJ,nova_iguacu,dados-municipios/Rio_de_Janeiro/municipios_RJ/nova_iguacu/painel_nova_iguacu.html,Centro Educacional Pinheiros,84,3206,2053,1498,2678,4176,2123,soma_maior_validos,4176 > 2053
+RJ,paracambi,dados-municipios/Rio_de_Janeiro/municipios_RJ/paracambi/painel_paracambi.html,Faculdade Estadual de Tecnologia - Faetec,70,2209,1650,828,1142,1970,320,soma_maior_validos,1970 > 1650
+RJ,petropolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/petropolis/painel_petropolis.html,Universidade Estácio de Sá,29,2343,1565,760,1129,1889,324,soma_maior_validos,1889 > 1565
+RJ,petropolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/petropolis/painel_petropolis.html,CEI Dona Esperanza de Bourbon de Orleans e Bragança,29,1000,667,416,680,1096,429,flavio_maior_validos,680 > 667
+RJ,petropolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/petropolis/painel_petropolis.html,CEI Dona Esperanza de Bourbon de Orleans e Bragança,29,1000,667,416,680,1096,429,soma_maior_validos,1096 > 667
+RJ,petropolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/petropolis/painel_petropolis.html,Escola Germano Valente,29,1188,740,604,903,1507,767,flavio_maior_validos,903 > 740
+RJ,petropolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/petropolis/painel_petropolis.html,Escola Germano Valente,29,1188,740,604,903,1507,767,soma_maior_validos,1507 > 740
+RJ,petropolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/petropolis/painel_petropolis.html,Universidade Católica de Petrópolis - Benjamin Constant,29,1599,949,1297,1957,3254,2305,lula_maior_validos,1297 > 949
+RJ,petropolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/petropolis/painel_petropolis.html,Universidade Católica de Petrópolis - Benjamin Constant,29,1599,949,1297,1957,3254,2305,flavio_maior_validos,1957 > 949
+RJ,petropolis,dados-municipios/Rio_de_Janeiro/municipios_RJ/petropolis/painel_petropolis.html,Universidade Católica de Petrópolis - Benjamin Constant,29,1599,949,1297,1957,3254,2305,soma_maior_validos,3254 > 949
+RJ,pirai,dados-municipios/Rio_de_Janeiro/municipios_RJ/pirai/painel_pirai.html,"Colégio Estadual Affonsina M, T, Campos",30,768,482,808,990,1798,1316,lula_maior_validos,808 > 482
+RJ,pirai,dados-municipios/Rio_de_Janeiro/municipios_RJ/pirai/painel_pirai.html,"Colégio Estadual Affonsina M, T, Campos",30,768,482,808,990,1798,1316,flavio_maior_validos,990 > 482
+RJ,pirai,dados-municipios/Rio_de_Janeiro/municipios_RJ/pirai/painel_pirai.html,"Colégio Estadual Affonsina M, T, Campos",30,768,482,808,990,1798,1316,soma_maior_validos,1798 > 482
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Colégio dos Santos Anjos,7,1174,701,2084,1348,3432,2731,lula_maior_validos,2084 > 701
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Colégio dos Santos Anjos,7,1174,701,2084,1348,3432,2731,flavio_maior_validos,1348 > 701
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Colégio dos Santos Anjos,7,1174,701,2084,1348,3432,2731,soma_maior_validos,3432 > 701
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Escola Municipal Duque de Caxias,170,1636,1058,2027,1268,3295,2237,lula_maior_validos,2027 > 1058
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Escola Municipal Duque de Caxias,170,1636,1058,2027,1268,3295,2237,flavio_maior_validos,1268 > 1058
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Escola Municipal Duque de Caxias,170,1636,1058,2027,1268,3295,2237,soma_maior_validos,3295 > 1058
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Unigama - Centro Universitário Gama e Souza - Av Brasil 5843,161,4105,2513,3384,1739,5123,2610,lula_maior_validos,3384 > 2513
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Unigama - Centro Universitário Gama e Souza - Av Brasil 5843,161,4105,2513,3384,1739,5123,2610,soma_maior_validos,5123 > 2513
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Polo Educacional SESC (Escola SESC),179,1523,812,2251,1982,4233,3421,lula_maior_validos,2251 > 812
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Polo Educacional SESC (Escola SESC),179,1523,812,2251,1982,4233,3421,flavio_maior_validos,1982 > 812
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Polo Educacional SESC (Escola SESC),179,1523,812,2251,1982,4233,3421,soma_maior_validos,4233 > 812
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Faetec,179,2838,1803,2105,1614,3719,1916,lula_maior_validos,2105 > 1803
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Faetec,179,2838,1803,2105,1614,3719,1916,soma_maior_validos,3719 > 1803
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,CIEP Samuel Wainer,7,3767,2664,2288,1632,3920,1256,soma_maior_validos,3920 > 2664
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Colégio Franciscano Santo Antônio,179,1478,881,1914,1895,3809,2928,lula_maior_validos,1914 > 881
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Colégio Franciscano Santo Antônio,179,1478,881,1914,1895,3809,2928,flavio_maior_validos,1895 > 881
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Colégio Franciscano Santo Antônio,179,1478,881,1914,1895,3809,2928,soma_maior_validos,3809 > 881
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Colégio-Curso Tamandaré,9,3272,2056,1293,1504,2797,741,soma_maior_validos,2797 > 2056
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Escola Municipal Celia Maria de Oliveira Camargo,246,2011,1491,626,868,1494,3,soma_maior_validos,1494 > 1491
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Escola Municipal Conego Fernandes Pinheiro,176,2203,1516,915,1167,2082,566,soma_maior_validos,2082 > 1516
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Cubo Global School,119,1331,994,884,1187,2071,1077,flavio_maior_validos,1187 > 994
+RJ,rio_de_janeiro,dados-municipios/Rio_de_Janeiro/municipios_RJ/rio_de_janeiro/painel_rio_de_janeiro.html,Cubo Global School,119,1331,994,884,1187,2071,1077,soma_maior_validos,2071 > 994
+RJ,sao_goncalo,dados-municipios/Rio_de_Janeiro/municipios_RJ/sao_goncalo/painel_sao_goncalo.html,Shopping São Gonçalo,36,4627,2773,2786,2515,5301,2528,lula_maior_validos,2786 > 2773
+RJ,sao_goncalo,dados-municipios/Rio_de_Janeiro/municipios_RJ/sao_goncalo/painel_sao_goncalo.html,Shopping São Gonçalo,36,4627,2773,2786,2515,5301,2528,soma_maior_validos,5301 > 2773
+RJ,sao_goncalo,dados-municipios/Rio_de_Janeiro/municipios_RJ/sao_goncalo/painel_sao_goncalo.html,"CIEP 240 Prof, Haroldo Teixeira Valadao",69,2713,1633,2131,2834,4965,3332,lula_maior_validos,2131 > 1633
+RJ,sao_goncalo,dados-municipios/Rio_de_Janeiro/municipios_RJ/sao_goncalo/painel_sao_goncalo.html,"CIEP 240 Prof, Haroldo Teixeira Valadao",69,2713,1633,2131,2834,4965,3332,flavio_maior_validos,2834 > 1633
+RJ,sao_goncalo,dados-municipios/Rio_de_Janeiro/municipios_RJ/sao_goncalo/painel_sao_goncalo.html,"CIEP 240 Prof, Haroldo Teixeira Valadao",69,2713,1633,2131,2834,4965,3332,soma_maior_validos,4965 > 1633
+RJ,trajano_de_moraes,dados-municipios/Rio_de_Janeiro/municipios_RJ/trajano_de_moraes/painel_trajano_de_moraes.html,Escola Estadual João de Moraes Martins - Antigo Lele,51,488,345,566,302,868,523,lula_maior_validos,566 > 345
+RJ,trajano_de_moraes,dados-municipios/Rio_de_Janeiro/municipios_RJ/trajano_de_moraes/painel_trajano_de_moraes.html,Escola Estadual João de Moraes Martins - Antigo Lele,51,488,345,566,302,868,523,soma_maior_validos,868 > 345
+RR,boa_vista,dados-municipios/Roraima/municipios_RR/boa_vista/painel_boa_vista.html,Escola Estadual Lobo D'Almada,1,1790,1418,753,1601,2354,936,flavio_maior_validos,1601 > 1418
+RR,boa_vista,dados-municipios/Roraima/municipios_RR/boa_vista/painel_boa_vista.html,Escola Estadual Lobo D'Almada,1,1790,1418,753,1601,2354,936,soma_maior_validos,2354 > 1418
+SC,jaragua_do_sul,dados-municipios/Santa_Catarina/municipios_SC/jaragua_do_sul/painel_jaragua_do_sul.html,Escola de Educação Básica Professora Valdete Inês Piazera Zindars,17,397,302,551,1451,2002,1700,lula_maior_validos,551 > 302
+SC,jaragua_do_sul,dados-municipios/Santa_Catarina/municipios_SC/jaragua_do_sul/painel_jaragua_do_sul.html,Escola de Educação Básica Professora Valdete Inês Piazera Zindars,17,397,302,551,1451,2002,1700,flavio_maior_validos,1451 > 302
+SC,jaragua_do_sul,dados-municipios/Santa_Catarina/municipios_SC/jaragua_do_sul/painel_jaragua_do_sul.html,Escola de Educação Básica Professora Valdete Inês Piazera Zindars,17,397,302,551,1451,2002,1700,soma_maior_validos,2002 > 302
+SP,valinhos,dados-municipios/Sao_Paulo/municipios_SP/valinhos/painel_valinhos.html,Associação Lemense de Educação e Cultura - Fav,34,3448,2562,1509,3373,4882,2320,flavio_maior_validos,3373 > 2562
+SP,valinhos,dados-municipios/Sao_Paulo/municipios_SP/valinhos/painel_valinhos.html,Associação Lemense de Educação e Cultura - Fav,34,3448,2562,1509,3373,4882,2320,soma_maior_validos,4882 > 2562
+SE,aracaju,dados-municipios/Sergipe/municipios_SE/aracaju/painel_aracaju.html,Colégio Aprendiz,27,2014,1579,1035,908,1943,364,soma_maior_validos,1943 > 1579

@@ -1,12 +1,32 @@
 # Como Eu Fico
 
-Projeto de análise eleitoral e indicadores públicos por município brasileiro.
+Projeto de conscientização política através de dados, conectando o voto da cidade à evolução das políticas públicas e às condições de vida da população.
+
+**Entenda como sua cidade vota e o que muda na vida de quem mora nela.** Acompanhe recursos, serviços e benefícios públicos ao longo do tempo, com dados para formar sua própria opinião.
 
 ## Direção editorial e contrato de dados
 
-O **Como Eu Fico** mostra, no nível municipal, a presença das políticas, serviços, benefícios e entregas com participação federal na vida cotidiana. Acompanha sua evolução **mês a mês**, tendo o resultado da eleição presidencial de 2026 como referência fixa para análises descritivas; uma associação não demonstra causalidade.
+O **Como Eu Fico** tem a cidade como centro da experiência e o resultado eleitoral como referência permanente. O objetivo de longo prazo é investigar como a presidência impacta — ou não — a vida das pessoas e como linhas políticas se relacionam com a percepção de valor das políticas públicas, sem antecipar conclusões que os dados ainda precisam sustentar.
 
-- [Contrato editorial e de dados v1 (proposta)](docs/contrato-editorial-dados-v1.md)
+O produto se organiza em três camadas:
+
+| Camada | O que o cidadão deve encontrar |
+|---|---|
+| Voto | Como a cidade votou, com distribuição de votos, percentuais e contexto eleitoral. O placar eleitoral deve permanecer no panorama municipal e acompanhar as análises pertinentes. |
+| Vida cotidiana | Evolução de recursos, benefícios, estrutura, serviços e resultados observáveis, conforme a disponibilidade e a definição de cada fonte. |
+| Relações e percepções | Análises sobre convergências e diferenças entre voto, políticas públicas e percepção de valor. A investigação de percepção depende de evidências próprias, como pesquisas, ainda a integrar e validar. |
+
+As principais jornadas são:
+
+- **Entender minha cidade:** como votou, quais políticas estão presentes e o que mudou.
+- **Acompanhar uma gestão:** o que aconteceu durante o mandato em diferentes áreas e territórios.
+- **Investigar uma relação:** se cidades com perfis eleitorais diferentes tiveram trajetórias diferentes.
+- **Conferir uma afirmação:** qual dado sustenta uma leitura, em qual período e com quais limites.
+
+A evolução das políticas, serviços, benefícios e entregas com participação federal é acompanhada na frequência efetivamente disponível em cada fonte. O primeiro turno presidencial de 2026 é a referência fixa das análises iniciais. Evolução durante um mandato, responsabilidade de cada esfera de governo e impacto demonstrado são conceitos distintos: uma associação não demonstra causalidade. Votos agregados não revelam motivações individuais nem medem diretamente a percepção de valor.
+
+- [Contrato editorial e de dados v1 — direção de produto atualizada em 15/10/2026](docs/contrato-editorial-dados-v1.md)
+- [Protocolo de evidências e interpretação](methodology/protocolo-evidencias.md)
 - [Catálogo de fontes e questões em aberto](docs/catalogo-fontes-v0.md)
 
 Cada domínio (eleições, benefícios, finanças, território e entregas) conserva dados independentes. Relacionamentos são efetuados em código, com chaves territoriais e regras temporais explícitas. Novas integrações dependem da revisão do contrato.
@@ -83,12 +103,22 @@ npm run start
 
 Abra `http://localhost:3000`. Para desenvolvimento: `npm run dev`.
 
-- `/`: busca e detalhe municipal, votos e série CGU.
-- `/explorar`: rankings financeiros e cobertura populacional, com filtros.
+- `/`: apresentação do produto, busca municipal, variação regional de famílias beneficiárias e ranking de alcance populacional do Bolsa Família.
+- `/cidade/{codigo_ibge}`: panorama municipal com placar eleitoral, recursos federais de saúde e alcance do Bolsa Família; aprofundamento por tema e fontes. Links antigos `/?municipio={codigo_ibge}` redirecionam para esse endereço.
+- `/comparar`: duas cidades lado a lado em voto, dinheiro federal para saúde, vagas ocupadas do Mais Médicos, alcance e valores do Bolsa Família. As buscas, a inversão e o modo total/por habitante ficam preservados no link (`a`, `b`, `modo`).
+- `/explorar`: exploração por Bolsa Família, Saúde e Voto, com filtros de região, estado e resultado eleitoral, ordenação, paginação e seleção de duas cidades para comparar. Veja as [regras da exploração nacional](docs/explorar-brasil.md).
 - `/analises`: comparações territoriais descritivas.
 - `/fontes` e `/api/fontes`: períodos, unidades, ausências, URLs e hashes SHA-256 dos snapshots em uso.
 
+O [sistema de design](docs/design-system.md) é compartilhado por todas essas telas: tokens semânticos, controles, cards, tabelas, mensagens e indicadores. Consulte-o antes de criar ou alterar componentes. `npm run lint` também verifica os padrões da interface.
+
+A navegação principal aparece no topo de todas as páginas. Na cidade, o menu de temas acompanha a rolagem na ordem Panorama, Saúde, Bolsa Família, Eleição 2026 e Fontes. Busca e troca de cidade aceitam teclado. A entrada usa somente snapshots publicados: a variação regional compara as somas de famílias nos municípios com observações nos dois períodos e informa cobertura incompleta; o ranking apresenta os cinco maiores percentuais de moradores em famílias beneficiárias entre cidades com dado disponível, independentemente do resultado eleitoral. Veja a [arquitetura da experiência municipal](docs/experiencia-municipal.md).
+
+A [comparação entre cidades](docs/comparacao-cidades.md) começa com São Paulo e Rio de Janeiro como exemplo substituível e valores monetários por habitante. A página municipal oferece acesso com a cidade atual já selecionada. Valores do Bolsa Família usam o último mês comum às duas séries; diferenças e barras comparativas só aparecem quando os períodos e as referências necessárias são compatíveis. Ausência não vira zero.
+
 **Cobertura publicada:** população IBGE 2026 nos 5.571 municípios; pessoas em famílias beneficiárias MDS nos 5.571 municípios, competência setembro de 2026. As seis ausências cartográficas foram completadas por consulta tabular oficial e o total reconciliado com o Brasil. Ausências futuras continuam indisponíveis, nunca zero. Famílias MDS têm observações em janeiro/2025 e agosto/2026. A série CGU vai de janeiro/2025 a agosto/2026, com cobertura histórica variável por município; os rankings financeiros usam janeiro–agosto/2026.
+
+**Leitura rápida dos snapshots.** `npm run build` e `npm run dev` executam antes `npm run dados:derivar` (`scripts/fragmentar_snapshots.mjs`), que gera `data/derivados/` a partir de `data/public/`: fragmentos por UF de detalhes, saúde e financiamento, índice de busca sem acentos, projeção enxuta para a exploração e manifesto com SHA-256 e cabeçalhos de cada snapshot. Os derivados não são versionados nem editados; `data/public/` continua sendo a única fonte. Cada arquivo é interpretado uma vez por processo (`lib/snapshots.ts`), e as respostas da API levam `Cache-Control` para a CDN, renovada a cada deploy. Depois de republicar um snapshot com o `npm run dev` aberto, execute `npm run dados:derivar` e reinicie o servidor.
 
 Os JSONs de detalhe e rankings derivam do SQLite pelo workflow `Atualizar dados web`. Consultar a web não executa ingestões nem modifica fontes. `FASTAPI_BASE_URL` é opcional e serve apenas às rotas legadas do proxy; não apontar a Vercel para o localhost do Mac.
 

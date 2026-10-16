@@ -1,6 +1,5 @@
 import {NextResponse} from "next/server";
-import {readFile} from "node:fs/promises";
-import {join} from "node:path";
+import {CACHE_PUBLICO,lerSnapshot} from "@/lib/snapshots";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 type M={codigo_ibge:string;nome:string;uf:string;vencedor:string|null;empatados:number};
@@ -10,7 +9,7 @@ export async function GET(req:Request){
  try{
  const url=new URL(req.url),uf=url.searchParams.get("uf")||"";
  if(uf&&!/^[A-Z]{2}$/.test(uf))return NextResponse.json({detail:"UF inválida"},{status:422});
- const [r,d]=await Promise.all(["rankings_2026.json","detalhes_2026.json"].map(async f=>JSON.parse(await readFile(join(process.cwd(),"data/public",f),"utf8"))));
+ const [r,d]=await Promise.all([lerSnapshot<any>("rankings_2026.json"),lerSnapshot<any>("detalhes_2026.json")]);
  if(r.municipios!==5571||d.municipios!==5571)throw Error("Cobertura divergente");
  const rows:M[]=r.registros.filter((m:M)=>m.empatados===1&&m.vencedor&&(!uf||m.uf===uf));
  const allMonths=[...new Set<string>(Object.values(d.registros as Record<string,Det>).flatMap(x=>x.bolsa_familia.map(y=>y.mes_competencia)))].sort();
@@ -38,6 +37,6 @@ export async function GET(req:Request){
   return {situacao,total:list.length,...Object.fromEntries(candidates.map(g=>[g,list.filter(x=>belongs(x,g)).length]))};
  });
  const exemplos=changed.filter(x=>x.situacao==="aumentou").sort((a,b)=>b.delta-a.delta).slice(0,20);
- return NextResponse.json({indicador:"Número de parcelas registradas por competência; não é número de famílias ou pessoas beneficiárias",inicio,fim,municipios:changed.length,porVencedor,porMudanca,exemplos});
+ return NextResponse.json({indicador:"Número de parcelas registradas por competência; não é número de famílias ou pessoas beneficiárias",inicio,fim,municipios:changed.length,porVencedor,porMudanca,exemplos},{headers:CACHE_PUBLICO});
  }catch(e){return NextResponse.json({detail:(e as Error).message},{status:503});}
 }

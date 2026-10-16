@@ -1,8 +1,7 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { pessoasTabulares, type BeneficiariosCidade } from "@/lib/bolsa-familia";
+import { CACHE_PUBLICO, lerManifesto, lerSnapshot } from "@/lib/snapshots";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,15 +11,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ cod
   const { codigo_ibge } = await params;
   if (!/^\d{7}$/.test(codigo_ibge)) return NextResponse.json({ detail: "Código IBGE inválido" }, { status: 400 });
   try {
-    const [territorio, familiasRaw, publicado, mensal] = await Promise.all([
-      readFile(join(process.cwd(), "data/public/rankings_2026.json"), "utf8").then(JSON.parse),
-      readFile(join(process.cwd(), "data/public/familias_mds.json"), "utf8"),
-      readFile(join(process.cwd(), "data/public/pessoas_mds.json"), "utf8").then(JSON.parse),
-      readFile(join(process.cwd(), "data/public/pessoas_mds_mensal.json"), "utf8").then(JSON.parse),
-    ]);
+    const [territorio, familias, publicado, mensal, manifesto] = await Promise.all([lerSnapshot<any>("rankings_2026.json"),
+      lerSnapshot<any>("familias_mds.json"), lerSnapshot<any>("pessoas_mds.json"), lerSnapshot<any>("pessoas_mds_mensal.json"), lerManifesto()]);
     const cidade = territorio.registros.find((r: { codigo_ibge: string }) => r.codigo_ibge === codigo_ibge);
     if (!cidade) return NextResponse.json({ detail: "Município não encontrado" }, { status: 404 });
-    const familias = JSON.parse(familiasRaw);
     if (familias.unidade !== "familias_beneficiarias" || mensal.esquema !== 1 || mensal.unidade !== "pessoas_em_familias_beneficiarias") throw Error("Unidade incompatível");
     let pessoas: Record<string, number> = mensal.registros[codigo_ibge]?.periodos ?? {};
     let origem = mensal.registros[codigo_ibge]?.proveniencia ?? null;
@@ -49,8 +43,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ cod
       return [mes, { pessoas: pessoas[mes] ?? null, familias: Number.isSafeInteger(f) && f >= 0 ? f : null }];
     }));
     const result: BeneficiariosCidade = { codigo_ibge, periodos, pessoas_disponiveis: !!origem, aviso,
-      fontes: { pessoas: origem, familias: { arquivo: "familias_mds.json", sha256: digest(familiasRaw) } } };
-    return NextResponse.json(result);
+      fontes: { pessoas: origem, familias: { arquivo: "familias_mds.json", sha256: manifesto.snapshots["familias_mds.json"].sha256 } } };
+    return NextResponse.json(result, { headers: CACHE_PUBLICO });
   } catch {
     return NextResponse.json({ detail: "Não foi possível carregar as contagens de beneficiários." }, { status: 503 });
   }

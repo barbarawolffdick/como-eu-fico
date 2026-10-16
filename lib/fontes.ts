@@ -1,14 +1,12 @@
-import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { lerManifesto, lerSnapshot } from "./snapshots";
 
 const arquivos = ["rankings_2026.json", "detalhes_2026.json", "familias_mds.json", "pessoas_mds.json", "saude_municipal.json", "financiamento_saude.json", "pessoas_mds_mensal.json"] as const;
 
 export async function fontesPublicadas() {
-  const snapshots = await Promise.all(arquivos.map(async arquivo => {
-    const bytes = await readFile(join(process.cwd(), "data/public", arquivo));
-    return { arquivo, sha256: createHash("sha256").update(bytes).digest("hex"), dados: JSON.parse(bytes.toString("utf8")) };
-  }));
+  // Hashes e cabeçalhos vêm do manifesto gerado no build; só a série CGU exige os registros.
+  const [{ snapshots: manifesto }, detalhesCompletos] = await Promise.all([lerManifesto(), lerSnapshot("detalhes_2026.json")]);
+  const snapshots = arquivos.map(arquivo => ({ arquivo, sha256: manifesto[arquivo].sha256,
+    dados: (arquivo === "detalhes_2026.json" ? detalhesCompletos : manifesto[arquivo].metadados) as any }));
   const [rankings, detalhes, familias, pessoas, saude, financiamento, pessoasMensais] = snapshots;
   const commit = /^[a-f0-9]{40}$/.test(process.env.VERCEL_GIT_COMMIT_SHA || "") ? process.env.VERCEL_GIT_COMMIT_SHA! : null;
   return {

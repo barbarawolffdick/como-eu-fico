@@ -1,14 +1,17 @@
 import { NextRequest,NextResponse } from "next/server";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { CACHE_PUBLICO, lerIndiceBusca, normalizarBusca } from "@/lib/snapshots";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
+// Busca sem distinção de acentos; nomes iguais ao termo vêm antes, depois os que começam por ele.
 export async function GET(request:NextRequest) {
  try {
-  const data=JSON.parse(await readFile(join(process.cwd(),"data/public/detalhes_2026.json"),"utf8"));
-  const q=(request.nextUrl.searchParams.get("q")||"").trim().toLocaleLowerCase("pt-BR");
+  const indice=await lerIndiceBusca();
+  const q=normalizarBusca((request.nextUrl.searchParams.get("q")||"").trim());
   const limit=Math.min(100,Math.max(1,Number(request.nextUrl.searchParams.get("limit")||"30")));
-  const registros=Object.values(data.registros) as {municipio:{codigo_ibge:string;nome:string;uf:string;populacao:number|null;ano_populacao:number|null}}[];
-  return NextResponse.json(registros.map(x=>x.municipio).filter(x=>x.codigo_ibge.includes(q)||x.nome.toLocaleLowerCase("pt-BR").includes(q)).sort((a,b)=>a.nome.localeCompare(b.nome,"pt-BR")).slice(0,limit));
+  const ordem=(x:{chave:string})=>x.chave===q?0:x.chave.startsWith(q)?1:2;
+  const encontrados=indice.filter(x=>x.codigo_ibge.includes(q)||x.chave.includes(q));
+  const resultado=encontrados.map((x,i)=>({x,i})).sort((a,b)=>ordem(a.x)-ordem(b.x)||a.i-b.i).slice(0,limit)
+   .map(({x:{codigo_ibge,nome,uf,populacao,ano_populacao}})=>({codigo_ibge,nome,uf,populacao,ano_populacao}));
+  return NextResponse.json(resultado,{headers:CACHE_PUBLICO});
  } catch {return NextResponse.json({detail:"Snapshot de municípios indisponível no repositório."},{status:503});}
 }

@@ -118,6 +118,8 @@ git switch main
 git pull --ff-only origin main
 git lfs install
 git lfs pull
+**Leitura rápida dos snapshots.** `npm run build` e `npm run dev` executam antes `npm run dados:derivar` (`scripts/fragmentar_snapshots.mjs`), que gera `data/derivados/` a partir de `data/public/`: fragmentos por UF de detalhes, saúde e financiamento, índice de busca sem acentos, projeção enxuta para a exploração e manifesto com SHA-256 e cabeçalhos de cada snapshot. Os derivados não são versionados nem editados; `data/public/` continua sendo a única fonte. Cada arquivo é interpretado uma vez por processo (`lib/snapshots.ts`), e as respostas da API levam `Cache-Control` para a CDN, renovada a cada deploy. Depois de republicar um snapshot com o `npm run dev` aberto, execute `npm run dados:derivar` e reinicie o servidor.
+
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt

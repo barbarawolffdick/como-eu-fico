@@ -1,15 +1,46 @@
 # Como Eu Fico — contrato editorial e de dados v1.0
 
-**Estado:** proposta versionada para revisão, não autorização automática para novas ingestões.  
-**Data:** 2026-10-12  
+**Estado:** proposta versionada com direção de produto aprovada em conversa em 15/10/2026 e decisões de escopo registradas nos adendos; não é autorização automática para novas ingestões.
+
+**Data original:** 2026-10-12 · **Atualização da direção de produto:** 2026-10-15
+
 **Unidade central:** município brasileiro identificado por `codigo_ibge` (texto, sete dígitos).  
 **Referência eleitoral:** primeiro turno presidencial de 2026, fixo para as análises iniciais.
 
 ## 1. Objetivo editorial
 
-Tornar observável, por município, como políticas, serviços, investimentos, transferências e benefícios com participação federal estão presentes na vida cotidiana e como sua trajetória temporal se relaciona descritivamente com os resultados eleitorais de 2026.
+O Como Eu Fico é um projeto de **conscientização política através de dados**, conectando o voto da cidade à evolução das políticas públicas e às condições de vida da população. A cidade é o centro da experiência; o resultado eleitoral é uma referência permanente do produto.
 
-O projeto procura responder, para um cidadão: **“O que o governo federal tem a ver com a minha vida e com a minha cidade?”**
+**Promessa ao cidadão:** “Entenda como sua cidade vota e o que muda na vida de quem mora nela.” Acompanhe recursos, serviços e benefícios públicos ao longo do tempo, com dados para formar sua própria opinião.
+
+O objetivo de longo prazo é investigar como a presidência impacta — ou não — a vida das pessoas, como isso se relaciona com o voto e como linhas políticas influenciam percepções de valor. Essas são perguntas de investigação: não pressupõem efeito, ausência de efeito ou explicação do voto antes da análise das evidências.
+
+O projeto procura responder: **“O que o governo federal tem a ver com a minha vida e com a minha cidade?”** Para isso, torna observável a presença de políticas, serviços, investimentos, transferências e benefícios com participação federal e acompanha sua trajetória na frequência disponível em cada fonte.
+
+### Camadas do produto
+
+| Camada | Direção para conteúdo e experiência |
+|---|---|
+| Voto | Mostrar como a cidade votou, com distribuição de votos, percentuais e contexto eleitoral. Preservar o placar eleitoral no panorama municipal e como referência nas análises pertinentes. |
+| Vida cotidiana | Mostrar a evolução de recursos, benefícios, estrutura, serviços e resultados observáveis, conforme o que cada fonte efetivamente mede. |
+| Relações e percepções | Investigar convergências e diferenças entre voto, políticas públicas e percepção de valor. Evidências de percepção, como pesquisas, são uma evolução futura que exige integração e validação próprias. |
+
+O placar eleitoral deve preservar a leitura dos resultados, com eleição, turno e denominador dos percentuais explícitos. Priorizar distribuição de votos e margem entre candidatos; não substituir essa informação por um índice opaco ou uma classificação política dos moradores.
+
+### Principais jornadas do cidadão
+
+1. **Entender minha cidade:** como votou, quais políticas estão presentes e o que mudou.
+2. **Acompanhar uma gestão:** o que aconteceu durante o mandato em diferentes áreas e territórios.
+3. **Investigar uma relação:** se cidades com perfis eleitorais diferentes tiveram trajetórias diferentes.
+4. **Conferir uma afirmação:** qual dado sustenta uma leitura, em qual período e com quais limites.
+
+Essas jornadas orientam conteúdo e experiência; não significam que todas as funcionalidades ou fontes necessárias já estejam disponíveis.
+
+### Compromissos de interpretação
+
+Separar evolução observada durante um mandato, responsabilidade de cada esfera de governo e impacto demonstrado. Identificar a participação federal e a execução compartilhada quando documentadas. A ausência de evidência de impacto não demonstra, por si só, ausência de impacto.
+
+Votos agregados mostram escolhas eleitorais no território; não revelam motivações individuais nem medem diretamente percepção de valor. Investigar percepção requer evidências próprias, com população pesquisada, período, método e limites explícitos. Afirmar influência causal de linhas políticas sobre percepções exige evidências e método adicionais aos cruzamentos descritivos.
 
 Não restringir a presença federal a fluxos financeiros. Além de valores, considerar entregas, alcance, acesso e resultados observáveis quando a fonte os medir. Não presumir impacto a partir apenas de despesa, repasse ou anúncio.
 
@@ -78,6 +109,8 @@ Os termos `investimento`, `transferência`, `gasto`, `benefício`, `cobertura`, 
 - Nenhuma consulta derivada altera o arquivo original ou os snapshots de uma fonte.
 - Variáveis municipais descrevem agregados territoriais. Não permitem inferir comportamento individual dos eleitores (falácia ecológica).
 - Correlação entre trajetória de uma política e votação de 2026 não comprova influência causal. Hipóteses explicativas exigem método e evidências adicionais.
+- Acompanhar uma gestão não autoriza atribuir à presidência toda mudança ocorrida durante o mandato. Identificar responsabilidades e mecanismos documentados, preservando a distinção entre associação temporal e impacto causal.
+- Resultados eleitorais não substituem evidências de percepção. Quando pesquisas forem integradas, preservar sua unidade de observação, representatividade, período e incerteza; não atribuir opiniões individuais a todos os moradores a partir do resultado municipal.
 
 ## 7. Níveis de evidência para a experiência do cidadão
 

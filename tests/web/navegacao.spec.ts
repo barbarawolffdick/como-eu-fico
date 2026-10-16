@@ -81,6 +81,8 @@ test("placar preserva empate e indisponibilidade eleitoral", async ({ page }) =>
   await page.reload();
   await expect(placar).toContainText("Dados eleitorais indisponíveis.");
   await expect(placar.locator(".overview-number")).toHaveCount(0);
+  await expect(placar.locator(".overview-meta")).toContainText("Recorte eleitoral indisponível");
+  await expect(placar.locator(".overview-meta")).not.toContainText("0 votos");
 });
 
 test("falha municipal permite nova tentativa e cidade inexistente não fica carregando", async ({ page }) => {

@@ -96,7 +96,7 @@ export default function CityPage({ codigo }: {
                 {!empate && votos[1] && <p className="sub">Margem sobre o segundo: {((lider.votos - votos[1].votos) / totalVotos * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} pontos percentuais.</p>}
                 <VotosMunicipais key={codigo} votos={votos} compact />
               </>}</div>
-              <footer className="overview-footer"><p className="overview-meta">Fonte: TSE · {br.format(totalVotos)} votos dos candidatos listados.</p><ActionLink href="#dados-eleicao">Ver a distribuição de votos <ArrowUpRight size={17} aria-hidden="true"/></ActionLink></footer>
+              <footer className="overview-footer"><p className="overview-meta">Fonte: TSE · {totalVotos > 0 ? br.format(totalVotos) + " votos dos candidatos listados." : "Recorte eleitoral indisponível."}</p><ActionLink href="#dados-eleicao">Ver a distribuição de votos <ArrowUpRight size={17} aria-hidden="true"/></ActionLink></footer>
             </Card>
             <Card className="overview-card">
               <header className="overview-heading"><div className="overview-label"><HeartPulse size={19} aria-hidden="true"/><h3>Recursos federais para saúde</h3></div><p className="kicker">Fundo municipal · {repasse ? `${competencia(repasse.inicio)} a ${competencia(repasse.fim)}` : "FNS"}</p></header>

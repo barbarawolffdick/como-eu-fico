@@ -52,11 +52,11 @@ test("busca por teclado, troca de cidade e histórico preservam o município", a
 test("links antigos abrem a cidade e os temas seguem a ordem do conteúdo", async ({ page }, testInfo) => {
   await page.goto("/?municipio=1504752");
   await expect(page).toHaveURL(/\/cidade\/1504752$/);
-  await expect(page.getByRole("heading", { name: "Placar eleitoral da cidade" })).toBeVisible();
-  await expect(page.locator(".overview-card").nth(1)).not.toContainText("Carregando…");
-  await page.locator("#panorama").screenshot({ path: `test-results/panorama-${testInfo.project.name}.png` });
+  await expect(page.getByRole("heading", { name: /^Quanto dinheiro federal chegou à cidade em \d{4}\?$/ })).toBeVisible();
+  await expect(page.locator("#quanto")).not.toContainText("Calculando");
+  await page.locator("#quanto").screenshot({ path: `test-results/quanto-chega-${testInfo.project.name}.png` });
   const links = page.getByRole("navigation", { name: "Indicadores da cidade" });
-  for (const name of ["Saúde", "Bolsa Família", "Eleição 2026", "Fontes"]) {
+  for (const name of ["Quanto chega", "Para quem", "Como mudou", "Comparação", "Voto", "Saúde", "Bolsa Família", "Fontes"]) {
     const link = links.getByRole("link", { name, exact: true });
     const href = await link.getAttribute("href");
     await link.click();
@@ -72,17 +72,20 @@ test("placar preserva empate e indisponibilidade eleitoral", async ({ page }) =>
     ...original, eleitoral_disponivel: true, votos_presidenciais: [{ candidato: "13", votos: 100 }, { candidato: "22", votos: 100 }],
   } }));
   await page.goto("/cidade/3550308");
-  const placar = page.locator(".electoral-overview");
-  await expect(placar).toContainText("Empate na primeira colocação");
-  await expect(placar).toContainText("50%");
-  await expect(placar).not.toContainText("Margem sobre o segundo");
+  const cabecalho = page.locator(".city-heading");
+  const voto = page.locator("#voto");
+  // Empate: o cabeçalho não aponta vencedor e a lista mostra os dois com 50%.
+  await expect(voto.locator(".vote")).toHaveCount(2);
+  await expect(voto.locator(".vote").first()).toContainText("50%");
+  await expect(voto.locator(".vote").last()).toContainText("50%");
+  await expect(cabecalho).not.toContainText("dos votos no 1º turno");
   await page.unroute("**/api/municipios/3550308");
   await page.route("**/api/municipios/3550308", route => route.fulfill({ json: { ...original, eleitoral_disponivel: false } }));
   await page.reload();
-  await expect(placar).toContainText("Dados eleitorais indisponíveis.");
-  await expect(placar.locator(".overview-number")).toHaveCount(0);
-  await expect(placar.locator(".overview-meta")).toContainText("Recorte eleitoral indisponível");
-  await expect(placar.locator(".overview-meta")).not.toContainText("0 votos");
+  await expect(voto).toContainText("Dados eleitorais indisponíveis.");
+  await expect(voto.locator(".vote")).toHaveCount(0);
+  await expect(cabecalho).not.toContainText("dos votos no 1º turno");
+  await expect(voto).not.toContainText("0 votos");
 });
 
 test("falha municipal permite nova tentativa e cidade inexistente não fica carregando", async ({ page }) => {

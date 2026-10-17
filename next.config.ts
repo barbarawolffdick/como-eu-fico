@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
     "/api/municipios/[codigo_ibge]": derivados("detalhes_2026/*.json"),
     "/api/saude/[codigo_ibge]": derivados("saude_municipal/*.json", "financiamento_saude/*.json"),
     "/api/explorar": derivados("explorar_saude.json"),
+    "/api/dinheiro-federal/[codigo_ibge]": derivados("dinheiro_federal/*.json"),
+    "/api/dinheiro-federal/regioes": derivados("dinheiro_federal_regioes.json"),
   },
 };
 export default nextConfig;

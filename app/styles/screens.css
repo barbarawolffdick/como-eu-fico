@@ -2812,3 +2812,64 @@
 .comparison-explanation { font-size: var(--font-size-body-small); line-height: var(--line-height-reading); margin: var(--space-4) 0; color: var(--color-text-muted); }
 
 .comparison-mode { flex-wrap: wrap; max-width: 100%; flex-shrink: 1; }
+
+/* Dinheiro federal que chega à cidade (app/components/dinheiro-federal.tsx) */
+.federal-section { display: grid; gap: var(--space-6); }
+.federal-section .section-heading { margin: 0; }
+.federal-lead { margin: 0; max-width: var(--size-copy); line-height: var(--line-height-reading); }
+.federal-hero { display: grid; gap: var(--space-6); }
+.federal-hero > * { margin: 0; }
+.federal-big { font-size: var(--font-size-hero); line-height: var(--line-height-heading); margin: 0; }
+.federal-scale { display: grid; gap: var(--space-3); padding-top: var(--space-6); border-top: var(--border-width) solid var(--color-border); }
+.federal-scale p { margin: 0; }
+.federal-stack { height: var(--space-8); border-radius: var(--radius-control); overflow: hidden; background: var(--color-chart-track); }
+.federal-stack > span { display: block; height: 100%; background: var(--color-chart); }
+.federal-scale-labels { display: flex; justify-content: space-between; gap: var(--space-4); font-size: var(--font-size-caption); color: var(--color-text-muted); }
+.federal-scale-labels b { color: var(--color-text); }
+.federal-flows, .federal-compare { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-5); }
+.federal-flows li, .federal-compare li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2) var(--space-4); align-items: baseline; }
+.federal-flows .data-bar, .federal-compare .data-bar, .federal-flows small, .federal-flows .federal-absent { grid-column: 1 / -1; }
+.federal-flows small, .federal-compare small { display: block; color: var(--color-text-muted); font-size: var(--font-size-caption); }
+.federal-flows b, .federal-compare b { font-variant-numeric: tabular-nums; }
+.federal-compare li.is-current > span { font-weight: var(--font-weight-bold); }
+.federal-absent { margin: 0; }
+.federal-compare-note { margin: 0 0 var(--space-5); }
+.federal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
+.federal-grid .card h3 { margin-bottom: var(--space-5); }
+.federal-rows { display: grid; }
+.federal-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2) var(--space-4); padding: var(--space-3) 0; border-top: var(--border-width) solid var(--color-border); font-size: var(--font-size-body-small); }
+.federal-row > span:first-child { font-weight: var(--font-weight-bold); }
+.federal-row b { font-variant-numeric: tabular-nums; }
+.federal-row--child { padding-left: var(--space-5); }
+.federal-row--child > span:first-child { font-weight: var(--font-weight-regular); }
+.federal-row .hint { grid-column: 1 / -1; margin: 0; }
+.federal-note { margin: var(--space-2) 0 var(--space-3) var(--space-5); }
+.federal-callout { margin: var(--space-2) 0 var(--space-3) var(--space-5); padding: var(--space-4); border-radius: var(--radius-control); background: var(--color-warning-surface); color: var(--color-warning); font-size: var(--font-size-body-small); line-height: var(--line-height-body); }
+.federal-insight { margin: var(--space-6) 0 0; padding: var(--space-5); border-radius: var(--radius-control); background: var(--color-surface-muted); }
+.federal-details { margin-top: var(--space-5); font-size: var(--font-size-body-small); }
+.federal-details summary { cursor: pointer; color: var(--color-action); font-weight: var(--font-weight-bold); }
+.federal-details .table-scroll { margin-top: var(--space-4); }
+.federal-chart { display: grid; gap: var(--space-5); }
+.federal-chart > h3, .federal-chart > p { margin: 0; }
+.federal-legend { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); font-size: var(--font-size-body-small); color: var(--color-text-muted); }
+.federal-legend span { display: inline-flex; align-items: center; gap: var(--space-3); }
+.federal-dot { width: var(--space-4); height: var(--space-4); border-radius: var(--radius-pill); }
+.federal-dot--ne { background: var(--color-chart); }
+.federal-dot--out { background: var(--color-chart-tertiary); }
+.federal-dot--current { background: var(--color-text); }
+.federal-scatter { width: 100%; height: auto; display: block; }
+.federal-series { width: 100%; height: auto; display: block; }
+.federal-series line { stroke: var(--color-border); stroke-width: 1; }
+.federal-series text { fill: var(--color-text-muted); font-family: var(--font-family-body); font-size: var(--font-size-caption); }
+.federal-series text.is-value { fill: var(--color-text); font-weight: var(--font-weight-bold); }
+.federal-series text.is-gap { fill: var(--color-text-subtle); }
+.federal-series path.is-inss, .federal-dot--bar-inss { fill: var(--color-chart); background: var(--color-chart); }
+.federal-series path.is-fpm, .federal-dot--bar-fpm { fill: var(--color-chart-secondary); background: var(--color-chart-secondary); }
+.federal-dot--bar-inss, .federal-dot--bar-fpm { border-radius: var(--radius-control); }
+.federal-scatter line { stroke: var(--color-border); stroke-width: 1; }
+.federal-scatter text { fill: var(--color-text-muted); font-family: var(--font-family-body); font-size: var(--font-size-caption); }
+.federal-scatter text.is-label { fill: var(--color-text); font-weight: var(--font-weight-bold); paint-order: stroke; stroke: var(--color-surface); stroke-width: 4px; stroke-linejoin: round; }
+.federal-scatter circle.is-ne { fill: var(--color-chart); fill-opacity: .6; }
+.federal-scatter circle.is-out { fill: var(--color-chart-tertiary); }
+.federal-scatter circle.is-current { fill: var(--color-text); stroke: var(--color-surface); stroke-width: 2; }
+@media (max-width: 48em) { .federal-grid { grid-template-columns: minmax(0, 1fr); } .federal-big { font-size: var(--font-size-heading); } }

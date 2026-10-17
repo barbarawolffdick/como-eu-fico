@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from "react";
 const sections = [
-    { id: "panorama", label: "Panorama" },
+    { id: "quanto", label: "Quanto chega" },
+    { id: "para-quem", label: "Para quem" },
+    { id: "mudou", label: "Como mudou" },
+    { id: "compara", label: "Comparação" },
+    { id: "voto", label: "Voto" },
     { id: "titulo-saude", label: "Saúde" },
     { id: "dados-bolsa", label: "Bolsa Família" },
-    { id: "dados-eleicao", label: "Eleição 2026" },
     { id: "fontes-cidade", label: "Fontes" },
 ];
 export default function CitySections() {
-    const [active, setActive] = useState("panorama");
+    const [active, setActive] = useState("quanto");
     useEffect(() => {
         let frame = 0;
         function update() {
@@ -21,7 +24,7 @@ export default function CitySections() {
                 const element = document.getElementById(section.id);
                 return element && element.getBoundingClientRect().top <= 155;
             }).at(-1);
-            setActive(current?.id ?? "panorama");
+            setActive(current?.id ?? "quanto");
         }
         function scroll() { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); }
         update();

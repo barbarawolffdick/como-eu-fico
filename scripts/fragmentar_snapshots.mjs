@@ -5,10 +5,12 @@
 // - fragmentos por UF (dois primeiros dígitos do código IBGE) dos arquivos por cidade;
 // - índice de busca com nomes normalizados (sem acentos);
 // - projeção enxuta do financiamento usada pela exploração nacional;
+// - dinheiro federal por cidade (fragmentado por UF) e por região imediata (scripts/derivar_dinheiro_federal.mjs);
 // - manifesto com SHA-256 e metadados (tudo exceto `registros`) de cada snapshot.
 import { createHash } from "node:crypto";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { derivarDinheiroFederal } from "./derivar_dinheiro_federal.mjs";
 
 const raiz = process.cwd();
 const origem = join(raiz, "data/public");
@@ -16,6 +18,9 @@ const destinoFinal = join(raiz, "data/derivados");
 const destino = destinoFinal + ".tmp";
 const snapshots = ["rankings_2026.json", "detalhes_2026.json", "familias_mds.json", "pessoas_mds.json",
   "saude_municipal.json", "financiamento_saude.json", "pessoas_mds_mensal.json"];
+// Um arquivo por ano (dinheiro_federal.json, dinheiro_federal_2025.json...); a página usa o ano mais recente.
+const federais = (await readdir(origem)).filter(f => /^dinheiro_federal(_\d{4})?\.json$/.test(f)).sort();
+const serieFederal = (await readdir(origem)).includes("dinheiro_federal_serie.json") ? ["dinheiro_federal_serie.json"] : [];
 const fragmentados = { "detalhes_2026.json": "municipios", "saude_municipal.json": "municipios_referencia", "financiamento_saude.json": "municipios" };
 
 const falha = mensagem => { throw Error("fragmentar_snapshots: " + mensagem); };
@@ -29,7 +34,7 @@ async function gravar(caminho, dados) {
 await rm(destino, { recursive: true, force: true });
 const manifesto = { esquema: 1, gerado_em: new Date().toISOString(), snapshots: {} };
 const carregados = {};
-for (const arquivo of snapshots) {
+for (const arquivo of [...snapshots, ...federais, ...serieFederal]) {
   const bytes = await readFile(join(origem, arquivo));
   const dados = JSON.parse(bytes.toString("utf8"));
   const { registros, ...metadados } = dados;
@@ -65,6 +70,17 @@ await gravar(join(destino, "explorar_saude.json"), { registros: Object.fromEntri
   variacao_anual_2024_2025_percentual: r.variacao_anual_2024_2025_percentual,
   centavos_por_habitante: r.centavos_por_habitante,
 }])) });
+
+const federalAtual = federais.reduce((a, b) => (carregados[b].ano > carregados[a].ano ? b : a));
+manifesto.dinheiro_federal_atual = federalAtual;
+const federal = derivarDinheiroFederal({ dinheiro: carregados[federalAtual], detalhes: carregados["detalhes_2026.json"],
+  financiamento, rankings: carregados["rankings_2026.json"], serie: carregados["dinheiro_federal_serie.json"] ?? null });
+const federalPorUf = {};
+for (const [codigo, registro] of Object.entries(federal.cidades)) (federalPorUf[codigo.slice(0, 2)] ??= {})[codigo] = registro;
+if (Object.keys(federal.cidades).length !== carregados[federalAtual].municipios_referencia) falha("dinheiro federal: cobertura incompleta");
+for (const [uf, registros] of Object.entries(federalPorUf)) await gravar(join(destino, "dinheiro_federal", uf + ".json"), { registros });
+manifesto.snapshots[federalAtual].fragmentos = Object.keys(federalPorUf).sort();
+await gravar(join(destino, "dinheiro_federal_regioes.json"), { ano: federal.ano, pib: federal.pib, regioes: federal.regioes, correlacao: federal.correlacao });
 
 await gravar(join(destino, "manifesto.json"), manifesto);
 await rm(destinoFinal, { recursive: true, force: true });

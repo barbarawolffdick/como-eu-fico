@@ -127,3 +127,30 @@ test("dispersão destaca a região da cidade e trata falta de dados", async ({ p
   await expect(page.locator("#voto")).toContainText("ainda não está disponível");
   await expect(page.locator(".federal-scatter")).toHaveCount(0);
 });
+
+test("série é convertida para reais do último ano pelo IPCA médio", () => {
+  const serie = { anos: ["2023", "2025"], ipca_medio_anual: { "2023": 100, "2025": 110 },
+    situacao: { "2023": { inss: "completo", fpm: "incompleto: 03" }, "2025": { inss: "completo", fpm: "completo" } },
+    registros: { "2300001": { inss: { "2023": 1000, "2025": 1200 }, fpm: { "2023": null, "2025": 50 } } } };
+  const { cidades } = derivarDinheiroFederal({ ...amostra(), serie });
+  const s = cidades["2300001"].serie!;
+  expect(s.base_inflacao).toBe("2025");
+  expect(s.inss["2023"]).toEqual({ nominal: 1000, real: 1100, motivo: null });
+  expect(s.fpm["2023"]).toEqual({ nominal: null, real: null, motivo: "incompleto: 03" });
+  expect(cidades["3500001"].serie).toBeNull();
+});
+
+test("como mudou mostra lacunas como s/d e descreve a variação real", async ({ page, request }) => {
+  const real = await (await request.get("/api/dinheiro-federal/2307304")).json();
+  const ponto = (nominal: number | null, realValor: number | null) => ({ nominal, real: realValor, motivo: realValor == null ? "incompleto" : null });
+  const serie = { anos: ["2023", "2024", "2025"], base_inflacao: "2025",
+    inss: { "2023": ponto(800, 1000_00000000), "2024": ponto(900, 1010_00000000), "2025": ponto(1000, 1005_00000000) },
+    fpm: { "2023": ponto(100, 200_00000000), "2024": ponto(null, null), "2025": ponto(120, 150_00000000) } };
+  await page.route("**/api/dinheiro-federal/2307304", route => route.fulfill({ json: { ...real, cidade: { ...real.cidade, serie } } }));
+  await page.goto("/cidade/2307304");
+  const mudou = page.locator("#mudou");
+  await expect(mudou).toContainText("ficou estável de 2023 a 2025");
+  await expect(mudou).toContainText("o FPM caiu 25% de 2023 a 2025");
+  await expect(mudou.locator("svg text.is-gap")).toHaveCount(1);
+  await expect(mudou.locator("svg")).toHaveAttribute("aria-label", /FPM: 2023 200, 2024 sem dado completo, 2025 150/);
+});

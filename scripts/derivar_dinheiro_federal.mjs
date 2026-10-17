@@ -50,7 +50,17 @@ function percentuais(grupo, nome, detalhe) {
   return { nome, detalhe, municipios: grupo.municipios, percentual_do_pib: pct, total };
 }
 
-export function derivarDinheiroFederal({ dinheiro, detalhes, financiamento, rankings }) {
+// Série anual (INSS e FPM nominais) convertida para reais do último ano pelo IPCA médio de cada ano.
+function serieDaCidade(serie, codigo) {
+  const r = serie?.registros[codigo];
+  if (!r) return null;
+  const anos = serie.anos, ipca = serie.ipca_medio_anual, base = anos.at(-1);
+  const real = (v, ano) => v == null ? null : Math.round(v * ipca[base] / ipca[ano]);
+  const fonte = f => Object.fromEntries(anos.map(a => [a, { nominal: r[f][a], real: real(r[f][a], a), motivo: serie.situacao[a][f] === "completo" ? null : serie.situacao[a][f] }]));
+  return { anos, base_inflacao: base, inss: fonte("inss"), fpm: fonte("fpm") };
+}
+
+export function derivarDinheiroFederal({ dinheiro, detalhes, financiamento, rankings, serie = null }) {
   const ano = dinheiro.ano;
   const pib = dinheiro.pib ?? { ano_fonte: ano, estimado: false };
   const populacao = Object.fromEntries(rankings.registros.map(r => [r.codigo_ibge, r.populacao]));
@@ -66,6 +76,7 @@ export function derivarDinheiroFederal({ dinheiro, detalhes, financiamento, rank
       inss_detalhe: r.inss?.valor_ano_centavos ?? null, inss_quantidade_dezembro: r.inss?.quantidade_dezembro ?? null,
       inss_beneficios_por_100_habitantes: por100,
       inss_orgao_pagador_atipico: por100 !== null && (por100 < INSS_POR_100_MIN || por100 > INSS_POR_100_MAX),
+      serie: serieDaCidade(serie, codigo),
     };
   }
 

@@ -56,7 +56,7 @@ test("links antigos abrem a cidade e os temas seguem a ordem do conteúdo", asyn
   await expect(page.locator("#quanto")).not.toContainText("Calculando");
   await page.locator("#quanto").screenshot({ path: `test-results/quanto-chega-${testInfo.project.name}.png` });
   const links = page.getByRole("navigation", { name: "Indicadores da cidade" });
-  for (const name of ["Quanto chega", "Para quem", "Comparação", "Voto", "Saúde", "Bolsa Família", "Fontes"]) {
+  for (const name of ["Quanto chega", "Para quem", "Como mudou", "Comparação", "Voto", "Saúde", "Bolsa Família", "Fontes"]) {
     const link = links.getByRole("link", { name, exact: true });
     const href = await link.getAttribute("href");
     await link.click();

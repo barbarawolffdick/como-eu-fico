@@ -29,7 +29,10 @@ export type DinheiroFederalCidade = {
   inss_beneficios_por_100_habitantes: number | null;
   inss_orgao_pagador_atipico: boolean;
   comparacoes: Comparacao[];
+  serie: SerieCidade | null;
 };
+export type PontoSerie = { nominal: number | null; real: number | null; motivo: string | null };
+export type SerieCidade = { anos: string[]; base_inflacao: string; inss: Record<string, PontoSerie>; fpm: Record<string, PontoSerie> };
 export type RespostaDinheiroFederal = { ano: number; pib: PibReferencia; cidade: DinheiroFederalCidade };
 
 export type PontoRegiao = { id: string; nome: string; uf: string; regiao: string; federal_percentual_do_pib: number; lula_percentual: number };

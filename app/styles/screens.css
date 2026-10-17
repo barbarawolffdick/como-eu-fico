@@ -2858,6 +2858,14 @@
 .federal-dot--out { background: var(--color-chart-tertiary); }
 .federal-dot--current { background: var(--color-text); }
 .federal-scatter { width: 100%; height: auto; display: block; }
+.federal-series { width: 100%; height: auto; display: block; }
+.federal-series line { stroke: var(--color-border); stroke-width: 1; }
+.federal-series text { fill: var(--color-text-muted); font-family: var(--font-family-body); font-size: var(--font-size-caption); }
+.federal-series text.is-value { fill: var(--color-text); font-weight: var(--font-weight-bold); }
+.federal-series text.is-gap { fill: var(--color-text-subtle); }
+.federal-series path.is-inss, .federal-dot--bar-inss { fill: var(--color-chart); background: var(--color-chart); }
+.federal-series path.is-fpm, .federal-dot--bar-fpm { fill: var(--color-chart-secondary); background: var(--color-chart-secondary); }
+.federal-dot--bar-inss, .federal-dot--bar-fpm { border-radius: var(--radius-control); }
 .federal-scatter line { stroke: var(--color-border); stroke-width: 1; }
 .federal-scatter text { fill: var(--color-text-muted); font-family: var(--font-family-body); font-size: var(--font-size-caption); }
 .federal-scatter text.is-label { fill: var(--color-text); font-weight: var(--font-weight-bold); paint-order: stroke; stroke: var(--color-surface); stroke-width: 4px; stroke-linejoin: round; }

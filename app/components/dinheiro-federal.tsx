@@ -40,6 +40,7 @@ export default function DinheiroFederal({ codigo, votos }: { codigo: string; vot
   return <>
     <QuantoChega ano={ano} pibEstimado={pib.estimado} pibAnoFonte={pib.ano_fonte} cidade={cidade} />
     <ParaQuem ano={ano} cidade={cidade} />
+    <ComoMudou cidade={cidade} />
     <ComparaRegiao ano={ano} pibEstimado={pib.estimado} cidade={cidade} />
     <VotoERelacao votos={votos} regioes={regioes.data} erro={regioes.error} retry={regioes.retry} regiaoId={cidade.regiao_imediata.id} regiaoNome={cidade.regiao_imediata.nome} />
   </>;
@@ -121,6 +122,47 @@ function ParaQuem({ ano, cidade }: { ano: number; cidade: RespostaDinheiroFedera
   </section>;
 }
 
+function ComoMudou({ cidade }: { cidade: RespostaDinheiroFederal["cidade"] }) {
+  const serie = cidade.serie;
+  if (!serie) return null;
+  const anos = serie.anos;
+  const pontos = (f: "inss" | "fpm") => anos.filter(a => serie[f][a].real != null);
+  const inssAnos = pontos("inss"), fpmAnos = pontos("fpm");
+  const variacao = (f: "inss" | "fpm", campo: "real" | "nominal", de: string, ate: string) => 100 * (serie[f][ate][campo]! / serie[f][de][campo]! - 1);
+  const W = 640, H = 230, L = 44, B = 196, T = 16;
+  const maxv = Math.max(1, ...anos.flatMap(a => [serie.inss[a].real ?? 0, serie.fpm[a].real ?? 0]));
+  const passo = maxv / 1e8 > 600 ? 300 : maxv / 1e8 > 150 ? 100 : maxv / 1e8 > 30 ? 20 : 5;
+  const topo = Math.ceil(maxv / 1e8 / passo) * passo;
+  const y = (centavos: number) => B - (B - T) * (centavos / 1e8) / topo;
+  const grupo = (W - L - 10) / anos.length;
+  const largura = Math.min(26, grupo / 2 - 4);
+  const mi = (c: number) => numero(c / 1e8, 0);
+  const rotulo = (f: "inss" | "fpm") => f === "inss" ? "INSS" : "FPM";
+  // Variação real: abaixo de 2% em módulo é tratada como estabilidade, para não destacar oscilações pequenas.
+  const frase = (sujeito: string, v: number, de: string, ate: string) => Math.abs(v) < 2
+    ? `Descontada a inflação, ${sujeito.charAt(0).toLowerCase() + sujeito.slice(1)} ficou estável de ${de} a ${ate} (${v >= 0 ? "+" : "−"}${percentual(Math.abs(v), 0)}).`
+    : `Descontada a inflação, ${sujeito.charAt(0).toLowerCase() + sujeito.slice(1)} ${v > 0 ? "cresceu" : "caiu"} ${percentual(Math.abs(v), 0)} de ${de} a ${ate}.`;
+  return <section id="mudou" aria-labelledby="mudou-title" className="federal-section">
+    <SectionHeading id="mudou-title" kicker="3 · Como mudou" title="Como esse dinheiro mudou nos últimos anos?" />
+    <Card className="federal-chart">
+      {inssAnos.length >= 2 && <p className="federal-lead">{frase("O INSS pago pela cidade", variacao("inss", "real", inssAnos[0], inssAnos.at(-1)!), inssAnos[0], inssAnos.at(-1)!)} Sem descontar a inflação, a variação parece de {percentual(variacao("inss", "nominal", inssAnos[0], inssAnos.at(-1)!), 0)}.{fpmAnos.length >= 2 ? " " + frase("O FPM", variacao("fpm", "real", fpmAnos[0], fpmAnos.at(-1)!), fpmAnos[0], fpmAnos.at(-1)!) : ""}</p>}
+      <div className="federal-legend"><span><i className="federal-dot federal-dot--bar-inss" />INSS</span><span><i className="federal-dot federal-dot--bar-fpm" />FPM</span></div>
+      <svg className="federal-series" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Valores anuais em milhões de reais de ${serie.base_inflacao}. INSS: ${anos.map(a => `${a} ${serie.inss[a].real != null ? mi(serie.inss[a].real!) : "sem dado"}`).join(", ")}. FPM: ${anos.map(a => `${a} ${serie.fpm[a].real != null ? mi(serie.fpm[a].real!) : "sem dado completo"}`).join(", ")}.`}>
+        {[0, 1, 2, 3].map(i => { const v = topo * i / 3; return <g key={i}><line x1={L} y1={B - (B - T) * i / 3} x2={W - 6} y2={B - (B - T) * i / 3} /><text x={L - 6} y={B - (B - T) * i / 3 + 4} textAnchor="end">{numero(v, 0)}</text></g>; })}
+        {anos.map((a, i) => { const x0 = L + i * grupo + (grupo - 2 * largura - 4) / 2; return <g key={a}>
+          {(["inss", "fpm"] as const).map((f, j) => { const v = serie[f][a].real; const xb = x0 + j * (largura + 4);
+            return v == null ? <text key={f} x={xb + largura / 2} y={B - 6} textAnchor="middle" className="is-gap">s/d</text>
+              : <path key={f} className={`is-${f}`} d={`M${xb} ${B} V${y(v) + 4} a4 4 0 0 1 4 -4 H${xb + largura - 4} a4 4 0 0 1 4 4 V${B} Z`}><title>{`${a} · ${rotulo(f)}: R$ ${mi(v)} milhões em reais de ${serie.base_inflacao}`}</title></path>; })}
+          <text x={L + i * grupo + grupo / 2} y={B + 16} textAnchor="middle">{a}</text></g>; })}
+        {inssAnos.length > 0 && [inssAnos[0], inssAnos.at(-1)!].filter((a, i, l) => l.indexOf(a) === i).map(a => { const i = anos.indexOf(a); const x0 = L + i * grupo + (grupo - 2 * largura - 4) / 2;
+          return <text key={"v" + a} className="is-value" x={x0 + largura / 2} y={y(serie.inss[a].real!) - 6} textAnchor="middle">{mi(serie.inss[a].real!)}</text>; })}
+        <text x={L} y={H - 2}>R$ milhões por ano, em reais de {serie.base_inflacao} (IPCA)</text>
+      </svg>
+      <p className="footnote">Valores de cada ano convertidos para reais de {serie.base_inflacao} pelo IPCA médio do ano. “s/d”: o dado da fonte está incompleto nesse ano (meses ausentes, publicados pela metade ou com nomes de municípios ainda sem correspondência revisada), por isso não mostramos o total. Bolsa Família e SUS ganham suas séries quando os anos anteriores forem integrados.</p>
+    </Card>
+  </section>;
+}
+
 function ComparaRegiao({ ano, pibEstimado, cidade }: { ano: number; pibEstimado: boolean; cidade: RespostaDinheiroFederal["cidade"] }) {
   const vias = FLUXOS.filter(f => cidade.fluxos[f] != null);
   const parcial = vias.length < FLUXOS.length;
@@ -130,7 +172,7 @@ function ComparaRegiao({ ano, pibEstimado, cidade }: { ano: number; pibEstimado:
   const [propria, regiao, vizinhos] = linhas;
   const temVizinhos = vizinhos && vizinhos.nome.startsWith("As ");
   return <section id="compara" aria-labelledby="compara-title" className="federal-section">
-    <SectionHeading id="compara-title" kicker="3 · Comparação" title="O dinheiro federal pesa mais ou menos aqui?" />
+    <SectionHeading id="compara-title" kicker="4 · Comparação" title="O dinheiro federal pesa mais ou menos aqui?" />
     <Card>
       {parcial && <p className="hint federal-compare-note">Comparação feita com {lista(vias.map(f => NOME_CURTO[f]))}, as vias com dado para {cidade.municipio.nome} em {ano}.</p>}
       <ul className="federal-compare">{linhas.map((l, i) => <li key={l.nome} className={i === 0 ? "is-current" : undefined}>
@@ -156,7 +198,7 @@ function ComparaRegiao({ ano, pibEstimado, cidade }: { ano: number; pibEstimado:
 
 function VotoERelacao({ votos, regioes, erro, retry, regiaoId, regiaoNome }: { votos: { candidato: string; votos: number }[]; regioes: RespostaRegioes | null; erro: string; retry: () => void; regiaoId: string; regiaoNome: string }) {
   return <section id="voto" aria-labelledby="voto-title" className="federal-section">
-    <SectionHeading id="voto-title" kicker="4 · Voto" title="Como a cidade votou, e como votaram lugares parecidos?" />
+    <SectionHeading id="voto-title" kicker="5 · Voto" title="Como a cidade votou, e como votaram lugares parecidos?" />
     <Card>
       <h3>Votação presidencial · 2026</h3>
       <VotosMunicipais votos={votos} />

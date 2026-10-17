@@ -31,6 +31,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_correspondencia_pessoas_mds.py' -v
           python -m unittest discover -s tests -p 'test_complementar_pessoas_mds.py' -v
           python -m unittest discover -s tests -p 'test_saude*.py' -v
+          python -m unittest discover -s tests -p 'test_dinheiro_federal.py' -v
 
   next-build:
     runs-on: ubuntu-latest

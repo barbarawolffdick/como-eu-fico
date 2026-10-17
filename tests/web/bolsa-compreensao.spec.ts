@@ -36,10 +36,10 @@ test("API identifica cidade, competência e proveniência sem confundir pessoas 
 
 test("percentual explica toda a população e a modal distingue família e titular", async ({ page }, testInfo) => {
   await page.goto("/cidade/3550308");
-  const panorama = page.locator("#panorama");
-  await expect(panorama).toContainText("da população da cidade");
-  await expect(panorama).toContainText("em cada 100 moradores");
-  const trigger = panorama.getByRole("button", { name: "Entender: Quem entra na conta do Bolsa Família?" });
+  const bolsa = page.locator("#dados-bolsa");
+  await expect(bolsa).toContainText("da população da cidade");
+  await expect(bolsa).toContainText("em cada 100 moradores");
+  const trigger = bolsa.getByRole("button", { name: "Entender: Quem entra na conta do Bolsa Família?" });
   await trigger.click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toContainText("Titular:");
@@ -87,7 +87,7 @@ test("sem pessoas no mês, a comparação não usa setembro como substituto de a
 
 test("resumo eleitoral mostra três candidatos e expande sem recalcular os percentuais", async ({ page }) => {
   await page.goto("/cidade/3550308");
-  for (const selector of [".electoral-overview", ".election-detail"]) {
+  for (const selector of ["#voto"]) {
     const box = page.locator(selector);
     await expect(box.locator(".vote")).toHaveCount(3);
     const first = await box.locator(".vote").first().textContent();

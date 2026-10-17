@@ -310,34 +310,39 @@ class PibEstimadoTest(unittest.TestCase):
     def cadastro(self):
         return {c: {**m, "regiao": "R", "regiao_imediata": {"id": "1", "nome": "X"}} for c, m in CADASTRO.items()}
 
-    def test_estimativa_fica_em_campo_proprio_e_rotulado(self):
-        cadastro = self.cadastro()
-        referencia = {"natureza": "estimado", "ano": 2025, "ano_base": 2023, "fator": "1.164047"}
-        estimado = {c: 100_000 for c in cadastro} | {"5101837": None}
-        doc = montar_documento(2025, cadastro, {}, {}, {}, {}, {}, {}, referencia, estimado)
-        validar_publicacao(doc, cadastro)
-        r = doc["registros"]["2700102"]
-        self.assertIsNone(r["pib_centavos"])
-        self.assertEqual(r["pib_estimado_centavos"], 100_000)
-        self.assertIn("estimativa", r["ausencias"]["pib"])
-        self.assertIn("ESTIMATIVA", doc["definicoes"]["pib_estimado_centavos"])
-        self.assertEqual(doc["natureza"], "fluxos observados; PIB estimado")
-        self.assertIn("não há estimativa", doc["registros"]["5101837"]["ausencias"]["pib"])
+    def meta(self, **mudancas):
+        return {"ano_fonte": 2023, "estimado": True, "fator": 1.164047, "metodo": "PIB 2023 × crescimento nominal (IBGE 1846)",
+                "fonte_fator": {"url": "u", "sha256": "s", "data_extracao": "d"}} | mudancas
 
-    def test_estimativa_nao_se_disfarca_de_observado(self):
+    def test_estimativa_vai_em_pib_centavos_com_rotulo_no_documento(self):
         cadastro = self.cadastro()
-        referencia = {"natureza": "estimado", "ano": 2025, "ano_base": 2023, "fator": "1.164047"}
-        doc = montar_documento(2025, cadastro, {}, {}, {}, {}, {}, {}, referencia, {c: 100_000 for c in cadastro})
-        misturado = copy.deepcopy(doc)
-        misturado["registros"]["2700102"]["pib_centavos"] = 100_000
-        del misturado["registros"]["2700102"]["ausencias"]["pib"]
-        misturado["cobertura"]["pib"] = 1
+        estimado = {c: 100_000 for c in cadastro} | {"5101837": None}
+        doc = montar_documento(2025, cadastro, estimado, {}, {}, {}, {}, {}, self.meta())
+        validar_publicacao(doc, cadastro)
+        self.assertEqual(doc["registros"]["2700102"]["pib_centavos"], 100_000)
+        self.assertEqual((doc["pib"]["ano_fonte"], doc["pib"]["estimado"]), (2023, True))
+        self.assertIn("ESTIMATIVA", doc["definicoes"]["pib_centavos"])
+        self.assertEqual(doc["natureza"], "fluxos observados; PIB estimado")
+        self.assertIn("não há base para estimar", doc["registros"]["5101837"]["ausencias"]["pib"])
+
+    def test_estimativa_sem_rotulo_completo_ou_pib_de_outro_ano_como_observado_interrompe(self):
+        cadastro = self.cadastro()
+        pib = {c: 100_000 for c in cadastro}
+        for meta in (self.meta(fonte_fator=None), self.meta(fator=None), self.meta(ano_fonte=2025)):
+            with self.assertRaises(ValueError):
+                validar_publicacao(montar_documento(2025, cadastro, pib, {}, {}, {}, {}, {}, meta), cadastro)
+        disfarcado = montar_documento(2025, cadastro, pib, {}, {}, {}, {}, {}, {"ano_fonte": 2023, "estimado": False})
         with self.assertRaises(ValueError):
-            validar_publicacao(misturado, cadastro)
+            validar_publicacao(disfarcado, cadastro)
+
+    def test_observado_e_ausente(self):
+        cadastro = self.cadastro()
         observado = montar_documento(2023, cadastro, {c: 1 for c in cadastro}, {}, {}, {}, {}, {})
-        observado["registros"]["2700102"]["pib_estimado_centavos"] = 1
-        with self.assertRaises(ValueError):
-            validar_publicacao(observado, cadastro)
+        self.assertEqual(observado["pib"], {"ano_fonte": 2023, "estimado": False})
+        validar_publicacao(observado, cadastro)
+        ausente = montar_documento(2025, cadastro, {}, {}, {}, {}, {}, {}, {"ano_fonte": None, "estimado": False})
+        self.assertIn("ainda não publicou", ausente["registros"]["2700102"]["ausencias"]["pib"])
+        self.assertEqual(ausente["natureza"], "fluxos observados; PIB ausente")
 
 
 class SnapshotTest(unittest.TestCase):
@@ -366,7 +371,7 @@ class SnapshotTest(unittest.TestCase):
         exemplo = SNAPSHOT["registros"]["2307304"]
         self.assertEqual(set(exemplo), {"municipio", "regiao_imediata", "regiao", "pib_centavos", "inss", "fpm", "ausencias"})
         self.assertIn("órgão pagador", SNAPSHOT["definicoes"]["inss.valor_ano_centavos"])
-        self.assertEqual(SNAPSHOT["pib_referencia"], {"natureza": "observado", "ano": 2023})
+        self.assertEqual(SNAPSHOT["pib"], {"ano_fonte": 2023, "estimado": False})
 
 
 class Snapshot2025Test(unittest.TestCase):
@@ -374,24 +379,25 @@ class Snapshot2025Test(unittest.TestCase):
         publicados = json.loads((ROOT / "data/public/rankings_2026.json").read_text())["registros"]
         validar_publicacao(SNAPSHOT_2025, {r["codigo_ibge"]: {} for r in publicados})
         self.assertEqual(SNAPSHOT_2025["ano"], 2025)
-        self.assertEqual(SNAPSHOT_2025["cobertura"], {"pib": 0, "inss": 5571, "fpm": 5570, "pib_estimado": 5570})
-        ref = SNAPSHOT_2025["pib_referencia"]
-        self.assertEqual((ref["natureza"], ref["ano_base"], ref["fator"]), ("estimado", 2023, "1.164047"))
-        self.assertTrue(all(r["pib_centavos"] is None and "pib" in r["ausencias"] for r in SNAPSHOT_2025["registros"].values()))
+        self.assertEqual(SNAPSHOT_2025["cobertura"], {"pib": 5570, "inss": 5571, "fpm": 5570})
+        pib = SNAPSHOT_2025["pib"]
+        self.assertEqual((pib["ano_fonte"], pib["estimado"], pib["fator"]), (2023, True, 1.164047))
+        self.assertEqual(set(pib["fonte_fator"]) >= {"url", "sha256", "data_extracao"}, True)
+        self.assertIn("ESTIMATIVA", SNAPSHOT_2025["definicoes"]["pib_centavos"])
         self.assertEqual(sorted(SNAPSHOT_2025["fontes"]["fpm"]["meses"]), [f"{m:02d}" for m in range(1, 13)])
 
     def test_municipio_instalado_em_2025_tem_fluxos_mas_nao_pib(self):
         r = SNAPSHOT_2025["registros"]["5101837"]
         self.assertIsNotNone(r["inss"])
         self.assertIsNotNone(r["fpm"])
-        self.assertIsNone(r["pib_estimado_centavos"])
+        self.assertIsNone(r["pib_centavos"])
         self.assertEqual(set(r["ausencias"]), {"pib"})
 
-    def test_estimativa_preserva_o_pib_de_2023_vezes_o_fator(self):
+    def test_estimativa_e_o_pib_de_2023_vezes_o_fator(self):
         for codigo in ("3550308", "2307304"):
             base = SNAPSHOT["registros"][codigo]["pib_centavos"]
             esperado = int((Decimal(base) * Decimal("1.164047") / 100_000).quantize(Decimal(1))) * 100_000
-            self.assertEqual(SNAPSHOT_2025["registros"][codigo]["pib_estimado_centavos"], esperado)
+            self.assertEqual(SNAPSHOT_2025["registros"][codigo]["pib_centavos"], esperado)
 
 
 if __name__ == "__main__":

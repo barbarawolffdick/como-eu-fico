@@ -366,17 +366,35 @@ def fpm_por_municipio(escolhidos, cadastro):
     return dict(total)
 
 
-def montar_documento(ano, cadastro, pib, inss_valor, inss_qtd, fpm, fontes, validacao, pib_referencia=None, pib_estimado=None):
-    """`pib_referencia` diz se o PIB do ano é observado, estimado ou ausente. Estimativa vai em campo próprio
-    (`pib_estimado_centavos`); `pib_centavos` só recebe valor observado."""
-    pib_referencia = pib_referencia or {"natureza": "observado", "ano": ano}
-    natureza_pib = pib_referencia["natureza"]
+def descrever_pib(ano, ano_fonte, estimado=False, **extra):
+    """Bloco `pib` do documento: de que ano vem o PIB dos registros e se é estimativa. ano_fonte nulo = sem PIB."""
+    return {"ano_fonte": ano_fonte, "estimado": estimado, **extra}
+
+
+def montar_documento(ano, cadastro, pib, inss_valor, inss_qtd, fpm, fontes, validacao, pib_meta=None):
+    """`pib_meta` (bloco `pib`) diz a origem de `pib_centavos`: observado no próprio ano, estimado a partir de
+    `ano_fonte` (rotulado no documento e na definição) ou ausente (ano_fonte nulo)."""
+    pib_meta = pib_meta or descrever_pib(ano, ano)
     motivos = {
         "pib": "O IBGE não publica PIB deste município para o ano (município instalado depois ou valor não numérico).",
         "inss": "A planilha do INSS não traz este município no ano.",
         "fpm": "O Tesouro não registra FPM para este ente no ano (Fernando de Noronha é distrito estadual; ou município instalado depois).",
     }
-    if natureza_pib != "observado":
+    definicoes = {
+        "pib_centavos": "PIB a preços correntes do ano (IBGE, tabela 5938, variável 37), em centavos.",
+        "inss.valor_ano_centavos": "Valor líquido (bruto menos descontos) dos benefícios emitidos pelo INSS no ano, por grupo de espécies, "
+                                   "no município do órgão pagador — não necessariamente o de residência do beneficiário.",
+        "inss.quantidade_dezembro": "Quantidade de benefícios emitidos em dezembro (créditos, não pessoas), mesmo critério territorial.",
+        "fpm.valor_ano_centavos": "FPM creditado ao município no ano (soma dos decêndios), líquido da retenção para o FUNDEB.",
+    }
+    natureza = "observado"
+    if pib_meta["estimado"]:
+        natureza = "fluxos observados; PIB estimado"
+        motivos["pib"] = f"Sem PIB municipal observado em {pib_meta['ano_fonte']}; não há base para estimar {ano}."
+        definicoes["pib_centavos"] = (f"ESTIMATIVA, não dado do IBGE: PIB municipal de {pib_meta['ano_fonte']} × crescimento nominal do PIB "
+                                      f"do Brasil até {ano} (ver bloco pib). Arredondado a mil reais, em centavos.")
+    elif pib_meta["ano_fonte"] is None:
+        natureza = "fluxos observados; PIB ausente"
         motivos["pib"] = f"O IBGE ainda não publicou o PIB municipal de {ano}."
     registros = {}
     for codigo, m in sorted(cadastro.items()):
@@ -387,28 +405,12 @@ def montar_documento(ano, cadastro, pib, inss_valor, inss_qtd, fpm, fontes, vali
              "regiao_imediata": m["regiao_imediata"], "regiao": m["regiao"],
              "pib_centavos": pib.get(codigo), "inss": inss,
              "fpm": None if codigo not in fpm else {"valor_ano_centavos": fpm[codigo]}}
-        if natureza_pib == "estimado":
-            r["pib_estimado_centavos"] = pib_estimado.get(codigo)
         r["ausencias"] = {k: motivos[k] for k, vazio in (("pib", r["pib_centavos"] is None), ("inss", inss is None), ("fpm", r["fpm"] is None)) if vazio}
-        if natureza_pib == "estimado":
-            r["ausencias"]["pib"] += (" Ver pib_estimado_centavos (estimativa, não observado)." if r["pib_estimado_centavos"] is not None
-                                      else f" Sem PIB observado em {pib_referencia['ano_base']}, não há estimativa.")
         registros[codigo] = r
-    definicoes = {
-        "pib_centavos": "PIB a preços correntes do ano (IBGE, tabela 5938, variável 37), em centavos. Só valor observado.",
-        "inss.valor_ano_centavos": "Valor líquido (bruto menos descontos) dos benefícios emitidos pelo INSS no ano, por grupo de espécies, "
-                                   "no município do órgão pagador — não necessariamente o de residência do beneficiário.",
-        "inss.quantidade_dezembro": "Quantidade de benefícios emitidos em dezembro (créditos, não pessoas), mesmo critério territorial.",
-        "fpm.valor_ano_centavos": "FPM creditado ao município no ano (soma dos decêndios), líquido da retenção para o FUNDEB.",
-    }
-    if natureza_pib == "estimado":
-        definicoes["pib_estimado_centavos"] = ("ESTIMATIVA, não dado do IBGE: PIB municipal observado no ano-base × variação do PIB nacional "
-                                               "nominal entre o ano-base e o ano (ver pib_referencia). Arredondado a mil reais.")
     return {
-        "esquema": 1, "ano": ano, "natureza": "observado" if natureza_pib == "observado" else f"fluxos observados; PIB {natureza_pib}",
-        "data_geracao": datetime.now(timezone.utc).isoformat(),
+        "esquema": 1, "ano": ano, "natureza": natureza, "data_geracao": datetime.now(timezone.utc).isoformat(),
         "municipios_referencia": len(cadastro), "unidade_territorial": "municipio_ibge_7_digitos",
-        "pib_referencia": pib_referencia, "definicoes": definicoes,
+        "pib": pib_meta, "definicoes": definicoes,
         "limites": "Fluxos de natureza diferente: benefícios a pessoas (INSS) e transferência constitucional ao governo municipal (FPM). "
                    "Não somar como investimento federal. Valores nominais. O INSS segue o órgão pagador: taxas por habitante e rankings "
                    "municipais não descrevem os moradores; usar a região imediata para comparações.",
@@ -417,21 +419,26 @@ def montar_documento(ano, cadastro, pib, inss_valor, inss_qtd, fpm, fontes, vali
 
 
 def cobertura(registros):
-    saida = {"pib": sum(r["pib_centavos"] is not None for r in registros.values()),
-             "inss": sum(r["inss"] is not None for r in registros.values()),
-             "fpm": sum(r["fpm"] is not None for r in registros.values())}
-    if any("pib_estimado_centavos" in r for r in registros.values()):
-        saida["pib_estimado"] = sum(r.get("pib_estimado_centavos") is not None for r in registros.values())
-    return saida
+    return {"pib": sum(r["pib_centavos"] is not None for r in registros.values()),
+            "inss": sum(r["inss"] is not None for r in registros.values()),
+            "fpm": sum(r["fpm"] is not None for r in registros.values())}
 
 
 def validar_publicacao(documento, cadastro):
     registros = documento["registros"]
-    natureza_pib = documento.get("pib_referencia", {"natureza": "observado"})["natureza"]
+    pib_meta = documento.get("pib", descrever_pib(documento["ano"], documento["ano"]))
     if set(registros) != set(cadastro) or documento["municipios_referencia"] != len(cadastro):
         raise ValueError("Publicação não cobre todo o cadastro municipal")
     if documento["cobertura"] != cobertura(registros):
         raise ValueError("Cobertura declarada não confere com registros")
+    if pib_meta["estimado"]:
+        # Estimativa só com rótulo completo: ano-base anterior, fator, método e fonte do fator.
+        if not (pib_meta["ano_fonte"] and pib_meta["ano_fonte"] < documento["ano"]
+                and all(pib_meta.get(k) for k in ("fator", "metodo", "fonte_fator"))
+                and "ESTIMATIVA" in documento["definicoes"]["pib_centavos"]):
+            raise ValueError("PIB estimado sem rótulo completo")
+    elif pib_meta["ano_fonte"] not in (None, documento["ano"]):
+        raise ValueError("PIB de outro ano publicado como observado")
     for codigo, r in registros.items():
         if r["municipio"]["codigo_ibge"] != codigo:
             raise ValueError("Identificação municipal inconsistente")
@@ -439,14 +446,12 @@ def validar_publicacao(documento, cadastro):
             vazio = (r["pib_centavos"] if campo == "pib" else r[campo]) is None
             if vazio != (campo in r["ausencias"]):
                 raise ValueError(f"Ausência de {campo} sem motivo declarado em {codigo}")
-        if ("pib_estimado_centavos" in r) != (natureza_pib == "estimado"):
-            raise ValueError(f"Estimativa de PIB fora do modo estimado em {codigo}")
-        if natureza_pib != "observado" and r["pib_centavos"] is not None:
-            raise ValueError(f"PIB observado em publicação sem PIB do ano em {codigo}")
         if r["inss"] is not None and r["inss"]["valor_ano_centavos"]["total"] < 0:
             raise ValueError("Valor anual do INSS negativo")
     # Proporção mínima esperada: quase todos os municípios do ano têm as fontes publicadas.
-    esperadas = {"observado": ("pib", "inss", "fpm"), "estimado": ("pib_estimado", "inss", "fpm"), "ausente": ("inss", "fpm")}[natureza_pib]
+    esperadas = ("inss", "fpm") if pib_meta["ano_fonte"] is None else ("pib", "inss", "fpm")
+    if pib_meta["ano_fonte"] is None and documento["cobertura"]["pib"]:
+        raise ValueError("PIB declarado ausente, mas há valores")
     if min(documento["cobertura"][c] for c in esperadas) < len(cadastro) - 5:
         raise ValueError(f"Cobertura abaixo do esperado: {documento['cobertura']}")
 
@@ -461,7 +466,7 @@ def carregar_cadastro(cache, atualizar):
 
 
 def carregar_pib(ano, modo, ano_base, cadastro, cache, atualizar):
-    """Devolve (pib observado do ano, estimativa ou None, pib_referencia, fontes)."""
+    """Devolve (pib_centavos por município, bloco `pib` do documento, fontes)."""
     if modo == "observado":
         b, origem = obter_com_retentativas(PIB_URL.format(ano=ano), cache, atualizar)
         pib = extrair_pib(json_da_fonte(b), ano)
@@ -469,9 +474,9 @@ def carregar_pib(ano, modo, ano_base, cadastro, cache, atualizar):
             raise ValueError("PIB com município fora do cadastro")
         if not any(v is not None for v in pib.values()):
             raise ValueError(f"IBGE sem PIB municipal de {ano}; use --pib estimado ou --pib ausente")
-        return pib, None, {"natureza": "observado", "ano": ano}, origem
+        return pib, descrever_pib(ano, ano), origem
     if modo == "ausente":
-        return {}, None, {"natureza": "ausente", "ano": ano}, None
+        return {}, descrever_pib(ano, None), None
     if ano_base >= ano:
         raise ValueError("O ano-base da estimativa precisa ser anterior ao ano publicado")
     b, origem_base = obter_com_retentativas(PIB_URL.format(ano=ano_base), cache, atualizar)
@@ -483,14 +488,13 @@ def carregar_pib(ano, modo, ano_base, cadastro, cache, atualizar):
     trimestral = json_da_fonte(b)
     nacional = {a: pib_nacional_anual(trimestral, a) for a in (ano_base, ano)}
     estimado, fator = estimar_pib(pib_base, nacional[ano_base], nacional[ano])
-    referencia = {
-        "natureza": "estimado", "ano": ano, "ano_base": ano_base, "fator": str(fator),
-        "pib_nacional_milhoes": {str(a): str(v) for a, v in nacional.items()},
-        "metodo": f"PIB municipal observado de {ano_base} (IBGE 5938) × razão entre o PIB nacional nominal de {ano} e o de {ano_base} "
-                  f"(soma dos quatro trimestres, IBGE 1846, PIB a preços de mercado). Supõe que todo município cresceu como o país: "
-                  f"não capta safra, preço de commodities, royalties ou choques locais. Substituir pelo PIB municipal quando o IBGE publicar.",
-    }
-    return {}, estimado, referencia, {"pib_municipal_ano_base": origem_base, "contas_trimestrais": origem_trim}
+    meta = descrever_pib(
+        ano, ano_base, True, fator=float(fator),
+        metodo=f"PIB municipal de {ano_base} × crescimento nominal do PIB do Brasil {ano_base}→{ano} (IBGE, tabela 1846, soma dos "
+               f"4 trimestres, PIB a preços de mercado). Supõe que todo município cresceu como o país: não capta safra, preço de "
+               f"commodities, royalties ou choques locais. Substituir pelo PIB municipal quando o IBGE publicar.",
+        fonte_fator=origem_trim, pib_brasil_milhoes={str(a): int(v) for a, v in nacional.items()})
+    return estimado, meta, {"pib_municipal_ano_base": origem_base, "contas_trimestrais": origem_trim}
 
 
 def carregar_inss(ano, cadastro, cache, atualizar):
@@ -576,9 +580,8 @@ def main():
     # 2023 mantém o nome do primeiro snapshot; demais anos ganham arquivo próprio para não sobrescrevê-lo.
     saida = args.saida or ROOT / "data/public" / ("dinheiro_federal.json" if args.ano == 2023 else f"dinheiro_federal_{args.ano}.json")
 
-    pib, pib_estimado, pib_referencia, origem_pib = carregar_pib(args.ano, args.pib, args.pib_ano_base, cadastro, args.cache, args.atualizar)
-    print(f"PIB {args.ano} ({pib_referencia['natureza']}): "
-          f"{sum(v is not None for v in (pib_estimado if pib_estimado is not None else pib).values())} municípios.", flush=True)
+    pib, pib_meta, origem_pib = carregar_pib(args.ano, args.pib, args.pib_ano_base, cadastro, args.cache, args.atualizar)
+    print(f"PIB {args.ano} ({args.pib}): {sum(v is not None for v in pib.values())} municípios.", flush=True)
 
     inss_valor, inss_qtd, val_inss, origem_inss = carregar_inss(args.ano, cadastro, args.cache, args.atualizar)
     print(f"INSS {args.ano}: {len(inss_valor)} municípios.", flush=True)
@@ -588,13 +591,13 @@ def main():
 
     fontes = {"cadastro_ibge": origem_ibge, "pib": origem_pib, "inss": origem_inss, "fpm": fontes_fpm}
     validacao = {"inss": val_inss, "fpm": {"municipios": len(fpm), "aliases_revisados": len(ALIASES_FPM)}}
-    documento = montar_documento(args.ano, cadastro, pib, inss_valor, inss_qtd, fpm, fontes, validacao, pib_referencia, pib_estimado)
+    documento = montar_documento(args.ano, cadastro, pib, inss_valor, inss_qtd, fpm, fontes, validacao, pib_meta)
     validar_publicacao(documento, cadastro)
     saida.parent.mkdir(parents=True, exist_ok=True)
     temp = saida.with_suffix(".tmp")
     temp.write_text(json.dumps(documento, ensure_ascii=False, separators=(",", ":")) + "\n")
     temp.replace(saida)
-    print(json.dumps({"arquivo": str(saida), "ano": args.ano, "pib": pib_referencia["natureza"], "cobertura": documento["cobertura"]},
+    print(json.dumps({"arquivo": str(saida), "ano": args.ano, "pib": args.pib, "cobertura": documento["cobertura"]},
                      ensure_ascii=False))
 
 

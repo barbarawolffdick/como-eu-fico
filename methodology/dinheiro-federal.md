@@ -67,20 +67,19 @@ O PIB municipal do IBGE vai até 2023; para 2024 e 2025 só com `--pib estimado`
 
 ## PIB estimado (2025)
 
-O IBGE publica o PIB municipal com dois anos de defasagem. Com `--pib estimado`, `pib_centavos` fica **nulo** (com motivo em `ausencias`) e a estimativa vai em campo próprio, `pib_estimado_centavos`:
+O IBGE publica o PIB municipal com dois anos de defasagem. Todo snapshot traz um bloco `pib` que diz de onde vem `pib_centavos`: `{"ano_fonte": <ano>, "estimado": false}` quando é o PIB publicado do próprio ano. Com `--pib estimado`, `pib_centavos` recebe a estimativa (centavos inteiros) e o bloco fica `{"ano_fonte": 2023, "estimado": true, "fator", "metodo", "fonte_fator", "pib_brasil_milhoes"}`; a definição de `pib_centavos` começa com “ESTIMATIVA”. Leitores devem consultar `pib.estimado` antes de exibir o valor. A estimativa é:
 
 > PIB municipal observado de 2023 × (PIB nacional nominal de 2025 ÷ PIB nacional nominal de 2023)
 
-O PIB nacional é a soma dos quatro trimestres da tabela 1846 do IBGE (valores correntes, PIB a preços de mercado): R$ 10.943.344 milhões em 2023 e R$ 12.738.566 milhões em 2025, fator **1,164047**. O resultado é arredondado a mil reais. Antes de estimar, a soma do PIB municipal de 2023 precisa conferir com o nacional trimestral (tolerância de 2%). O documento declara `natureza: "fluxos observados; PIB estimado"` e descreve método, fator e fontes em `pib_referencia`.
+O PIB nacional é a soma dos quatro trimestres da tabela 1846 do IBGE (valores correntes, PIB a preços de mercado): R$ 10.943.344 milhões em 2023 e R$ 12.738.566 milhões em 2025, fator **1,164047**. O resultado é arredondado a mil reais. Antes de estimar, a soma do PIB municipal de 2023 precisa conferir com o nacional trimestral (tolerância de 2%). O documento declara `natureza: "fluxos observados; PIB estimado"`; a publicação é recusada se faltar fator, método ou fonte do fator, ou se um PIB de outro ano vier marcado como não estimado. Com `--pib ausente`, `pib_centavos` fica nulo com motivo e o bloco é `{"ano_fonte": null, "estimado": false}`.
 
 Limite: a estimativa supõe que todo município cresceu como o país. Não capta safra, preço de commodities, royalties nem choques locais; razões fluxo/PIB de 2025 devem ser apresentadas como aproximação. Município sem PIB em 2023 (Boa Esperança do Norte) fica sem estimativa. Substituir pelo PIB observado quando o IBGE publicar 2025 (rodar com `--atualizar`, porque a resposta vazia do IBGE fica no cache).
 
 ## Ausências
 
 Ausência é nula com motivo, nunca zero:
-- Boa Esperança do Norte-MT (`5101837`): instalada após 2023, sem PIB, INSS nem FPM em 2023. Em 2025 tem INSS (código inferido por nome e UF idênticos) e FPM, mas não PIB nem estimativa.
+- Boa Esperança do Norte-MT (`5101837`): instalada após 2023, sem PIB, INSS nem FPM em 2023. Em 2025 tem INSS (código inferido por nome e UF idênticos) e FPM, mas não PIB (sem base de 2023 para estimar).
 - Fernando de Noronha-PE (`2605459`): distrito estadual, sem FPM.
-- 2025: `pib_centavos` nulo em todos os municípios (PIB não publicado); ver `pib_estimado_centavos`.
 
 ## Limites
 

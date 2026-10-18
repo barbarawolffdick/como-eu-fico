@@ -44,6 +44,17 @@ import { ActionLink } from "@/app/components/ui/button";
 
 Tabelas continuam HTML nativo: envolva em `.table-scroll`, aplique `.data-table` e use `.data-table--wide` quando as colunas precisarem de rolagem local. Use cabeçalhos e caption ou nome acessível quando necessário. Não crie componentes de tabela com configurações complexas. `.kicker`, `.hint`, `.footnote` e `.sr-only` são utilitários tipográficos compartilhados.
 
+## Visualização de dados
+
+Gráficos usam a família `--color-viz-*` (18/10/2026). Os tokens `--color-chart*` continuam valendo para as barras de indicador simples (`DataBar`), mas têm pouca saturação e não servem para distinguir categorias.
+
+- **Categorias** (`--color-viz-1` a `--color-viz-4`, nesta ordem): verde, âmbar, azul e terracota. A cor acompanha a entidade em todas as páginas (por exemplo, pessoas em verde e prefeitura em azul no fluxo do dinheiro federal). Nunca colorir por posição no ranking. Mais de quatro categorias viram “outros”, rótulos diretos ou tabela.
+- **Magnitude** de uma série (`--color-viz-seq-1` a `--color-viz-seq-5`): mais escuro é mais. Texto sobre `seq-4` e `seq-5` usa `--color-text-inverse`; sobre os demais, `--color-text`.
+- **Fundo de trilha e “restante”**: `--color-viz-track`.
+- **Destaque da cidade** em gráficos com muitos pontos: `--color-text`, com contorno `--color-surface`.
+- **Voto**: candidatos não recebem cores partidárias nem cores por posição; segmentos na mesma cor, separados por espaço e com nome escrito.
+- `--color-viz-2` (âmbar) tem contraste abaixo de 3:1 sobre branco: sempre com rótulo visível ou tabela.
+
 ## Composição e estados
 
 Busca municipal, seções da cidade, indicadores de saúde, comparação e filtros continuam próximos das funcionalidades. Reutilize ou amplie uma peça existente antes de extrair outra. Conteúdo e cor diferentes não são novas responsabilidades. Uma composição só vira componente compartilhado se houver repetição relevante.

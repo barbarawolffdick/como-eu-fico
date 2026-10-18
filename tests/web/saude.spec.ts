@@ -1,4 +1,4 @@
-import { test, expect } from "./fixtures";
+import { test, expect, abrirDetalheSaude } from "./fixtures";
 import { readFileSync } from "node:fs";
 
 const snapshot = JSON.parse(readFileSync("data/public/saude_municipal.json", "utf8"));
@@ -9,6 +9,7 @@ test("saúde aparece na cidade com períodos independentes e fundo estadual sepa
   const resposta = await r.json();
   expect(resposta.dados).toEqual(snapshot.registros["3550308"]);
   await page.goto("/?municipio=3550308");
+  await abrirDetalheSaude(page);
   const saude = page.getByTestId("saude-municipal");
   await expect(saude.getByRole("heading", { name: "Saúde na sua cidade" })).toBeVisible();
   await expect(saude).toContainText("Acumulado de 01/2026 a 07/2026");
@@ -16,7 +17,7 @@ test("saúde aparece na cidade com períodos independentes e fundo estadual sepa
   await expect(saude).toContainText("Parcela 10/2026 · Cadastro CNES 08/2026");
   await expect(saude).toContainText("Referência: 09/10/2026");
   await page.getByRole("navigation", { name: "Indicadores da cidade" }).getByRole("link", { name: "Saúde", exact: true }).click();
-  await expect(saude.getByRole("heading", { name: "Saúde na sua cidade" })).toBeInViewport();
+  await expect(page.locator("#saude-title")).toBeInViewport();
   expect(await saude.locator(".health-table").evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
   await saude.locator(".cards").last().screenshot({ path: `test-results/saude-${testInfo.project.name}.png` });
   await saude.getByText("Repasses ao fundo estadual registrado nesta cidade", { exact: true }).click();
@@ -27,6 +28,7 @@ test("zero explícito do consolidado não é confundido com ausência", async ({
   const r = await request.get("/api/saude/5101837");
   expect((await r.json()).dados.mais_medicos.ultimo.vagas_ocupadas).toBe(0);
   await page.goto("/?municipio=5101837");
+  await abrirDetalheSaude(page);
   const saude = page.getByTestId("saude-municipal");
   await expect(saude).toContainText("Zero informado explicitamente no consolidado oficial");
   await expect(saude).toContainText("Vagas ocupadas no provimento federal");
@@ -37,6 +39,7 @@ test("cidade antes fora do piloto agora tem os três indicadores", async ({ page
   expect(await r.json()).toMatchObject({ disponivel: true, status: "NACIONAL", municipios_referencia: 5571,
     dados: snapshot.registros["1504752"] });
   await page.goto("/?municipio=1504752");
+  await abrirDetalheSaude(page);
   const saude = page.getByTestId("saude-municipal");
   await expect(saude.getByRole("heading", { name: "Equipes com financiamento federal" })).toBeVisible();
   await expect(saude).toContainText("R$ 7.569.070,01");
@@ -46,6 +49,7 @@ test("cidade antes fora do piloto agora tem os três indicadores", async ({ page
 
 test("ausência de repasse municipal permanece indisponível", async ({ page }) => {
   await page.goto("/?municipio=2605459");
+  await abrirDetalheSaude(page);
   const saude = page.getByTestId("saude-municipal");
   const fns = saude.getByRole("article").filter({ has: page.getByRole("heading", { name: "Dinheiro federal para os cuidados básicos de saúde" }) });
   await expect(fns.locator(".big")).toHaveText("Indisponível");
@@ -56,6 +60,7 @@ test("Brasília mantém fundo distrital separado do indicador municipal", async 
   const r = await request.get("/api/saude/5300108");
   expect((await r.json()).dados.fns.municipal).toBeNull();
   await page.goto("/?municipio=5300108");
+  await abrirDetalheSaude(page);
   const saude = page.getByTestId("saude-municipal");
   await expect(saude).toContainText("Repasses ao fundo distrital registrado nesta cidade");
   await saude.getByText("Repasses ao fundo distrital registrado nesta cidade", { exact: true }).click();
@@ -80,10 +85,11 @@ test("API de saúde rejeita códigos inválidos e municípios inexistentes", asy
 test("falha de rede na saúde pode ser recuperada sem virar ausência", async ({ page }) => {
   await page.route("**/api/saude/*", route => route.abort());
   await page.goto("/?municipio=3550308");
-  const saude = page.getByTestId("saude-municipal");
-  await expect(saude.getByRole("alert")).toContainText("Não foi possível carregar os indicadores de saúde");
+  const secao = page.locator("#saude");
+  await expect(secao.getByRole("alert")).toContainText("Não foi possível carregar os indicadores de saúde");
   await page.unroute("**/api/saude/*");
-  await saude.getByRole("button", { name: "Tentar novamente", exact: true }).click();
-  await expect(saude.getByRole("heading", { name: "Dinheiro federal para os cuidados básicos de saúde" })).toBeVisible();
-  await expect(saude.getByRole("alert")).toHaveCount(0);
+  await secao.getByRole("button", { name: "Tentar novamente", exact: true }).click();
+  await abrirDetalheSaude(page);
+  await expect(page.getByTestId("saude-municipal").getByRole("heading", { name: "Dinheiro federal para os cuidados básicos de saúde" })).toBeVisible();
+  await expect(secao.getByRole("alert")).toHaveCount(0);
 });

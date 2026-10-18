@@ -1,7 +1,8 @@
-import { test, expect } from "./fixtures";
+import { test, expect, abrirDetalheSaude } from "./fixtures";
 
 test("explicações funcionam com mouse, toque e teclado sem sair da tela", async ({ page, isMobile }, testInfo) => {
   await page.goto("/cidade/3550308");
+  await abrirDetalheSaude(page);
   const card = page.getByRole("article").filter({ has: page.getByRole("heading", { name: "Para quais áreas veio o dinheiro?" }) });
   await expect(card).toContainText("Cuidados do dia a dia, como os oferecidos nas UBS.");
   const help = card.getByRole("button", { name: "Entender: Atenção primária", exact: true });
@@ -27,6 +28,7 @@ test("explicações funcionam com mouse, toque e teclado sem sair da tela", asyn
 
 test("equipes explicam siglas e distinguem reconhecimento de apoio financeiro", async ({ page }, testInfo) => {
   await page.goto("/cidade/3550308");
+  await abrirDetalheSaude(page);
   const card = page.getByRole("article").filter({ has: page.getByRole("heading", { name: "Equipes com financiamento federal" }) });
   await expect(card).toContainText("não significa que pague todos os custos");
   await expect(card.getByRole("columnheader", { name: /Com registro oficial/ })).toBeVisible();
@@ -47,6 +49,7 @@ test("variação diferencia aumento, redução, estabilidade e ausência", async
   for (const [number, css, text] of [[5.5, "change-up", "Aumentou 5,5%"], [-2, "change-down", "Diminuiu 2%"], [0, "change-flat", "Mesmo valor nos dois anos"], [null, "change-unavailable", "Comparação indisponível"]] as const) {
     value = number;
     await page.goto("/cidade/1504752");
+    await abrirDetalheSaude(page);
     await expect(page.getByTestId("variacao-saude").locator("." + css)).toContainText(text);
   }
 });
@@ -58,6 +61,7 @@ test("equipamentos alinham aparelhos e estabelecimentos pelo tipo, sem depender 
     await route.fulfill({ json: original });
   });
   await page.goto("/cidade/1504752");
+  await abrirDetalheSaude(page);
   const card = page.getByTestId("equipamentos-saude");
   await expect(card.locator('[data-equipamento="Ultrassom"]')).toContainText("3 locais");
   await card.locator("summary").click();

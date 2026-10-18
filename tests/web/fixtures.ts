@@ -19,3 +19,9 @@ export const test = base.extend({
   },
 });
 export { expect };
+
+/** Abre o detalhe de saúde, que fica recolhido abaixo dos gráficos da seção 6 da página da cidade. */
+export async function abrirDetalheSaude(page: import("@playwright/test").Page) {
+  const detalhe = page.getByTestId("saude-detalhe");
+  if (!(await detalhe.evaluate(el => (el as HTMLDetailsElement).open))) await detalhe.locator("> summary").click();
+}

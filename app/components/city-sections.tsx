@@ -7,8 +7,8 @@ const sections = [
     { id: "mudou", label: "Como mudou" },
     { id: "compara", label: "Comparação" },
     { id: "voto", label: "Voto" },
-    { id: "titulo-saude", label: "Saúde" },
-    { id: "dados-bolsa", label: "Bolsa Família" },
+    { id: "saude", label: "Saúde" },
+    { id: "bolsa", label: "Bolsa Família" },
     { id: "fontes-cidade", label: "Fontes" },
 ];
 export default function CitySections() {

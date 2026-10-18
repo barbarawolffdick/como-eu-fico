@@ -143,7 +143,8 @@ class FpmTest(unittest.TestCase):
             ("Água Branca", "AL", "20.00", "10.00", "5.00", "FPM", "FUNDEB"),
             ("Água Branca", "AL", "999.00", "0", "0", "ICMS", "FUNDEB"),
             ("Açu", "RN", "10.00", "0", "0", "FPM", "FPM"),
-            ("Olho D Água Grande", "AL", "1.00", "1.00", "1.00", "FPM", "FPM")]
+            ("Olho D Água Grande", "AL", "1.00", "1.00", "1.00", "FPM", "FPM"),
+            ("Água Branca", "AL", "0", "0", "7.00", "FPM 1%", "FPM 1%")]
 
     def ano(self, base=None, mes_alterado=None):
         arquivos = []
@@ -164,9 +165,10 @@ class FpmTest(unittest.TestCase):
     def test_soma_so_fpm_creditado_e_usa_aliases_revisados(self):
         escolhidos, descartados = consolidar_fpm(self.ano(), 2023)
         fpm = fpm_por_municipio(escolhidos, CADASTRO)
-        self.assertEqual(fpm["2700102"], 12 * 17500)  # sem FUNDEB nem ICMS
-        self.assertEqual(fpm["2400208"], 12 * 1000)  # Açu → Assú
-        self.assertEqual(fpm["2705903"], 12 * 300)  # apóstrofo
+        # FPM mensal sem FUNDEB nem ICMS, mais a cota extraordinária "FPM 1%", publicada também à parte
+        self.assertEqual(fpm["2700102"], (12 * 17500 + 12 * 700, 12 * 700))
+        self.assertEqual(fpm["2400208"], (12 * 1000, 0))  # Açu → Assú; ano com linha separada: zero real
+        self.assertEqual(fpm["2705903"], (12 * 300, 0))  # apóstrofo
         self.assertEqual(descartados, [])
         self.assertEqual(ALIASES_FPM[("Açu", "RN")], "2400208")
 
@@ -192,6 +194,12 @@ class FpmTest(unittest.TestCase):
         escolhidos, _ = consolidar_fpm(self.ano(base, "05"), 2023)
         with self.assertRaises(ValueError):
             fpm_por_municipio(escolhidos, CADASTRO)
+
+    def test_ano_sem_linha_separada_deixa_extraordinarias_nulas(self):
+        sem_extra = [linha for linha in self.BASE if linha[5] != "FPM 1%"]
+        arquivos = [({"url": f"u{m:02d}", "sha256": "x"}, ler_fpm_csv(fpm_csv(sem_extra, f"{m:02d}"))) for m in range(1, 13)]
+        escolhidos, _ = consolidar_fpm(arquivos, 2023)
+        self.assertEqual(fpm_por_municipio(escolhidos, CADASTRO)["2700102"], (12 * 17500, None))
 
     def test_contem_exige_valores_identicos_onde_ja_havia_valor(self):
         self.assertTrue(contem({"a": (1, 2, 3)}, {"a": (1, 2, 0)}))

@@ -14,6 +14,8 @@
     "check:design": "node scripts/validar_design_system.mjs"
   },
   "dependencies": {
+    "d3-force": "^3.0.0",
+    "d3-hierarchy": "^3.1.2",
     "lucide-react": "^0.468.0",
     "next": "^15.5.0",
     "react": "^19.1.0",
@@ -21,6 +23,8 @@
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",
+    "@types/d3-force": "^3.0.10",
+    "@types/d3-hierarchy": "^3.1.7",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

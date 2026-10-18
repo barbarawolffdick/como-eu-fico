@@ -19,7 +19,7 @@ function ler<T>(caminho: string): Promise<T> {
 
 export type SnapshotPublico = "rankings_2026.json" | "detalhes_2026.json" | "familias_mds.json" | "pessoas_mds.json" |
   "saude_municipal.json" | "financiamento_saude.json" | "pessoas_mds_mensal.json" | "dinheiro_federal.json";
-export type SnapshotFragmentado = "detalhes_2026" | "saude_municipal" | "financiamento_saude" | "dinheiro_federal";
+export type SnapshotFragmentado = "detalhes_2026" | "saude_municipal" | "financiamento_saude" | "dinheiro_federal" | "emendas";
 
 /** Snapshot canônico completo. Preferir `registroMunicipal` para consultas de uma cidade. */
 export const lerSnapshot = <T>(arquivo: SnapshotPublico) => ler<T>("data/public/" + arquivo);
@@ -27,7 +27,9 @@ export const lerSnapshot = <T>(arquivo: SnapshotPublico) => ler<T>("data/public/
 type EntradaManifesto = { sha256: string; bytes: number; metadados: Record<string, unknown>; fragmentos?: string[] };
 export type Manifesto = { esquema: number; gerado_em: string; snapshots: Record<SnapshotPublico, EntradaManifesto> & Record<string, EntradaManifesto>;
   /** Arquivo de dinheiro federal do ano mais recente, usado pela página da cidade. */
-  dinheiro_federal_atual: string };
+  dinheiro_federal_atual: string;
+  /** Arquivo de emendas parlamentares do ano mais recente, se publicado. */
+  emendas_atual?: string };
 /** SHA-256 e campos de cabeçalho (tudo exceto `registros`) de cada snapshot, calculados no build. */
 export const lerManifesto = () => ler<Manifesto>("data/derivados/manifesto.json");
 
@@ -36,7 +38,8 @@ export async function registroMunicipal<T>(snapshot: SnapshotFragmentado, codigo
   if (!/^\d{7}$/.test(codigo_ibge)) return undefined;
   const manifesto = await lerManifesto();
   const uf = codigo_ibge.slice(0, 2);
-  const entrada = snapshot === "dinheiro_federal" ? manifesto.snapshots[manifesto.dinheiro_federal_atual] : manifesto.snapshots[`${snapshot}.json`];
+  const arquivo = snapshot === "dinheiro_federal" ? manifesto.dinheiro_federal_atual : snapshot === "emendas" ? manifesto.emendas_atual : `${snapshot}.json`;
+  const entrada = arquivo ? manifesto.snapshots[arquivo] : undefined;
   if (!entrada?.fragmentos?.includes(uf)) return undefined;
   const { registros } = await ler<{ registros: Record<string, T> }>(`data/derivados/${snapshot}/${uf}.json`);
   return registros[codigo_ibge];

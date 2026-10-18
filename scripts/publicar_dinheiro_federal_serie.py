@@ -40,12 +40,12 @@ def ipca_medio_anual(documento, anos):
 
 def montar_serie(anos, cadastro, inss_por_ano, fpm_por_ano, situacao, ipca, fontes):
     registros = {codigo: {"inss": {str(a): (inss_por_ano[a] or {}).get(codigo, {}).get("total") if inss_por_ano[a] is not None else None for a in anos},
-                          "fpm": {str(a): (fpm_por_ano[a] or {}).get(codigo) if fpm_por_ano[a] is not None else None for a in anos}}
+                          "fpm": {str(a): ((fpm_por_ano[a] or {}).get(codigo) or (None,))[0] if fpm_por_ano[a] is not None else None for a in anos}}
                  for codigo in sorted(cadastro)}
     return {"esquema": 1, "natureza": "observado, valores nominais", "data_geracao": datetime.now(timezone.utc).isoformat(),
             "anos": [str(a) for a in anos], "municipios_referencia": len(cadastro), "ipca_medio_anual": ipca,
             "definicoes": {"inss": "Valor líquido anual dos benefícios emitidos pelo INSS (total), por município do órgão pagador.",
-                           "fpm": "FPM creditado no ano, líquido da retenção do FUNDEB.",
+                           "fpm": "FPM creditado no ano: cotas mensais líquidas da retenção do FUNDEB mais as cotas extraordinárias de 1%.",
                            "ipca_medio_anual": "Média dos números-índice mensais do IPCA no ano (IBGE, tabela 1737, variável 2266)."},
             "situacao": situacao, "fontes": fontes, "registros": registros}
 

@@ -58,7 +58,7 @@ test("falha na cobertura exibe erro e permite nova tentativa", async ({ page }) 
   await expect(page.getByText("Ausência não é zero.", { exact: false })).toHaveCount(0);
   await page.unroute("**/api/cobertura?*");
   await page.getByRole("button", { name: "Tentar novamente", exact: true }).click();
-  await expect(page.locator("#dados-bolsa").getByText(pessoas.registros["3550308"].pessoas.toLocaleString("pt-BR"), { exact: false })).toBeVisible();
+  await expect(page.locator("#bolsa").getByText(pessoas.registros["3550308"].pessoas.toLocaleString("pt-BR"), { exact: false })).toBeVisible();
   await expect(page.locator("main").getByRole("alert")).toHaveCount(0);
 });
 

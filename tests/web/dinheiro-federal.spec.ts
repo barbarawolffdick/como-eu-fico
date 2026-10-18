@@ -1,9 +1,9 @@
 import { test, expect } from "./fixtures";
 import { derivarDinheiroFederal as derivar } from "../../scripts/derivar_dinheiro_federal.mjs";
-import type { DinheiroFederalCidade, PibReferencia, PontoRegiao } from "../../lib/dinheiro-federal";
+import type { DinheiroFederalCidade, Enxame, PibReferencia, PontoRegiao } from "../../lib/dinheiro-federal";
 
 const derivarDinheiroFederal = (dados: unknown) => derivar(dados as Parameters<typeof derivar>[0]) as unknown as
-  { cidades: Record<string, DinheiroFederalCidade>; regioes: PontoRegiao[]; pib: PibReferencia };
+  { cidades: Record<string, DinheiroFederalCidade>; regioes: PontoRegiao[]; pib: PibReferencia; enxame: Enxame };
 
 // Amostra mínima: três cidades na mesma região imediata, uma em outra região, ano 2025.
 const meses = (valor: number) => Array.from({ length: 12 }, (_, i) => ({ mes_competencia: `2025${String(i + 1).padStart(2, "0")}`, valor_centavos: valor }));
@@ -69,6 +69,28 @@ test("pontos por região só existem com os quatro fluxos e votos válidos", () 
   expect(ce.lula_percentual).toBeCloseTo(75, 6); // (70 + 80) / 200; a cidade sem dado eleitoral não entra
 });
 
+test("enxame só inclui cidades com os quatro fluxos e é determinístico", () => {
+  const a = derivarDinheiroFederal(amostra()).enxame, b = derivarDinheiroFederal(amostra()).enxame;
+  // 2300002 não tem as 12 competências do Bolsa Família e 2300003 não tem FPM: ficam fora, não viram zero.
+  expect(a.pontos.map(p => p[0])).toEqual(["2300001", "3500001"]);
+  expect(a.pontos[0][3]).toBe(1);
+  expect(a.pontos[1][3]).toBe(0);
+  expect(a).toEqual(b);
+});
+
+test("API traz as emendas da cidade com partido da época e sem emenda não vira ausência", async ({ request }) => {
+  const juazeiro = await (await request.get("/api/dinheiro-federal/2307304")).json();
+  expect(juazeiro.emendas.ano).toBe(2025);
+  expect(juazeiro.emendas.saude_centavos).toBe(255719200);
+  const fernanda = juazeiro.emendas.autores.find((a: { autor: string }) => a.autor === "FERNANDA PESSOA");
+  expect([fernanda.partido, fernanda.partido_atual]).toEqual(["União", "PSD"]);
+  const bancada = juazeiro.emendas.autores.find((a: { tipo: string }) => a.tipo === "Emenda de Bancada");
+  expect(bancada.partido).toBeNull();
+  const regioes = await (await request.get("/api/dinheiro-federal/regioes")).json();
+  expect(regioes.enxame.pontos.length).toBeGreaterThan(5000);
+  expect(regioes.enxame.pontos.find((p: [string]) => p[0] === "2307304")).toBeTruthy();
+});
+
 test("API do dinheiro federal valida código e declara ausências com motivo", async ({ request }) => {
   expect((await request.get("/api/dinheiro-federal/123")).status()).toBe(400);
   expect((await request.get("/api/dinheiro-federal/9999999")).status()).toBe(404);
@@ -87,15 +109,16 @@ test("página mostra estimativa, nota do órgão pagador e não apresenta total 
   const resposta = { ...real, pib: { ano_fonte: 2023, estimado: true }, cidade: { ...real.cidade,
     pib_centavos: real.cidade.pib_centavos ?? 1_000_000_000_00,
     fluxos: { inss: 800_000_000_00, bolsa_familia: 200_000_000_00, fpm: 150_000_000_00, sus: null },
-    ausencias: { sus: "Sem repasse federal ao fundo municipal de saúde validado." } } };
+    ausencias: { sus: "Sem repasse federal ao fundo municipal de saúde validado." },
+    comparacoes: real.cidade.comparacoes.map((c: { total: number | null }, i: number) => i === 0 ? { ...c, total: null } : c) } };
   await page.route("**/api/dinheiro-federal/2307304", route => route.fulfill({ json: resposta }));
   await page.goto("/cidade/2307304");
   const quanto = page.locator("#quanto");
   await expect(quanto).toContainText("(estimativa)");
   await expect(quanto).toContainText("SUS não tem dado");
-  await expect(quanto).toContainText("Indisponível. Sem repasse federal ao fundo municipal de saúde validado.");
+  await expect(page.locator("#para-quem")).toContainText("Sem dado em 2025: SUS (Sem repasse federal ao fundo municipal de saúde validado)");
   await expect(page.locator("#para-quem")).toContainText("contados na cidade");
-  await expect(page.locator("#compara")).toContainText("Comparação feita com INSS, Bolsa Família e FPM");
+  await expect(page.locator("#compara")).toContainText("A comparação usa os quatro tipos de dinheiro");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
@@ -116,16 +139,16 @@ test("dispersão destaca a região da cidade e trata falta de dados", async ({ p
   ] };
   await page.route("**/api/dinheiro-federal/regioes", route => route.fulfill({ json: pontos }));
   await page.goto("/cidade/2307304");
-  const grafico = page.locator(".federal-scatter");
+  const grafico = page.locator("#voto svg.viz").last();
   await expect(grafico).toHaveAttribute("aria-label", /Região de Juazeiro do Norte: 34,0% e 73,0%/);
-  await expect(grafico.locator("circle.is-current")).toHaveCount(1);
-  await expect(grafico.locator("circle.is-ne, circle.is-out")).toHaveCount(2);
+  await expect(grafico.locator("circle.viz-ink")).toHaveCount(1);
+  await expect(grafico.locator("circle.viz-c1, circle.viz-c2")).toHaveCount(2);
   await expect(page.locator("#voto")).toContainText("não entre pessoas");
   await page.unroute("**/api/dinheiro-federal/regioes");
   await page.route("**/api/dinheiro-federal/regioes", route => route.fulfill({ json: { ...pontos, regioes: [] } }));
   await page.reload();
   await expect(page.locator("#voto")).toContainText("ainda não está disponível");
-  await expect(page.locator(".federal-scatter")).toHaveCount(0);
+  await expect(page.locator("#voto svg.viz")).toHaveCount(1);  // só a barra de votos
 });
 
 test("série é convertida para reais do último ano pelo IPCA médio", () => {
@@ -152,5 +175,5 @@ test("como mudou mostra lacunas como s/d e descreve a variação real", async ({
   await expect(mudou).toContainText("ficou estável de 2023 a 2025");
   await expect(mudou).toContainText("o FPM caiu 25% de 2023 a 2025");
   await expect(mudou.locator("svg text.is-gap")).toHaveCount(1);
-  await expect(mudou.locator("svg")).toHaveAttribute("aria-label", /FPM: 2023 200, 2024 sem dado completo, 2025 150/);
+  await expect(mudou.locator("svg")).toHaveAttribute("aria-label", /FPM: 2023 200, 2024 sem dado, 2025 150/);
 });

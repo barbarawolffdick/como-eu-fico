@@ -1,7 +1,8 @@
-import { test, expect } from "./fixtures";
+import { test, expect, abrirDetalheSaude } from "./fixtures";
 
 test("São Paulo destaca locais SUS e mantém o inventário em consulta separada", async ({ page }, testInfo) => {
   await page.goto("/?municipio=3550308");
+  await abrirDetalheSaude(page);
   const section = page.getByTestId("equipamentos-saude");
   await expect(section.getByRole("listitem")).toHaveCount(6);
   await expect(section.locator('[data-equipamento="Mamógrafo"]')).toContainText("88 locais");
@@ -29,6 +30,7 @@ test("valores continuam ligados ao tipo e zero explícito difere de ausência", 
     await route.fulfill({ json: body });
   });
   await page.goto("/?municipio=1504752");
+  await abrirDetalheSaude(page);
   const section = page.getByTestId("equipamentos-saude");
   await expect(section.locator('[data-equipamento="Ultrassom"]')).toContainText("3 locais");
   await expect(section.locator('[data-equipamento="Raio X"]')).toContainText("0 locais");

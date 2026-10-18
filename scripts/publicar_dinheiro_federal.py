@@ -343,15 +343,16 @@ def consolidar_fpm(arquivos, ano):
 
 
 def fpm_por_municipio(escolhidos, cadastro):
-    """Soma anual da linha FPM/FPM: crédito ao município, já líquido da retenção para o FUNDEB.
-    Linhas de FUNDEB (inclusive impostos estaduais) e royalties não entram."""
+    """Soma anual do FPM creditado: linha FPM/FPM (cota mensal, já líquida da retenção para o FUNDEB) mais a
+    linha FPM 1%/FPM 1% (cotas extraordinárias de julho, setembro e dezembro, sem retenção). Linhas de FUNDEB
+    (inclusive impostos estaduais) e royalties não entram. Devolve {codigo: (total, extraordinarias)}."""
     indice = {chave_nome(m["nome"], m["uf"]): c for c, m in cadastro.items()}
     if len(indice) != len(cadastro):
         raise ValueError("Cadastro IBGE com nomes ambíguos na mesma UF")
-    total, meses = defaultdict(int), defaultdict(set)
+    total, extra, meses = defaultdict(int), defaultdict(int), defaultdict(set)
     for mes, (_, celulas) in escolhidos.items():
         for (nome, uf, item, transferencia), valores in celulas.items():
-            if item != "FPM" or transferencia != "FPM":
+            if (item, transferencia) not in (("FPM", "FPM"), ("FPM 1%", "FPM 1%")):
                 continue
             codigo = ALIASES_FPM.get((nome, uf)) or indice.get(chave_nome(nome, uf))
             if codigo is None:
@@ -359,11 +360,17 @@ def fpm_por_municipio(escolhidos, cadastro):
             if cadastro[codigo]["uf"] != uf:
                 raise ValueError(f"UF do FPM incompatível com o cadastro: {nome}-{uf}")
             total[codigo] += sum(valores)
-            meses[codigo].add(mes)
+            if item == "FPM 1%":
+                extra[codigo] += sum(valores)
+            else:
+                meses[codigo].add(mes)
     incompletos = sorted(c for c, m in meses.items() if len(m) != 12)
     if incompletos:
         raise ValueError(f"FPM sem os 12 meses em {len(incompletos)} municípios")
-    return dict(total)
+    # Em alguns anos (ex.: 2023) a fonte soma as cotas extraordinárias na própria linha FPM, sem separá-las:
+    # o total está completo e a parte extraordinária fica nula (não identificada), nunca zero.
+    separa = bool(extra)
+    return {c: (v, extra.get(c, 0) if separa else None) for c, v in total.items()}
 
 
 def descrever_pib(ano, ano_fonte, estimado=False, **extra):
@@ -385,7 +392,8 @@ def montar_documento(ano, cadastro, pib, inss_valor, inss_qtd, fpm, fontes, vali
         "inss.valor_ano_centavos": "Valor líquido (bruto menos descontos) dos benefícios emitidos pelo INSS no ano, por grupo de espécies, "
                                    "no município do órgão pagador — não necessariamente o de residência do beneficiário.",
         "inss.quantidade_dezembro": "Quantidade de benefícios emitidos em dezembro (créditos, não pessoas), mesmo critério territorial.",
-        "fpm.valor_ano_centavos": "FPM creditado ao município no ano (soma dos decêndios), líquido da retenção para o FUNDEB.",
+        "fpm.valor_ano_centavos": "FPM creditado ao município no ano: cotas mensais (soma dos decêndios, líquidas da retenção para o FUNDEB) mais as cotas extraordinárias de 1% (julho, setembro e dezembro, sem retenção).",
+            "fpm.cotas_extraordinarias_centavos": "Parte do total que veio das cotas extraordinárias de 1% (linha “FPM 1%” do Tesouro). Nula quando a fonte do ano já as inclui na linha FPM sem separá-las.",
     }
     natureza = "observado"
     if pib_meta["estimado"]:
@@ -404,7 +412,7 @@ def montar_documento(ano, cadastro, pib, inss_valor, inss_qtd, fpm, fontes, vali
         r = {"municipio": {"codigo_ibge": codigo, "nome": m["nome"], "uf": m["uf"]},
              "regiao_imediata": m["regiao_imediata"], "regiao": m["regiao"],
              "pib_centavos": pib.get(codigo), "inss": inss,
-             "fpm": None if codigo not in fpm else {"valor_ano_centavos": fpm[codigo]}}
+             "fpm": None if codigo not in fpm else {"valor_ano_centavos": fpm[codigo][0], "cotas_extraordinarias_centavos": fpm[codigo][1]}}
         r["ausencias"] = {k: motivos[k] for k, vazio in (("pib", r["pib_centavos"] is None), ("inss", inss is None), ("fpm", r["fpm"] is None)) if vazio}
         registros[codigo] = r
     return {
@@ -551,7 +559,7 @@ def diagnosticar(anos, cadastro, cache, atualizar):
             linha["inss"] = {"situacao": "recusado", "motivo": str(exc)}
         try:
             fpm, escolhidos, _ = carregar_fpm(ano, cadastro, cache, atualizar)
-            linha["fpm"] = {"situacao": "completo", "municipios": len(fpm), "total_centavos": sum(fpm.values())}
+            linha["fpm"] = {"situacao": "completo", "municipios": len(fpm), "total_centavos": sum(v for v, _ in fpm.values())}
         except FpmIncompleto as exc:
             linha["fpm"] = {"situacao": "incompleto", "meses_recusados": exc.problemas}
         except Exception as exc:  # noqa: BLE001

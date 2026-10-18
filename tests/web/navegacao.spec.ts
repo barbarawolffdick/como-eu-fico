@@ -74,6 +74,7 @@ test("placar preserva empate e indisponibilidade eleitoral", async ({ page }) =>
   await page.goto("/cidade/3550308");
   const cabecalho = page.locator(".city-heading");
   const voto = page.locator("#voto");
+  await voto.getByText("Ver todos os candidatos").click();
   // Empate: o cabeçalho não aponta vencedor e a lista mostra os dois com 50%.
   await expect(voto.locator(".vote")).toHaveCount(2);
   await expect(voto.locator(".vote").first()).toContainText("50%");

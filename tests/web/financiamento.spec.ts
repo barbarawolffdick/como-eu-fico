@@ -1,4 +1,4 @@
-import { test, expect } from "./fixtures";
+import { test, expect, abrirDetalheSaude } from "./fixtures";
 import { readFileSync } from "node:fs";
 
 const snapshot = JSON.parse(readFileSync("data/public/financiamento_saude.json", "utf8"));
@@ -8,6 +8,7 @@ test("cidade relaciona total, finalidades, emendas e população sem dupla conta
   const body = await r.json();
   expect(body.financiamento).toEqual(snapshot.registros["1504752"]);
   await page.goto("/?municipio=1504752");
+  await abrirDetalheSaude(page);
   const painel = page.getByTestId("financiamento-saude");
   await expect(painel.getByRole("heading", { name: "Dinheiro enviado à saúde da cidade" })).toBeVisible();
   await expect(painel).toContainText("R$ 8.605.457,36");
@@ -21,6 +22,7 @@ test("cidade relaciona total, finalidades, emendas e população sem dupla conta
 
 test("evolução compara somente anos completos e deixa 2026 parcial separado", async ({ page }, testInfo) => {
   await page.goto("/?municipio=1504752");
+  await abrirDetalheSaude(page);
   const card = page.getByTestId("financiamento-saude").getByRole("article").filter({ has: page.getByRole("heading", { name: "A cidade recebeu mais ou menos dinheiro para saúde?" }) });
   await expect(card).toContainText("2024 · jan–dez");
   await expect(card).toContainText("2025 · jan–dez");
@@ -33,6 +35,7 @@ test("evolução compara somente anos completos e deixa 2026 parcial separado", 
 
 test("SIOPS apresenta despesas por fonte com seu próprio exercício", async ({ page }, testInfo) => {
   await page.goto("/?municipio=1504752");
+  await abrirDetalheSaude(page);
   const card = page.getByTestId("financiamento-saude").getByRole("article").filter({ has: page.getByRole("heading", { name: "Quanto a cidade gastou com saúde?" }) });
   await expect(card).toContainText("exercício 2025");
   await expect(card).toContainText("49,44%");
@@ -47,6 +50,7 @@ test("SIOPS apresenta despesas por fonte com seu próprio exercício", async ({ 
 
 test("equipamentos distinguem locais SUS do inventário e preservam ausências", async ({ page }, testInfo) => {
   await page.goto("/?municipio=1504752");
+  await abrirDetalheSaude(page);
   const card = page.getByTestId("equipamentos-saude");
   const ultrassom = card.locator('[data-equipamento="Ultrassom"]');
   await expect(ultrassom).toContainText("3 locais");
@@ -67,6 +71,7 @@ test("Brasília separa AgSUS, recurso distrital e valor municipal ausente", asyn
   expect(body.financiamento.centavos_por_habitante).toBeNull();
   expect(body.financiamento.fns.at(-1).outros_destinatarios_sediados_na_cidade.valor_centavos).toBe(930854400);
   await page.goto("/?municipio=5300108");
+  await abrirDetalheSaude(page);
   const painel = page.getByTestId("financiamento-saude");
   await painel.getByText("Outros destinatários sediados nesta cidade", { exact: true }).click();
   await expect(painel).toContainText("o destinatário identificado não é o fundo municipal");
@@ -76,6 +81,7 @@ test("Brasília separa AgSUS, recurso distrital e valor municipal ausente", asyn
 
 test("município sem registro hospitalar não recebe leitos zero", async ({ page }) => {
   await page.goto("/?municipio=1504752");
+  await abrirDetalheSaude(page);
   const painel = page.getByTestId("financiamento-saude");
   await expect(painel).toContainText("Não há registro hospitalar validado nesta competência para a cidade. Ausência não é zero.");
   await expect(painel).toContainText("10 unidades básicas");

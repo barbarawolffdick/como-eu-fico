@@ -25,7 +25,7 @@ O cache `data/raw/dinheiro_federal/` guarda cada resposta com URL, SHA-256 e dat
 |---|---|---|---|
 | PIB | IBGE, tabela 5938, variável 37 (API de agregados) | PIB a preços correntes do ano | Município |
 | INSS | Ministério da Previdência, `ben_municipios_especie_{ano}.xlsx` | Valor líquido emitido no ano, por grupo de espécies; quantidade emitida em dezembro | **Município do órgão pagador** |
-| FPM | Tesouro Nacional, transferências constitucionais mensais (CKAN, licença ODbL) | Linha `FPM/FPM`: crédito ao município, líquido da retenção para o FUNDEB | Município |
+| FPM | Tesouro Nacional, transferências constitucionais mensais (CKAN, licença ODbL) | Linhas `FPM/FPM` (cota mensal, líquida da retenção para o FUNDEB) e `FPM 1%/FPM 1%` (cotas extraordinárias de julho, setembro e dezembro) | Município |
 | Cadastro | IBGE, API de localidades | Nome, UF, região imediata | Município |
 
 Totais publicados:
@@ -50,6 +50,8 @@ Totais publicados:
 O PIB municipal do IBGE vai até 2023; para 2024 e 2025 só com `--pib estimado` ou `--pib ausente`. Os 27 nomes de 2019–2021 (ex.: Parati, Embu, Gouvêa, Santarém-PB, Augusto Severo) são grafias anteriores a renomeações e ficam fora de `ALIASES_FPM` até revisão um a um. A API de transferências do Tesouro (`apiapex.tesouro.gov.br/.../por_estado_municipio_detalhe`) foi avaliada para repor meses ausentes e não respondeu (tempo esgotado em 17/10/2026); não é usada.
 
 ## Regras de transformação
+
+- **FPM, cotas extraordinárias.** Até 18/10/2026 a linha `FPM 1%` ficava de fora e o FPM publicado era cerca de 13% menor. A conciliação com o Siconfi (DCA 2025 de Juazeiro do Norte, FPM líquido de R$ 179,87 mi) fecha ao centavo com a soma das duas linhas. O valor das cotas extraordinárias é publicado à parte em `fpm.cotas_extraordinarias_centavos`.
 
 - **Fluxos separados.** INSS é benefício pago a pessoas; FPM é transferência constitucional ao governo municipal. O snapshot não soma os dois nem os chama de investimento.
 - **INSS por órgão pagador.** O valor mostra quanto dinheiro de benefícios entra na economia pela cidade, não quantos moradores recebem. Não calcular taxas por habitante nem rankings municipais de cobertura; para comparar territórios, agregar por região imediata (ver [avaliação da fonte](../research/avaliacao-inss-beneficios-municipios.md)).

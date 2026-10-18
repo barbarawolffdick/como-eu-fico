@@ -30,7 +30,7 @@ class SerieTest(unittest.TestCase):
         cadastro = {"2307304": {}, "2605459": {}}
         doc = montar_serie([2023, 2024], cadastro,
                            {2023: {"2307304": {"total": 10}, "2605459": {"total": 5}}, 2024: None},
-                           {2023: {"2307304": 7}, 2024: None},
+                           {2023: {"2307304": (7, None)}, 2024: None},
                            {"2023": {"inss": "completo", "fpm": "completo"}, "2024": {"inss": "recusado: x", "fpm": "incompleto: y"}},
                            {"2023": 1.0, "2024": 1.1}, {})
         self.assertEqual(doc["registros"]["2307304"]["inss"], {"2023": 10, "2024": None})
@@ -49,7 +49,7 @@ class SerieTest(unittest.TestCase):
     def test_juazeiro_confere_com_a_fonte(self):
         r = SERIE["registros"]["2307304"]
         self.assertEqual(r["inss"]["2025"], 85834798989)
-        self.assertEqual(r["fpm"]["2025"], 15584922874)
+        self.assertEqual(r["fpm"]["2025"], 17986597412)  # inclui as cotas extraordinárias de 1% (confere com o Siconfi)
         self.assertEqual(SERIE["situacao"]["2025"], {"inss": "completo", "fpm": "completo"})
 
 

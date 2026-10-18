@@ -32,6 +32,19 @@
   --color-city-a-surface: #eef4e7;
   --color-city-b: #715589;
   --color-city-b-surface: #f3eff7;
+  /* Visualização de dados: paleta validada (faixa de luminosidade, saturação mínima, separação para
+     daltonismo e entre cores). Categorias em ordem fixa; cor segue a entidade, nunca a posição. */
+  --color-viz-1: #13784a;
+  --color-viz-2: #e8951e;
+  --color-viz-3: #2c7bb6;
+  --color-viz-4: #cf5a3f;
+  --color-viz-track: #e6ebe3;
+  /* Escala sequencial (magnitude de uma série): claro → escuro. */
+  --color-viz-seq-1: #d6ede0;
+  --color-viz-seq-2: #9fd3b3;
+  --color-viz-seq-3: #4ea676;
+  --color-viz-seq-4: #13784a;
+  --color-viz-seq-5: #0b4a2e;
   --color-overlay-shadow: #0d251e30;
   --color-card-shadow: #123b2710;
 

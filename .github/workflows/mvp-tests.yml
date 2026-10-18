@@ -33,6 +33,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_saude*.py' -v
           python -m unittest discover -s tests -p 'test_dinheiro_federal.py' -v
           python -m unittest discover -s tests -p 'test_dinheiro_federal_serie.py' -v
+          python -m unittest discover -s tests -p 'test_emendas.py' -v
 
   next-build:
     runs-on: ubuntu-latest

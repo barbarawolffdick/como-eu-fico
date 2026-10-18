@@ -4,7 +4,14 @@
 // Também calcula comparações territoriais e os pontos por região imediata (fluxos × voto).
 // Ausência fica nula com motivo, nunca zero.
 
+import { forceCollide, forceSimulation, forceX, forceY } from "d3-force";
+
 const FLUXOS = ["inss", "bolsa_familia", "fpm", "sus"];
+// Enxame da comparação: posições calculadas aqui, uma vez, para duas larguras de área útil (px).
+// O eixo vai de 0 a ENXAME_MAX% da economia; acima disso, o ponto fica na borda.
+export const ENXAME_MAX = 80;
+export const ENXAME_LARGURAS = { largo: 654, estreito: 300 };
+const ENXAME_RAIO = { largo: 1.9, estreito: 1.3 };
 // Benefícios do INSS emitidos em dezembro por 100 habitantes fora desta faixa indicam deslocamento
 // para o município do órgão pagador (ver research/avaliacao-inss-beneficios-municipios.md).
 const INSS_POR_100_MIN = 5, INSS_POR_100_MAX = 40;
@@ -120,7 +127,7 @@ export function derivarDinheiroFederal({ dinheiro, detalhes, financiamento, rank
       federal_percentual_do_pib: g.total, lula_percentual: 100 * v13 / vt });
   }
   regioes.sort((a, b) => a.id.localeCompare(b.id));
-  return { ano, pib, cidades, regioes, correlacao: correlacao(regioes) };
+  return { ano, pib, cidades, regioes, correlacao: correlacao(regioes), enxame: enxame(cidades) };
 }
 
 function correlacao(pontos) {
@@ -132,4 +139,25 @@ function correlacao(pontos) {
     return sxy / Math.sqrt(sxx * syy);
   };
   return { brasil: r(pontos), nordeste: r(pontos.filter(p => p.regiao === "Nordeste")), demais: r(pontos.filter(p => p.regiao !== "Nordeste")) };
+}
+
+// Cada cidade com os quatro fluxos vira um ponto: [código, nome, UF, Nordeste (0/1), % da economia,
+// deslocamento vertical na faixa larga, deslocamento na faixa estreita]. Determinístico (ordem por código).
+function enxame(cidades) {
+  const pontos = Object.entries(cidades).filter(([, x]) => x.comparacoes[0].total !== null && x.pib_centavos)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([codigo, x]) => ({ codigo, nome: x.municipio.nome, uf: x.municipio.uf, ne: x.regiao === "Nordeste" ? 1 : 0, v: x.comparacoes[0].total }));
+  const desloc = { largo: [], estreito: [] };
+  for (const [modo, largura] of Object.entries(ENXAME_LARGURAS)) {
+    // Uma simulação por faixa (Nordeste e demais), sem interação entre elas.
+    for (const ne of [0, 1]) {
+      const nos = pontos.map((p, i) => ({ i, p })).filter(n => n.p.ne === ne)
+        .map(({ i, p }) => { const alvo = largura * Math.min(p.v, ENXAME_MAX) / ENXAME_MAX; return { i, alvo, x: alvo, y: ((i * 7919) % 41) - 20 }; });
+      forceSimulation(nos).force("x", forceX(n => n.alvo).strength(1)).force("y", forceY(0).strength(0.09))
+        .force("c", forceCollide(ENXAME_RAIO[modo])).stop().tick(180);
+      for (const n of nos) desloc[modo][n.i] = Math.round(n.y * 10) / 10;
+    }
+  }
+  return { max: ENXAME_MAX, larguras: ENXAME_LARGURAS, raios: ENXAME_RAIO,
+    pontos: pontos.map((p, i) => [p.codigo, p.nome, p.uf, p.ne, Math.round(p.v * 10) / 10, desloc.largo[i], desloc.estreito[i]]) };
 }

@@ -33,11 +33,19 @@ export type DinheiroFederalCidade = {
 };
 export type PontoSerie = { nominal: number | null; real: number | null; motivo: string | null };
 export type SerieCidade = { anos: string[]; base_inflacao: string; inss: Record<string, PontoSerie>; fpm: Record<string, PontoSerie> };
-export type RespostaDinheiroFederal = { ano: number; pib: PibReferencia; cidade: DinheiroFederalCidade };
+export type AutorEmenda = { autor: string; tipo: string; ano_emenda: number | null; valor_centavos: number; saude_centavos: number;
+  partido: string | null; partido_atual: string | null; casa: string | null; favorecidos: [string, number][] };
+export type EmendasCidade = { total_centavos: number; saude_centavos: number; autores: AutorEmenda[] };
+export type RespostaDinheiroFederal = { ano: number; pib: PibReferencia; cidade: DinheiroFederalCidade;
+  /** Nulo se as emendas não estão publicadas; com o snapshot publicado, cidade sem emenda paga traz totais 0 e lista vazia. */
+  emendas: (EmendasCidade & { ano: number }) | null };
 
 export type PontoRegiao = { id: string; nome: string; uf: string; regiao: string; federal_percentual_do_pib: number; lula_percentual: number };
+/** [código, nome, UF, Nordeste (0/1), % da economia, deslocamento na faixa larga, na faixa estreita]. */
+export type PontoEnxame = [string, string, string, 0 | 1, number, number, number];
+export type Enxame = { max: number; larguras: { largo: number; estreito: number }; raios: { largo: number; estreito: number }; pontos: PontoEnxame[] };
 export type RespostaRegioes = { ano: number; pib: PibReferencia; regioes: PontoRegiao[];
-  correlacao: { brasil: number | null; nordeste: number | null; demais: number | null } };
+  correlacao: { brasil: number | null; nordeste: number | null; demais: number | null }; enxame: Enxame };
 
 /** Soma dos fluxos disponíveis; nula se algum faltar, para não exibir um total parcial como completo. */
 export function totalFederal(fluxos: Record<Fluxo, number | null>): number | null {
